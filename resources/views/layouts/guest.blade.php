@@ -15,20 +15,30 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @stack('head')
     </head>
-    <body class="min-h-screen bg-gray-900 text-gray-100 antialiased">
-        @if (request()->routeIs('login') || request()->routeIs('register'))
+    <body class="min-h-screen bg-white text-gray-900 antialiased">
+        @php
+            $isAuthPage = request()->routeIs('login')
+                || request()->routeIs('register')
+                || request()->routeIs('password.*')
+                || request()->routeIs('verification.*')
+                || request()->routeIs('confirm-password');
+        @endphp
+
+        @if ($isAuthPage)
             @include('partials.navbar-auth')
         @else
             @include('partials.navbar')
         @endif
 
-        <main class="{{ request()->routeIs('login') || request()->routeIs('register') ? '' : 'py-8' }}">
+        <main class="{{ $isAuthPage ? '' : 'py-8' }}">
             {{ $slot }}
         </main>
 
-        @unless (request()->routeIs('login') || request()->routeIs('register'))
+        @if ($isAuthPage)
+            @include('partials.footer-auth')
+        @else
             @include('partials.footer')
-        @endunless
+        @endif
 
         @stack('scripts')
     </body>

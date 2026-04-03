@@ -11,7 +11,6 @@ class Kegiatan extends Model
     protected $fillable = [
         'nama_kegiatan',
         'deskripsi',
-        'status',
     ];
 
     public function bookings()

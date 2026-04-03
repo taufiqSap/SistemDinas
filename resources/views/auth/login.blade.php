@@ -119,8 +119,6 @@
                     </div>
                 </div>
 
-                <p class="mt-5 text-center text-xs text-white/60">© 2025 Dinas Kebudayaan &amp; Pariwisata · Pemerintah Kota Blitar</p>
-            </div>
         </main>
     </div>
 

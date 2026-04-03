@@ -13,10 +13,15 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @stack('head')
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+        <div class="min-h-screen bg-gray-100 flex flex-col">
+            @if (auth()->check() && auth()->user()->role === 'admin')
+                @include('layouts.navigation')
+            @else
+                @include('partials.navbar')
+            @endif
 
             <!-- Page Heading -->
             @isset($header)
@@ -28,9 +33,13 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
+            <main class="flex-1">
                 {{ $slot }}
             </main>
+
+            @include('partials.footer')
         </div>
+
+        @stack('scripts')
     </body>
 </html>

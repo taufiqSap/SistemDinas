@@ -15,29 +15,30 @@
         <nav class="flex items-center gap-2 text-sm sm:gap-4">
             @auth
                 <a
-                    href="{{ route('dashboard') }}"
+                    href="{{ route('booking.create') }}"
                     class="rounded-lg border border-white/30 px-4 py-2 font-semibold text-white transition hover:bg-white hover:text-[#c62828]"
                 >
-                    Dashboard
+                    Daftar Fasilitas
+                </a>
+                <a
+                    href="{{ url('/#jadwal') }}"
+                    class="rounded-lg bg-yellow-300 px-4 py-2 font-semibold text-[#7a1d1d] transition hover:bg-yellow-200"
+                >
+                    Cek Jadwal
                 </a>
             @else
-                @if (\Illuminate\Support\Facades\Route::has('login'))
-                    <a
-                        href="{{ route('login') }}"
-                        class="rounded-lg border border-white/30 px-4 py-2 font-semibold text-white transition hover:bg-white hover:text-[#c62828]"
-                    >
-                        Masuk
-                    </a>
-                @endif
-
-                @if (\Illuminate\Support\Facades\Route::has('register'))
-                    <a
-                        href="{{ route('register') }}"
-                        class="rounded-lg bg-[#fbc02d] px-4 py-2 font-bold text-[#1b1f27] transition hover:bg-yellow-300"
-                    >
-                        Daftar
-                    </a>
-                @endif
+                <a
+                    href="{{ route('login') }}"
+                    class="rounded-lg border border-white/30 px-4 py-2 font-semibold text-white transition hover:bg-white hover:text-[#c62828]"
+                >
+                    Login
+                </a>
+                <a
+                    href="{{ route('register') }}"
+                    class="rounded-lg bg-yellow-300 px-4 py-2 font-semibold text-[#7a1d1d] transition hover:bg-yellow-200"
+                >
+                    Daftar
+                </a>
             @endauth
         </nav>
     </div>

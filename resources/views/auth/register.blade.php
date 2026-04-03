@@ -162,11 +162,11 @@
 
                                 <div class="animate-fadein-delay4 flex flex-col gap-1.5">
                                     <label for="alamat" class="text-sm font-semibold text-gray-800">
-                                        Alamat Lengkap <span class="text-[#C6352F]">*</span>
+                                        Alamat  <span class="text-[#C6352F]">*</span>
                                     </label>
                                     <div class="relative">
                                         <span class="material-symbols-outlined pointer-events-none absolute left-3.5 top-3 text-[20px] text-gray-400">home_pin</span>
-                                        <textarea id="alamat" name="alamat" class="textarea-field" placeholder="Masukkan alamat lengkap Anda" rows="3" required>{{ old('alamat') }}</textarea>
+                                        <textarea id="alamat" name="alamat" class="textarea-field" placeholder="Masukkan alamat Anda" rows="3" required>{{ old('alamat') }}</textarea>
                                     </div>
                                 </div>
 
@@ -252,7 +252,6 @@
                         </div>
                     </div>
 
-                    <p class="mt-5 text-center text-xs text-white/60">© 2025 Dinas Kebudayaan &amp; Pariwisata · Pemerintah Kota Blitar</p>
                 </div>
             </div>
         </main>
