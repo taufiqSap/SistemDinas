@@ -16,14 +16,14 @@
             @auth
                 <a
                     href="{{ route('dashboard') }}"
-                    class="rounded-lg border border-white/30 px-4 py-2 font-semibold text-white transition hover:bg-white hover:text-[#c62828]"
+                    class="rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white hover:text-[#c62828]"
                 >
                     Dashboard
                 </a>
             @else
                 <a
                     href="{{ url('/') }}"
-                    class="rounded-lg border border-white/30 px-4 py-2 font-semibold text-white transition hover:bg-white hover:text-[#c62828]"
+                    class="rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white hover:text-[#c62828]"
                 >
                     Kembali
                 </a>
