@@ -41,7 +41,7 @@
     <div class="bg-[#F5F5F0] text-gray-900 antialiased">
         <main class="relative flex min-h-[calc(100vh-80px)] items-center justify-center p-4 py-12">
             <div class="absolute inset-0 z-0">
-                <img alt="Landmark Kota Blitar" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlko62n4s7VrNC6p8PpEWWWFGsEaYKBfqid6hCkaJjQ4LIi9M6Nru52MFUiiMRSAW54w1rmSUARMv8KsCJ0CPXhn_xbbq5KDHT2WrLrc9lYg-_GHGLNxjTHpPTrucbgtW-CvM2CScsCYRv5Wr70I0eDE6qFp5nXRkbnYYt7tA1CFhvDgPYNGcUtyhUXIUVMYv7FI97QjKOdCGAQoMBuF7m-JeNaUkqveSxl1bCw5BUQKy08aM_fpdGIcTuWATUVVmY5A9BYqxPeqA" />
+                <img alt="Landmark Kota Blitar" class="h-full w-full object-cover" src="{{ asset('images/bg.png') }}" />
                 <div class="absolute inset-0 bg-gradient-to-br from-[#C6352F]/65 via-black/50 to-[#0F172A]/80"></div>
                 <div class="animate-pulse-slow pointer-events-none absolute -bottom-16 -left-16 h-72 w-72 rounded-full bg-[#FFD700]/10 blur-3xl"></div>
                 <div class="pointer-events-none absolute right-10 top-10 h-48 w-48 rounded-full bg-white/5 blur-2xl"></div>

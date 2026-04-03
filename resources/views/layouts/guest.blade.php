@@ -16,13 +16,17 @@
         @stack('head')
     </head>
     <body class="min-h-screen bg-gray-900 text-gray-100 antialiased">
-        @include('partials.navbar')
+        @if (request()->routeIs('login') || request()->routeIs('register'))
+            @include('partials.navbar-auth')
+        @else
+            @include('partials.navbar')
+        @endif
 
-        <main class="{{ request()->routeIs('login') ? '' : 'py-8' }}">
+        <main class="{{ request()->routeIs('login') || request()->routeIs('register') ? '' : 'py-8' }}">
             {{ $slot }}
         </main>
 
-        @unless (request()->routeIs('login'))
+        @unless (request()->routeIs('login') || request()->routeIs('register'))
             @include('partials.footer')
         @endunless
 
