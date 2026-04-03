@@ -29,7 +29,7 @@
                     </li>
                     <li class="flex items-center gap-2">
                         <span aria-hidden="true">›</span>
-                        <a href="{{ route('booking.create') }}" class="transition-colors hover:text-[#dc2626]">Katalog Aset</a>
+                        <a href="{{ route('fasilitas.index') }}" class="transition-colors hover:text-[#dc2626]">Katalog Aset</a>
                     </li>
                     <li class="flex items-center gap-2">
                         <span aria-hidden="true">›</span>
@@ -37,7 +37,7 @@
                     </li>
                     <li class="flex items-center gap-2">
                         <span aria-hidden="true">›</span>
-                        <a href="{{ route('booking.create') }}" class="transition-colors hover:text-[#dc2626]">Prosedur Sewa</a>
+                        <a href="{{ route('fasilitas.index') }}" class="transition-colors hover:text-[#dc2626]">Prosedur Sewa</a>
                     </li>
                 </ul>
             </div>

@@ -43,7 +43,7 @@
                                 <select id="fasilitas_id" name="fasilitas_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                                     <option value="">Pilih fasilitas</option>
                                     @foreach ($fasilitass as $fasilitas)
-                                        <option value="{{ $fasilitas->id }}" @selected(old('fasilitas_id') == $fasilitas->id)>{{ $fasilitas->nama_fasilitas }}</option>
+                                        <option value="{{ $fasilitas->id }}" @selected(old('fasilitas_id', request('fasilitas_id')) == $fasilitas->id)>{{ $fasilitas->nama_fasilitas }}</option>
                                     @endforeach
                                 </select>
                             </div>

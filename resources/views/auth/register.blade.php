@@ -133,9 +133,9 @@
                                     </label>
                                     <div class="relative flex items-center">
                                         <span class="material-symbols-outlined pointer-events-none absolute left-3.5 text-[20px] text-gray-400">badge</span>
-                                        <input id="nama" name="name" class="input-field" placeholder="Masukkan nama lengkap Anda" type="text" value="{{ old('name') }}" required autofocus autocomplete="name" />
+                                        <input id="nama" name="nama" class="input-field" placeholder="Masukkan nama lengkap Anda" type="text" value="{{ old('nama') }}" required autofocus autocomplete="name" />
                                     </div>
-                                    <x-input-error :messages="$errors->get('name')" class="mt-1 text-sm" />
+                                    <x-input-error :messages="$errors->get('nama')" class="mt-1 text-sm" />
                                 </div>
 
                                 <div class="animate-fadein-delay2 flex flex-col gap-1.5">
@@ -155,7 +155,7 @@
                                     </label>
                                     <div class="relative flex items-center">
                                         <span class="material-symbols-outlined pointer-events-none absolute left-3.5 text-[20px] text-gray-400">smartphone</span>
-                                        <input id="nohp" name="nohp" class="input-field" placeholder="08xxxxxxxxxx" type="tel" value="{{ old('nohp') }}" oninput="this.value=this.value.replace(/[^0-9+]/g,'')" required />
+                                        <input id="nohp" name="no_hp" class="input-field" placeholder="08xxxxxxxxxx" type="tel" value="{{ old('no_hp') }}" oninput="this.value=this.value.replace(/[^0-9+]/g,'')" required />
                                     </div>
                                     <p class="pl-1 text-xs text-gray-400">Format: 08xx atau +628xx</p>
                                 </div>
