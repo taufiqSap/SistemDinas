@@ -271,11 +271,6 @@
                                 <input type="hidden" name="fasilitas_id" value="{{ old('fasilitas_id', $fasilitasId) }}">
 
                                 <div>
-                                    <label for="kode_booking" class="mb-1.5 block text-sm font-bold text-slate-700">Kode Booking</label>
-                                    <input id="kode_booking" name="kode_booking" type="text" value="{{ old('kode_booking') }}" placeholder="BK-2026-0001" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:border-[#c62828] focus:ring-[#c62828]" required>
-                                </div>
-
-                                <div>
                                     <label for="tipe_sewa_id" class="mb-1.5 block text-sm font-bold text-slate-700">Tipe Sewa</label>
                                     <select id="tipe_sewa_id" name="tipe_sewa_id" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:border-[#c62828] focus:ring-[#c62828]" required>
                                         <option value="">Pilih tipe sewa</option>
@@ -306,20 +301,22 @@
                                     </div>
 
                                     <div>
-                                        <label for="tanggal_selesai" class="mb-1.5 block text-sm font-bold text-slate-700">Tanggal Selesai</label>
-                                        <input id="tanggal_selesai" name="tanggal_selesai" type="date" value="{{ old('tanggal_selesai') }}" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                        <label for="durasi_hari" class="mb-1.5 block text-sm font-bold text-slate-700">Durasi Hari</label>
+                                        <input id="durasi_hari" name="durasi_hari" type="number" min="1" value="{{ old('durasi_hari', 1) }}" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:border-[#c62828] focus:ring-[#c62828]" required>
                                     </div>
                                 </div>
 
                                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
-                                        <label for="durasi_hari" class="mb-1.5 block text-sm font-bold text-slate-700">Durasi Hari</label>
-                                        <input id="durasi_hari" name="durasi_hari" type="number" min="1" value="{{ old('durasi_hari', 1) }}" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                        <label for="tanggal_selesai" class="mb-1.5 block text-sm font-bold text-slate-700">Tanggal Selesai</label>
+                                        <input id="tanggal_selesai" type="date" value="{{ old('tanggal_selesai') }}" class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-800" readonly>
+                                        <p class="mt-2 text-xs text-slate-500">Tanggal selesai dihitung otomatis dari tanggal mulai dan durasi.</p>
                                     </div>
 
                                     <div>
                                         <label for="total_harga" class="mb-1.5 block text-sm font-bold text-slate-700">Total Harga</label>
-                                        <input id="total_harga" name="total_harga" type="number" step="0.01" min="0" value="{{ old('total_harga') }}" placeholder="1500000" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                        <input id="total_harga" name="total_harga" type="number" step="0.01" min="0" value="{{ old('total_harga') }}" placeholder="1500000" class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-800" readonly>
+                                        <p class="mt-2 text-xs text-slate-500">Total harga dihitung otomatis dari tipe sewa dan durasi.</p>
                                     </div>
                                 </div>
 
@@ -360,3 +357,56 @@
         </div>
     </section>
 </x-layout-app>
+
+@push('scripts')
+    <script>
+        (function () {
+            const hargaPerTipe = @json($hargaPerTipe ?? []);
+            const tanggalSewa = document.getElementById('tanggal_sewa');
+            const durasiHari = document.getElementById('durasi_hari');
+            const tanggalSelesai = document.getElementById('tanggal_selesai');
+            const tipeSewaId = document.getElementById('tipe_sewa_id');
+            const totalHarga = document.getElementById('total_harga');
+
+            if (!tanggalSewa || !durasiHari || !tanggalSelesai || !tipeSewaId || !totalHarga) {
+                return;
+            }
+
+            const setTanggalSelesai = () => {
+                if (!tanggalSewa.value || !durasiHari.value) {
+                    tanggalSelesai.value = '';
+                    return;
+                }
+
+                const durasi = parseInt(durasiHari.value, 10);
+                if (Number.isNaN(durasi) || durasi < 1) {
+                    tanggalSelesai.value = '';
+                    return;
+                }
+
+                const end = new window['Date'](tanggalSewa.value + 'T00:00:00');
+                end.setDate(end.getDate() + durasi - 1);
+                tanggalSelesai.value = end.toISOString().slice(0, 10);
+            };
+
+            const setTotalHarga = () => {
+                const hargaSatuan = Number(hargaPerTipe[tipeSewaId.value] ?? 0);
+                const durasi = parseInt(durasiHari.value, 10);
+
+                if (!tipeSewaId.value || Number.isNaN(durasi) || durasi < 1 || hargaSatuan <= 0) {
+                    totalHarga.value = '';
+                    return;
+                }
+
+                totalHarga.value = (hargaSatuan * durasi).toFixed(2);
+            };
+
+            tanggalSewa.addEventListener('change', setTanggalSelesai);
+            durasiHari.addEventListener('input', setTanggalSelesai);
+            tipeSewaId.addEventListener('change', setTotalHarga);
+            durasiHari.addEventListener('input', setTotalHarga);
+            setTanggalSelesai();
+            setTotalHarga();
+        })();
+    </script>
+@endpush

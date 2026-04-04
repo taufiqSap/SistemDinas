@@ -15,7 +15,7 @@
         <nav class="flex items-center gap-2 text-sm sm:gap-4">
             @auth
                 <a
-                    href="{{ route('dashboard') }}"
+                    href="{{ auth()->user()->role === 'admin' ? route('dashboard') : route('fasilitas.index') }}"
                     class="rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white hover:text-[#c62828]"
                 >
                     Dashboard

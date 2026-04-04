@@ -34,11 +34,6 @@
 
                         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div>
-                                <x-input-label for="kode_booking" value="Kode Booking" />
-                                <x-text-input id="kode_booking" name="kode_booking" type="text" class="mt-1 block w-full" :value="old('kode_booking')" required />
-                            </div>
-
-                            <div>
                                 <x-input-label for="fasilitas_id" value="Fasilitas" />
                                 <select id="fasilitas_id" name="fasilitas_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                                     <option value="">Pilih fasilitas</option>
@@ -75,18 +70,20 @@
                             </div>
 
                             <div>
-                                <x-input-label for="tanggal_selesai" value="Tanggal Selesai" />
-                                <x-text-input id="tanggal_selesai" name="tanggal_selesai" type="date" class="mt-1 block w-full" :value="old('tanggal_selesai')" required />
+                                <x-input-label for="durasi_hari" value="Durasi Hari" />
+                                <x-text-input id="durasi_hari" name="durasi_hari" type="number" min="1" class="mt-1 block w-full" :value="old('durasi_hari', 1)" required />
                             </div>
 
                             <div>
-                                <x-input-label for="durasi_hari" value="Durasi Hari" />
-                                <x-text-input id="durasi_hari" name="durasi_hari" type="number" min="1" class="mt-1 block w-full" :value="old('durasi_hari')" required />
+                                <x-input-label for="tanggal_selesai" value="Tanggal Selesai" />
+                                <x-text-input id="tanggal_selesai" type="date" class="mt-1 block w-full bg-gray-100" :value="old('tanggal_selesai')" readonly />
+                                <p class="mt-2 text-sm text-gray-500">Tanggal selesai dihitung otomatis dari tanggal sewa dan durasi.</p>
                             </div>
 
                             <div>
                                 <x-input-label for="total_harga" value="Total Harga" />
-                                <x-text-input id="total_harga" name="total_harga" type="number" step="0.01" min="0" class="mt-1 block w-full" :value="old('total_harga')" required />
+                                <x-text-input id="total_harga" name="total_harga" type="number" step="0.01" min="0" class="mt-1 block w-full bg-gray-100" :value="old('total_harga')" readonly />
+                                <p class="mt-2 text-sm text-gray-500">Total harga dihitung otomatis sesuai fasilitas, tipe sewa, dan durasi.</p>
                             </div>
                         </div>
 
@@ -99,3 +96,59 @@
         </div>
     </div>
 </x-app-layout>
+
+@push('scripts')
+    <script>
+        (function () {
+            const hargaSewaMap = @json($hargaSewaMap ?? []);
+            const fasilitasId = document.getElementById('fasilitas_id');
+            const tipeSewaId = document.getElementById('tipe_sewa_id');
+            const tanggalSewa = document.getElementById('tanggal_sewa');
+            const durasiHari = document.getElementById('durasi_hari');
+            const tanggalSelesai = document.getElementById('tanggal_selesai');
+            const totalHarga = document.getElementById('total_harga');
+
+            if (!fasilitasId || !tipeSewaId || !tanggalSewa || !durasiHari || !tanggalSelesai || !totalHarga) {
+                return;
+            }
+
+            const setTanggalSelesai = () => {
+                if (!tanggalSewa.value || !durasiHari.value) {
+                    tanggalSelesai.value = '';
+                    return;
+                }
+
+                const durasi = parseInt(durasiHari.value, 10);
+                if (Number.isNaN(durasi) || durasi < 1) {
+                    tanggalSelesai.value = '';
+                    return;
+                }
+
+                const end = new window['Date'](tanggalSewa.value + 'T00:00:00');
+                end.setDate(end.getDate() + durasi - 1);
+                tanggalSelesai.value = end.toISOString().slice(0, 10);
+            };
+
+            const setTotalHarga = () => {
+                const key = `${fasilitasId.value}-${tipeSewaId.value}`;
+                const hargaSatuan = Number(hargaSewaMap[key] ?? 0);
+                const durasi = parseInt(durasiHari.value, 10);
+
+                if (!fasilitasId.value || !tipeSewaId.value || Number.isNaN(durasi) || durasi < 1 || hargaSatuan <= 0) {
+                    totalHarga.value = '';
+                    return;
+                }
+
+                totalHarga.value = (hargaSatuan * durasi).toFixed(2);
+            };
+
+            tanggalSewa.addEventListener('change', setTanggalSelesai);
+            durasiHari.addEventListener('input', setTanggalSelesai);
+            fasilitasId.addEventListener('change', setTotalHarga);
+            tipeSewaId.addEventListener('change', setTotalHarga);
+            durasiHari.addEventListener('input', setTotalHarga);
+            setTanggalSelesai();
+            setTotalHarga();
+        })();
+    </script>
+@endpush

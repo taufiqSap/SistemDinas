@@ -120,9 +120,9 @@
 									</div>
 
 									<a
-										href="{{ route('booking.create', ['fasilitas_id' => $item->id]) }}"
+										href="{{ route('fasilitas.show', ['id' => $item->id]) }}"
 										class="inline-flex items-center justify-center rounded-full bg-slate-100 p-2.5 text-[#c62828] transition hover:bg-[#c62828] hover:text-white"
-										title="Lanjut booking"
+										title="Lihat detail fasilitas"
 									>
 										<span class="material-symbols-outlined">arrow_forward</span>
 									</a>
