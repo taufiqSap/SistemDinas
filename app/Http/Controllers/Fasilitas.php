@@ -6,6 +6,7 @@ use App\Models\Fasilitas as FasilitasModel;
 use App\Models\Kegiatan;
 use App\Models\TipeSewa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -57,10 +58,12 @@ class Fasilitas extends Controller
 
         $fasilitas = $query->paginate(8)->withQueryString();
 
-        $kategoriList = DB::table('kategori')
-            ->where('status', 'active')
-            ->orderBy('nama_kategori')
-            ->pluck('nama_kategori');
+        $kategoriList = Cache::remember('fasilitas.index.kategoriList', now()->addMinutes(10), function () {
+            return DB::table('kategori')
+                ->where('status', 'active')
+                ->orderBy('nama_kategori')
+                ->pluck('nama_kategori');
+        });
 
         return view('fasilitas.fasilitas', [
             'fasilitas' => $fasilitas,
@@ -97,11 +100,13 @@ class Fasilitas extends Controller
             $kegiatanQuery->where('status', 'active');
         }
 
-        $hargaPerTipe = DB::table('harga_sewa')
-            ->where('fasilitas_id', $fasilitas->id)
-            ->pluck('harga', 'tipe_sewa_id')
-            ->map(fn ($harga) => (float) $harga)
-            ->all();
+        $hargaPerTipe = Cache::remember('fasilitas.show.hargaPerTipe.' . $fasilitas->id, now()->addMinutes(10), function () use ($fasilitas) {
+            return DB::table('harga_sewa')
+                ->where('fasilitas_id', $fasilitas->id)
+                ->pluck('harga', 'tipe_sewa_id')
+                ->map(fn ($harga) => (float) $harga)
+                ->all();
+        });
 
         return view('fasilitas.detail', [
             'fasilitas' => $fasilitas,

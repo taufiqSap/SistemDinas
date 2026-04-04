@@ -8,6 +8,7 @@ use App\Models\Kegiatan;
 use App\Models\TipeSewa;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -15,24 +16,40 @@ class Booking extends Controller
 {
     public function create()
     {
-        $kegiatanQuery = Kegiatan::query();
+        $hasKegiatanStatus = Schema::hasColumn('kegiatan', 'status');
 
-        if (Schema::hasColumn('kegiatan', 'status')) {
-            $kegiatanQuery->where('status', 'active');
-        }
+        $kegiatans = Cache::remember('booking.create.kegiatans.' . (int) $hasKegiatanStatus, now()->addMinutes(10), function () use ($hasKegiatanStatus) {
+            $kegiatanQuery = Kegiatan::query();
 
-        $hargaSewaMap = DB::table('harga_sewa')
-            ->select('fasilitas_id', 'tipe_sewa_id', 'harga')
-            ->get()
-            ->mapWithKeys(function ($row) {
-                return ["{$row->fasilitas_id}-{$row->tipe_sewa_id}" => (float) $row->harga];
-            })
-            ->all();
+            if ($hasKegiatanStatus) {
+                $kegiatanQuery->where('status', 'active');
+            }
+
+            return $kegiatanQuery->orderBy('nama_kegiatan')->get();
+        });
+
+        $fasilitass = Cache::remember('booking.create.fasilitass', now()->addMinutes(10), function () {
+            return Fasilitas::orderBy('nama_fasilitas')->get();
+        });
+
+        $tipeSewas = Cache::remember('booking.create.tipeSewas', now()->addMinutes(10), function () {
+            return TipeSewa::orderBy('nama_tipe')->get();
+        });
+
+        $hargaSewaMap = Cache::remember('booking.create.hargaSewaMap', now()->addMinutes(10), function () {
+            return DB::table('harga_sewa')
+                ->select('fasilitas_id', 'tipe_sewa_id', 'harga')
+                ->get()
+                ->mapWithKeys(function ($row) {
+                    return ["{$row->fasilitas_id}-{$row->tipe_sewa_id}" => (float) $row->harga];
+                })
+                ->all();
+        });
 
         return view('booking.create', [
-            'kegiatans' => $kegiatanQuery->orderBy('nama_kegiatan')->get(),
-            'fasilitass' => Fasilitas::orderBy('nama_fasilitas')->get(),
-            'tipeSewas' => TipeSewa::orderBy('nama_tipe')->get(),
+            'kegiatans' => $kegiatans,
+            'fasilitass' => $fasilitass,
+            'tipeSewas' => $tipeSewas,
             'hargaSewaMap' => $hargaSewaMap,
         ]);
     }
