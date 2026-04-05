@@ -59,6 +59,21 @@
                                 <span class="text-xs {{ request()->routeIs('dashboard') ? 'text-slate-700' : 'text-slate-400' }}">Ringkasan</span>
                             </a>
 
+                            <a href="{{ route('admin.bookings.index') }}" class="flex items-center justify-between rounded-2xl px-4 py-3 transition {{ request()->routeIs('admin.bookings.*') ? 'bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-950/30' : 'bg-white/5 text-slate-200 hover:bg-white/10' }}">
+                                <span>Booking User</span>
+                                <span class="text-xs {{ request()->routeIs('admin.bookings.*') ? 'text-slate-700' : 'text-slate-400' }}">Handle</span>
+                            </a>
+
+                            <a href="{{ route('admin.fasilitas.index') }}" class="flex items-center justify-between rounded-2xl px-4 py-3 transition {{ request()->routeIs('admin.fasilitas.*') ? 'bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-950/30' : 'bg-white/5 text-slate-200 hover:bg-white/10' }}">
+                                <span>Fasilitas</span>
+                                <span class="text-xs {{ request()->routeIs('admin.fasilitas.*') ? 'text-slate-700' : 'text-slate-400' }}">CRUD</span>
+                            </a>
+
+                            <a href="{{ route('admin.tipe-sewa.index') }}" class="flex items-center justify-between rounded-2xl px-4 py-3 transition {{ request()->routeIs('admin.tipe-sewa.*') ? 'bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-950/30' : 'bg-white/5 text-slate-200 hover:bg-white/10' }}">
+                                <span>Tipe Sewa</span>
+                                <span class="text-xs {{ request()->routeIs('admin.tipe-sewa.*') ? 'text-slate-700' : 'text-slate-400' }}">CRUD</span>
+                            </a>
+
                             <a href="{{ route('profile.edit') }}" class="flex items-center justify-between rounded-2xl px-4 py-3 transition {{ request()->routeIs('profile.*') ? 'bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-950/30' : 'bg-white/5 text-slate-200 hover:bg-white/10' }}">
                                 <span>Profil</span>
                                 <span class="text-xs {{ request()->routeIs('profile.*') ? 'text-slate-700' : 'text-slate-400' }}">Akun</span>

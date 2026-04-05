@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Booking as BookingController;
 use App\Http\Controllers\Fasilitas as FasilitasController;
+use App\Http\Controllers\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\Admin\FasilitasController as AdminFasilitasController;
+use App\Http\Controllers\Admin\TipeSewaController as AdminTipeSewaController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Booking as BookingModel;
 use App\Models\Fasilitas;
@@ -97,6 +100,27 @@ Route::get('/dashboard', function () {
         'recentBookings' => $dashboardData['recentBookings'],
     ]);
 })->middleware(['auth', 'verified', 'role:admin'])->name('dashboard');
+
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
+    Route::get('/tipe-sewa', [AdminTipeSewaController::class, 'index'])->name('tipe-sewa.index');
+    Route::get('/tipe-sewa/create', [AdminTipeSewaController::class, 'create'])->name('tipe-sewa.create');
+    Route::post('/tipe-sewa', [AdminTipeSewaController::class, 'store'])->name('tipe-sewa.store');
+    Route::get('/tipe-sewa/{tipe_sewa}/edit', [AdminTipeSewaController::class, 'edit'])->name('tipe-sewa.edit');
+    Route::put('/tipe-sewa/{tipe_sewa}', [AdminTipeSewaController::class, 'update'])->name('tipe-sewa.update');
+    Route::delete('/tipe-sewa/{tipe_sewa}', [AdminTipeSewaController::class, 'destroy'])->name('tipe-sewa.destroy');
+
+    Route::get('/fasilitas', [AdminFasilitasController::class, 'index'])->name('fasilitas.index');
+    Route::get('/fasilitas/create', [AdminFasilitasController::class, 'create'])->name('fasilitas.create');
+    Route::post('/fasilitas', [AdminFasilitasController::class, 'store'])->name('fasilitas.store');
+    Route::get('/fasilitas/{fasilitas}/edit', [AdminFasilitasController::class, 'edit'])->name('fasilitas.edit');
+    Route::put('/fasilitas/{fasilitas}', [AdminFasilitasController::class, 'update'])->name('fasilitas.update');
+    Route::delete('/fasilitas/{fasilitas}', [AdminFasilitasController::class, 'destroy'])->name('fasilitas.destroy');
+
+    Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
+    Route::put('/bookings/{booking}', [AdminBookingController::class, 'update'])->name('bookings.update');
+    Route::delete('/bookings/{booking}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
+});
 
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');

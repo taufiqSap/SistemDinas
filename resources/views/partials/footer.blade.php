@@ -47,11 +47,11 @@
                 <ul class="space-y-4 text-sm text-slate-400">
                     <li class="flex items-start gap-3">
                         <span class="mt-0.5 shrink-0 text-[#dc2626]">●</span>
-                        <span>Jl. Semeru No. 25, Kauman, Kec. Kepanjenkidul, Kota Blitar, Jawa Timur 66117</span>
+                        <span>Jl. Ir. Soekarno, Kepanjen Lor, Kec. Kepanjenkidul, Kota Blitar, Jawa Timur 66112</span>
                     </li>
                     <li class="flex items-center gap-3">
                         <span class="shrink-0 text-[#dc2626]">●</span>
-                        <span>(0342) 801XXX</span>
+                        <span>(0342) 801815</span>
                     </li>
                     <li class="flex items-center gap-3">
                         <span class="shrink-0 text-[#dc2626]">●</span>

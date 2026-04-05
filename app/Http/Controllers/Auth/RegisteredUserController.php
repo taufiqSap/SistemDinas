@@ -50,6 +50,10 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        $redirectRoute = $user->role === 'admin'
+            ? 'dashboard'
+            : 'fasilitas.index';
+
+        return redirect()->route($redirectRoute);
     }
 }
