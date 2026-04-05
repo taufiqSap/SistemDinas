@@ -85,7 +85,7 @@
 								'maintenance' => ['label' => 'Perawatan', 'badge' => 'bg-slate-500'],
 							];
 							$status = $statusMap[$item->status_fasilitas] ?? ['label' => 'Tidak Diketahui', 'badge' => 'bg-slate-500'];
-							$image = $item->gambar_fasilitas ? asset($item->gambar_fasilitas) : 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=900&q=80';
+							$image = $item->gambar_fasilitas_url;
 						@endphp
 
 						<article class="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-2xl">

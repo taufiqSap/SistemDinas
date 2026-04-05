@@ -42,6 +42,10 @@
                             <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
                         </div>
 
+                        <x-dropdown-link :href="route('booking.history')">
+                            Riwayat Booking
+                        </x-dropdown-link>
+
                         <x-dropdown-link :href="route('profile.edit')">
                             Profil Saya
                         </x-dropdown-link>

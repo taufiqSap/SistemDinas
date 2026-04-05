@@ -39,8 +39,7 @@
         $kapasitas = data_get($fasilitas, 'kapasitas', '500 Orang');
         $deskripsi = data_get($fasilitas, 'deskripsi', 'Gedung representatif untuk acara resmi, pertunjukan, dan kegiatan masyarakat dengan akses mudah serta fasilitas yang memadai.');
         $spesifikasi = data_get($fasilitas, 'spesifikasi', 'Luas area representatif, area parkir memadai, sistem tata suara, pencahayaan, dan akses utama yang mudah dijangkau.');
-        $gambarUtama = data_get($fasilitas, 'gambar_fasilitas');
-        $gambarUtama = $gambarUtama ? asset($gambarUtama) : 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1400&q=80';
+        $gambarUtama = data_get($fasilitas, 'gambar_fasilitas_url');
         $fasilitasId = data_get($fasilitas, 'id');
     @endphp
 
@@ -228,8 +227,8 @@
                                                 <span class="font-bold text-slate-900">{{ $kapasitas }}</span>
                                             </div>
                                             <div class="flex items-center justify-between">
-                                                <span>Harga Mulai</span>
-                                                <span class="font-black text-[#c62828]">Rp {{ number_format((float) data_get($fasilitas, 'harga_mulai', 1500000), 0, ',', '.') }}/hari</span>
+                                                <span>Harga Satuan</span>
+                                                <span id="harga_satuan_info" class="font-black text-slate-500">Pilih tipe sewa</span>
                                             </div>
                                         </div>
                                     </div>
@@ -259,13 +258,13 @@
                                         <h3 class="mt-2 text-xl font-black text-slate-900">Form Permohonan Sewa</h3>
                                     </div>
                                     <div class="text-right">
-                                        <p class="text-xs font-semibold text-slate-400">Mulai dari</p>
-                                        <p class="text-2xl font-black text-[#c62828]">Rp {{ number_format((float) data_get($fasilitas, 'harga_mulai', 1500000), 0, ',', '.') }}</p>
+                                        <p class="text-xs font-semibold text-slate-400">Harga per hari</p>
+                                        <p id="harga_satuan_badge" class="text-2xl font-black text-slate-400">Pilih tipe sewa</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <form method="POST" action="{{ route('booking.store') }}" class="space-y-5 p-6">
+                            <form method="POST" action="{{ route('booking.payment') }}" class="space-y-5 p-6">
                                 @csrf
 
                                 <input type="hidden" name="fasilitas_id" value="{{ old('fasilitas_id', $fasilitasId) }}">
@@ -318,15 +317,11 @@
                                         <input id="total_harga" name="total_harga" type="number" step="0.01" min="0" value="{{ old('total_harga') }}" placeholder="1500000" class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-800" readonly>
                                         <p class="mt-2 text-xs text-slate-500">Total harga dihitung otomatis dari tipe sewa dan durasi.</p>
                                     </div>
-                                </div>
-
-                                <div class="rounded-2xl bg-slate-50 p-4 text-xs leading-6 text-slate-500">
-                                    Pembayaran DP minimal 30% saat booking. Harga akhir dapat menyesuaikan kebutuhan tambahan dan verifikasi admin.
-                                </div>
+                                </div>  
 
                                 <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#c62828] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#c62828]/20 transition hover:bg-[#b71c1c]">
                                     <span class="material-symbols-outlined">check_circle</span>
-                                    Kirim Permohonan Booking
+                                    Lanjut ke Pembayaran
                                 </button>
                             </form>
                         </div>
@@ -337,10 +332,7 @@
                                 Ketentuan Singkat
                             </h4>
                             <ul class="mt-4 space-y-3 text-sm text-slate-600">
-                                <li class="flex items-start gap-2">
-                                    <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300"></span>
-                                    Pembayaran DP minimal 30% saat booking.
-                                </li>
+                
                                 <li class="flex items-start gap-2">
                                     <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300"></span>
                                     Dilarang merusak properti gedung.
@@ -367,10 +359,40 @@
             const tanggalSelesai = document.getElementById('tanggal_selesai');
             const tipeSewaId = document.getElementById('tipe_sewa_id');
             const totalHarga = document.getElementById('total_harga');
+            const hargaSatuanInfo = document.getElementById('harga_satuan_info');
+            const hargaSatuanBadge = document.getElementById('harga_satuan_badge');
 
-            if (!tanggalSewa || !durasiHari || !tanggalSelesai || !tipeSewaId || !totalHarga) {
+            if (!tanggalSewa || !durasiHari || !tanggalSelesai || !tipeSewaId || !totalHarga || !hargaSatuanInfo || !hargaSatuanBadge) {
                 return;
             }
+
+            const formatRupiah = (value) => {
+                return 'Rp ' + Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            };
+
+            const setHargaSatuan = () => {
+                const hargaSatuan = Number(hargaPerTipe[tipeSewaId.value] ?? 0);
+
+                if (!tipeSewaId.value || hargaSatuan <= 0) {
+                    hargaSatuanInfo.textContent = 'Pilih tipe sewa';
+                    hargaSatuanInfo.classList.remove('text-[#c62828]');
+                    hargaSatuanInfo.classList.add('text-slate-500');
+
+                    hargaSatuanBadge.textContent = 'Pilih tipe sewa';
+                    hargaSatuanBadge.classList.remove('text-[#c62828]');
+                    hargaSatuanBadge.classList.add('text-slate-400');
+                    return;
+                }
+
+                const hargaLabel = formatRupiah(hargaSatuan) + '/hari';
+                hargaSatuanInfo.textContent = hargaLabel;
+                hargaSatuanInfo.classList.remove('text-slate-500');
+                hargaSatuanInfo.classList.add('text-[#c62828]');
+
+                hargaSatuanBadge.textContent = formatRupiah(hargaSatuan);
+                hargaSatuanBadge.classList.remove('text-slate-400');
+                hargaSatuanBadge.classList.add('text-[#c62828]');
+            };
 
             const setTanggalSelesai = () => {
                 if (!tanggalSewa.value || !durasiHari.value) {
@@ -403,8 +425,11 @@
 
             tanggalSewa.addEventListener('change', setTanggalSelesai);
             durasiHari.addEventListener('input', setTanggalSelesai);
+            tipeSewaId.addEventListener('change', setHargaSatuan);
             tipeSewaId.addEventListener('change', setTotalHarga);
             durasiHari.addEventListener('input', setTotalHarga);
+
+            setHargaSatuan();
             setTanggalSelesai();
             setTotalHarga();
         })();

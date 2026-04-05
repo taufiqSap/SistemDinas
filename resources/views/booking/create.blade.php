@@ -29,7 +29,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('booking.store') }}" class="space-y-6">
+                    <form method="POST" action="{{ route('booking.payment') }}" class="space-y-6">
                         @csrf
 
                         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -88,7 +88,7 @@
                         </div>
 
                         <div class="flex justify-end">
-                            <x-primary-button>Simpan Booking</x-primary-button>
+                            <x-primary-button>Lanjut ke Pembayaran</x-primary-button>
                         </div>
                     </form>
                 </div>

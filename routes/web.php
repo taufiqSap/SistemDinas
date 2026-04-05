@@ -4,6 +4,7 @@ use App\Http\Controllers\Booking as BookingController;
 use App\Http\Controllers\Fasilitas as FasilitasController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\FasilitasController as AdminFasilitasController;
+use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
 use App\Http\Controllers\Admin\TipeSewaController as AdminTipeSewaController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Booking as BookingModel;
@@ -116,6 +117,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::put('/fasilitas/{fasilitas}', [AdminFasilitasController::class, 'update'])->name('fasilitas.update');
     Route::delete('/fasilitas/{fasilitas}', [AdminFasilitasController::class, 'destroy'])->name('fasilitas.destroy');
 
+    Route::get('/kegiatan', [AdminKegiatanController::class, 'index'])->name('kegiatan.index');
+    Route::get('/kegiatan/create', [AdminKegiatanController::class, 'create'])->name('kegiatan.create');
+    Route::post('/kegiatan', [AdminKegiatanController::class, 'store'])->name('kegiatan.store');
+    Route::get('/kegiatan/{kegiatan}/edit', [AdminKegiatanController::class, 'edit'])->name('kegiatan.edit');
+    Route::put('/kegiatan/{kegiatan}', [AdminKegiatanController::class, 'update'])->name('kegiatan.update');
+    Route::delete('/kegiatan/{kegiatan}', [AdminKegiatanController::class, 'destroy'])->name('kegiatan.destroy');
+
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
     Route::put('/bookings/{booking}', [AdminBookingController::class, 'update'])->name('bookings.update');
@@ -125,7 +133,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');
     Route::get('/fasilitas/{id}', [FasilitasController::class, 'show'])->name('fasilitas.show');
+    Route::get('/booking/history', [BookingController::class, 'history'])->name('booking.history');
     Route::get('/booking/create', [BookingController::class, 'create'])->name('booking.create');
+    Route::get('/booking/payment', [BookingController::class, 'showPayment'])->name('booking.payment.show');
+    Route::post('/booking/payment', [BookingController::class, 'payment'])->name('booking.payment');
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 });
 

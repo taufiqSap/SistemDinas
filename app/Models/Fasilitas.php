@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 class Fasilitas extends Model
 {
@@ -55,6 +54,6 @@ class Fasilitas extends Model
             return '/' . ltrim($gambar, '/');
         }
 
-        return Storage::disk('public')->url($gambar);
+        return '/storage/' . ltrim($gambar, '/');
     }
 }
