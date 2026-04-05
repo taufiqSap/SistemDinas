@@ -47,4 +47,9 @@ class Booking extends Model
     {
         return $this->hasMany(Pembayaran::class);
     }
+
+    public function latestPembayaran()
+    {
+        return $this->hasOne(Pembayaran::class)->latestOfMany();
+    }
 }

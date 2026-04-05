@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -61,11 +62,14 @@ class FasilitasController extends Controller
             'kapasitas' => ['required', 'string', 'max:255'],
             'spesifikasi' => ['required', 'string'],
             'status_fasilitas' => ['required', Rule::in(['available', 'rented', 'maintenance'])],
-            'gambar_fasilitas' => ['nullable', 'string', 'max:255'],
+            'gambar_fasilitas' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'harga_per_tipe' => ['nullable', 'array'],
+            'harga_per_tipe.*' => ['nullable', 'numeric', 'min:0', 'max:9999999999.99'],
         ]);
 
-        DB::transaction(function () use ($validated) {
+        DB::transaction(function () use ($request, $validated) {
+            $gambarPath = $this->storeGambarFasilitas($request);
+
             $fasilitas = Fasilitas::create([
                 'kategori_id' => $validated['kategori_id'],
                 'nama_fasilitas' => $validated['nama_fasilitas'],
@@ -73,7 +77,7 @@ class FasilitasController extends Controller
                 'kapasitas' => $validated['kapasitas'],
                 'spesifikasi' => $validated['spesifikasi'],
                 'status_fasilitas' => $validated['status_fasilitas'],
-                'gambar_fasilitas' => $validated['gambar_fasilitas'] ?? null,
+                'gambar_fasilitas' => $gambarPath,
             ]);
 
             $this->syncHargaSewa($fasilitas->id, $validated['harga_per_tipe'] ?? []);
@@ -109,11 +113,19 @@ class FasilitasController extends Controller
             'kapasitas' => ['required', 'string', 'max:255'],
             'spesifikasi' => ['required', 'string'],
             'status_fasilitas' => ['required', Rule::in(['available', 'rented', 'maintenance'])],
-            'gambar_fasilitas' => ['nullable', 'string', 'max:255'],
+            'gambar_fasilitas' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'harga_per_tipe' => ['nullable', 'array'],
+            'harga_per_tipe.*' => ['nullable', 'numeric', 'min:0', 'max:9999999999.99'],
         ]);
 
-        DB::transaction(function () use ($fasilitas, $validated) {
+        DB::transaction(function () use ($request, $fasilitas, $validated) {
+            $gambarPath = $fasilitas->gambar_fasilitas;
+
+            if ($request->hasFile('gambar_fasilitas')) {
+                $this->deleteStoredGambarFasilitas($fasilitas->gambar_fasilitas);
+                $gambarPath = $this->storeGambarFasilitas($request);
+            }
+
             $fasilitas->update([
                 'kategori_id' => $validated['kategori_id'],
                 'nama_fasilitas' => $validated['nama_fasilitas'],
@@ -121,7 +133,7 @@ class FasilitasController extends Controller
                 'kapasitas' => $validated['kapasitas'],
                 'spesifikasi' => $validated['spesifikasi'],
                 'status_fasilitas' => $validated['status_fasilitas'],
-                'gambar_fasilitas' => $validated['gambar_fasilitas'] ?? null,
+                'gambar_fasilitas' => $gambarPath,
             ]);
 
             $this->syncHargaSewa($fasilitas->id, $validated['harga_per_tipe'] ?? []);
@@ -163,6 +175,30 @@ class FasilitasController extends Controller
 
         if (! empty($rows)) {
             DB::table('harga_sewa')->insert($rows);
+        }
+    }
+
+    private function storeGambarFasilitas(Request $request): ?string
+    {
+        if (! $request->hasFile('gambar_fasilitas')) {
+            return null;
+        }
+
+        return $request->file('gambar_fasilitas')->store('fasilitas', 'public');
+    }
+
+    private function deleteStoredGambarFasilitas(?string $storedPath): void
+    {
+        if (empty($storedPath)) {
+            return;
+        }
+
+        $path = str_starts_with($storedPath, '/storage/')
+            ? substr($storedPath, strlen('/storage/'))
+            : (str_starts_with($storedPath, 'storage/') ? substr($storedPath, strlen('storage/')) : $storedPath);
+
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
         }
     }
 }
