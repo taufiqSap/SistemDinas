@@ -127,7 +127,7 @@
                     <h3 class="mt-2 text-3xl font-extrabold text-[var(--brand-ink)]">Jadwal Bulan {{ $monthLabel }}</h3>
                 </div>
                 <div class="flex items-center gap-2 text-xs font-semibold">
-                    <span class="rounded-full bg-emerald-100 px-3 py-1 text-emerald-700">Kosong: {{ $emptyDays }} hari</span>
+                    <span class="rounded-full bg-emerald-100 px-3 py-1 text-emerald-700">Tersedia: {{ $emptyDays }} hari</span>
                     <span class="rounded-full bg-amber-100 px-3 py-1 text-amber-700">Terisi: {{ $filledDays }} hari</span>
                 </div>
             </div>
@@ -161,7 +161,7 @@
                 <div class="flex flex-wrap items-center gap-3 text-sm">
                     <div class="inline-flex items-center gap-2 text-gray-700">
                         <span class="h-3 w-3 rounded-full bg-emerald-400"></span>
-                        <span>Jadwal kosong</span>
+                        <span>Jadwal Tersedia</span>
                     </div>
                     <div class="inline-flex items-center gap-2 text-gray-700">
                         <span class="h-3 w-3 rounded-full bg-amber-400"></span>
@@ -189,7 +189,7 @@
                             </p>
                         @else
                             <p class="mt-2 inline-flex rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-800">
-                                Kosong
+                                Tersedia
                             </p>
                         @endif
                     </article>

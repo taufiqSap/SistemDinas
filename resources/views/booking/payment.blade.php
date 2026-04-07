@@ -73,14 +73,12 @@
                             <a href="{{ $qrisUrl }}" download="qris-booking.png" class="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">
                                 Download QRIS
                             </a>
-                            <button
-                                id="btn-sudah-bayar"
-                                type="button"
-                                onclick="document.getElementById('modal-bukti').classList.remove('hidden'); document.getElementById('modal-bukti').classList.add('flex');"
+                            <a
+                                href="{{ route('fasilitas.index') }}"
                                 class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
                             >
                                 Sudah Bayar
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
