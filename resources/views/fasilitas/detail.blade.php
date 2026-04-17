@@ -39,6 +39,7 @@
         $kapasitas = data_get($fasilitas, 'kapasitas', '500 Orang');
         $deskripsi = data_get($fasilitas, 'deskripsi', 'Gedung representatif untuk acara resmi, pertunjukan, dan kegiatan masyarakat dengan akses mudah serta fasilitas yang memadai.');
         $spesifikasi = data_get($fasilitas, 'spesifikasi', 'Luas area representatif, area parkir memadai, sistem tata suara, pencahayaan, dan akses utama yang mudah dijangkau.');
+        $alamat = data_get($fasilitas, 'alamat', 'Alamat belum tersedia');
         $gambarUtama = data_get($fasilitas, 'gambar_fasilitas_url');
         $fasilitasId = data_get($fasilitas, 'id');
     @endphp
@@ -69,8 +70,24 @@
     <section class="bg-gradient-to-b from-slate-50 to-white py-8">
         <div class="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
             @if (session('success'))
-                <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                    {{ session('success') }}
+                <div id="booking-success-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+                        <div class="flex items-start gap-3">
+                            <span class="material-symbols-outlined mt-0.5 text-3xl text-emerald-600">check_circle</span>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900">Booking berhasil dibuat</h3>
+                                <p class="mt-2 text-sm leading-6 text-slate-600">
+                                    Tunggu konfirmasi admin. Anda akan mendapatkan notifikasi WA.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 flex justify-end">
+                            <button id="close-booking-success-popup" type="button" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+                                Oke
+                            </button>
+                        </div>
+                    </div>
                 </div>
             @endif
 
@@ -110,7 +127,7 @@
                                     <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-900 md:text-4xl">{{ $namaFasilitas }}</h2>
                                     <p class="mt-3 flex items-start gap-2 text-sm leading-6 text-slate-600 md:text-base">
                                         <span class="material-symbols-outlined mt-0.5 text-[18px] text-[#c62828]">location_on</span>
-                                        {{ data_get($fasilitas, 'alamat', 'Jl. Kenari No. 12, Plosokerep, Kec. Sananwetan, Kota Blitar') }}
+                                        {{ $alamat }}
                                     </p>
                                 </div>
 
@@ -258,13 +275,13 @@
                                         <h3 class="mt-2 text-xl font-black text-slate-900">Form Permohonan Sewa</h3>
                                     </div>
                                     <div class="text-right">
-                                        <p class="text-xs font-semibold text-slate-400">Harga per hari</p>
-                                        <p id="harga_satuan_badge" class="text-2xl font-black text-slate-400">Pilih tipe sewa</p>
+                                        <p class="text-xs font-semibold text-slate-400">Biaya Sewa</p>
+                                        <p id="harga_satuan_badge" class="text-2xl font-black text-emerald-600">Gratis</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <form method="POST" action="{{ route('booking.payment') }}" class="space-y-5 p-6">
+                            <form method="POST" action="{{ route('booking.store') }}" class="space-y-5 p-6">
                                 @csrf
 
                                 <input type="hidden" name="fasilitas_id" value="{{ old('fasilitas_id', $fasilitasId) }}">
@@ -305,23 +322,15 @@
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                    <div>
-                                        <label for="tanggal_selesai" class="mb-1.5 block text-sm font-bold text-slate-700">Tanggal Selesai</label>
-                                        <input id="tanggal_selesai" type="date" value="{{ old('tanggal_selesai') }}" class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-800" readonly>
-                                        <p class="mt-2 text-xs text-slate-500">Tanggal selesai dihitung otomatis dari tanggal mulai dan durasi.</p>
-                                    </div>
-
-                                    <div>
-                                        <label for="total_harga" class="mb-1.5 block text-sm font-bold text-slate-700">Total Harga</label>
-                                        <input id="total_harga" name="total_harga" type="number" step="0.01" min="0" value="{{ old('total_harga') }}" placeholder="1500000" class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-800" readonly>
-                                        <p class="mt-2 text-xs text-slate-500">Total harga dihitung otomatis dari tipe sewa dan durasi.</p>
-                                    </div>
-                                </div>  
+                                <div>
+                                    <label for="tanggal_selesai" class="mb-1.5 block text-sm font-bold text-slate-700">Tanggal Selesai</label>
+                                    <input id="tanggal_selesai" type="date" value="{{ old('tanggal_selesai') }}" class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-800" readonly>
+                                    <p class="mt-2 text-xs text-slate-500">Tanggal selesai dihitung otomatis dari tanggal mulai dan durasi.</p>
+                                </div>
 
                                 <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#c62828] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#c62828]/20 transition hover:bg-[#b71c1c]">
                                     <span class="material-symbols-outlined">check_circle</span>
-                                    Lanjut ke Pembayaran
+                                    Ajukan Booking Gratis
                                 </button>
                             </form>
                         </div>
@@ -353,45 +362,25 @@
 @push('scripts')
     <script>
         (function () {
-            const hargaPerTipe = @json($hargaPerTipe ?? []);
             const tanggalSewa = document.getElementById('tanggal_sewa');
             const durasiHari = document.getElementById('durasi_hari');
             const tanggalSelesai = document.getElementById('tanggal_selesai');
             const tipeSewaId = document.getElementById('tipe_sewa_id');
-            const totalHarga = document.getElementById('total_harga');
             const hargaSatuanInfo = document.getElementById('harga_satuan_info');
             const hargaSatuanBadge = document.getElementById('harga_satuan_badge');
 
-            if (!tanggalSewa || !durasiHari || !tanggalSelesai || !tipeSewaId || !totalHarga || !hargaSatuanInfo || !hargaSatuanBadge) {
+            if (!tanggalSewa || !durasiHari || !tanggalSelesai || !tipeSewaId || !hargaSatuanInfo || !hargaSatuanBadge) {
                 return;
             }
 
-            const formatRupiah = (value) => {
-                return 'Rp ' + Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            };
-
             const setHargaSatuan = () => {
-                const hargaSatuan = Number(hargaPerTipe[tipeSewaId.value] ?? 0);
-
-                if (!tipeSewaId.value || hargaSatuan <= 0) {
-                    hargaSatuanInfo.textContent = 'Pilih tipe sewa';
-                    hargaSatuanInfo.classList.remove('text-[#c62828]');
-                    hargaSatuanInfo.classList.add('text-slate-500');
-
-                    hargaSatuanBadge.textContent = 'Pilih tipe sewa';
-                    hargaSatuanBadge.classList.remove('text-[#c62828]');
-                    hargaSatuanBadge.classList.add('text-slate-400');
-                    return;
-                }
-
-                const hargaLabel = formatRupiah(hargaSatuan) + '/hari';
-                hargaSatuanInfo.textContent = hargaLabel;
+                hargaSatuanInfo.textContent = 'Gratis';
                 hargaSatuanInfo.classList.remove('text-slate-500');
-                hargaSatuanInfo.classList.add('text-[#c62828]');
+                hargaSatuanInfo.classList.add('text-emerald-600');
 
-                hargaSatuanBadge.textContent = formatRupiah(hargaSatuan);
+                hargaSatuanBadge.textContent = 'Gratis';
                 hargaSatuanBadge.classList.remove('text-slate-400');
-                hargaSatuanBadge.classList.add('text-[#c62828]');
+                hargaSatuanBadge.classList.add('text-emerald-600');
             };
 
             const setTanggalSelesai = () => {
@@ -411,27 +400,28 @@
                 tanggalSelesai.value = end.toISOString().slice(0, 10);
             };
 
-            const setTotalHarga = () => {
-                const hargaSatuan = Number(hargaPerTipe[tipeSewaId.value] ?? 0);
-                const durasi = parseInt(durasiHari.value, 10);
-
-                if (!tipeSewaId.value || Number.isNaN(durasi) || durasi < 1 || hargaSatuan <= 0) {
-                    totalHarga.value = '';
-                    return;
-                }
-
-                totalHarga.value = (hargaSatuan * durasi).toFixed(2);
-            };
-
             tanggalSewa.addEventListener('change', setTanggalSelesai);
             durasiHari.addEventListener('input', setTanggalSelesai);
             tipeSewaId.addEventListener('change', setHargaSatuan);
-            tipeSewaId.addEventListener('change', setTotalHarga);
-            durasiHari.addEventListener('input', setTotalHarga);
 
             setHargaSatuan();
             setTanggalSelesai();
-            setTotalHarga();
+
+            const successPopup = document.getElementById('booking-success-popup');
+            const closeSuccessPopupBtn = document.getElementById('close-booking-success-popup');
+
+            if (successPopup && closeSuccessPopupBtn) {
+                const closePopup = () => {
+                    successPopup.classList.add('hidden');
+                };
+
+                closeSuccessPopupBtn.addEventListener('click', closePopup);
+                successPopup.addEventListener('click', (event) => {
+                    if (event.target === successPopup) {
+                        closePopup();
+                    }
+                });
+            }
         })();
     </script>
 @endpush

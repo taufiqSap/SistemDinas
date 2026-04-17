@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">History Booking</h2>
-                <p class="mt-1 text-sm text-gray-600">Daftar booking milik akun Anda sendiri. Halaman ini read-only.</p>
+                <p class="mt-1 text-sm text-gray-600">Daftar booking anda (seluruh penyewaan gratis).</p>
             </div>
         </div>
     </x-slot>
@@ -85,9 +85,7 @@
                                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Tipe</th>
                                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Kegiatan</th>
                                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Tanggal</th>
-                                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Total</th>
                                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Booking</th>
-                                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Pembayaran</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 bg-white">
@@ -98,15 +96,6 @@
                                                 'cancelled' => 'bg-rose-100 text-rose-700',
                                                 default => 'bg-amber-100 text-amber-700',
                                             };
-
-                                            $payment = $booking->latestPembayaran;
-                                            $paymentStatus = $payment?->status_pembayaran ?? '-';
-                                            $paymentStatusClass = match ($paymentStatus) {
-                                                'verified' => 'bg-emerald-100 text-emerald-700',
-                                                'pending' => 'bg-amber-100 text-amber-700',
-                                                'rejected' => 'bg-rose-100 text-rose-700',
-                                                default => 'bg-gray-100 text-gray-600',
-                                            };
                                         @endphp
                                         <tr>
                                             <td class="px-4 py-4 font-medium text-gray-900">{{ $booking->kode_booking }}</td>
@@ -114,17 +103,8 @@
                                             <td class="px-4 py-4 text-gray-700">{{ $booking->tipeSewa?->nama_tipe ?? '-' }}</td>
                                             <td class="px-4 py-4 text-gray-700">{{ $booking->kegiatan?->nama_kegiatan ?? '-' }}</td>
                                             <td class="px-4 py-4 text-gray-700">{{ $booking->tanggal_sewa }} - {{ $booking->tanggal_selesai }}</td>
-                                            <td class="px-4 py-4 text-gray-700">Rp {{ number_format($booking->total_harga, 0, ',', '.') }}</td>
                                             <td class="px-4 py-4">
                                                 <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $bookingStatusClass }}">{{ ucfirst($booking->status_booking) }}</span>
-                                            </td>
-                                            <td class="px-4 py-4">
-                                                <div class="space-y-1">
-                                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $paymentStatusClass }}">{{ ucfirst($paymentStatus) }}</span>
-                                                    @if ($payment)
-                                                        <p class="text-xs text-gray-500">{{ $payment->kode_pembayaran }}</p>
-                                                    @endif
-                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -139,15 +119,6 @@
                                         'confirmed' => 'bg-emerald-100 text-emerald-700',
                                         'cancelled' => 'bg-rose-100 text-rose-700',
                                         default => 'bg-amber-100 text-amber-700',
-                                    };
-
-                                    $payment = $booking->latestPembayaran;
-                                    $paymentStatus = $payment?->status_pembayaran ?? '-';
-                                    $paymentStatusClass = match ($paymentStatus) {
-                                        'verified' => 'bg-emerald-100 text-emerald-700',
-                                        'pending' => 'bg-amber-100 text-amber-700',
-                                        'rejected' => 'bg-rose-100 text-rose-700',
-                                        default => 'bg-gray-100 text-gray-600',
                                     };
                                 @endphp
 
@@ -176,17 +147,6 @@
                                         <div>
                                             <p class="text-xs uppercase tracking-[0.16em] text-gray-400">Tanggal</p>
                                             <p class="mt-1 font-medium">{{ $booking->tanggal_sewa }} - {{ $booking->tanggal_selesai }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs uppercase tracking-[0.16em] text-gray-400">Total</p>
-                                            <p class="mt-1 font-medium">Rp {{ number_format($booking->total_harga, 0, ',', '.') }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs uppercase tracking-[0.16em] text-gray-400">Pembayaran</p>
-                                            <span class="mt-1 inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $paymentStatusClass }}">{{ ucfirst($paymentStatus) }}</span>
-                                            @if ($payment)
-                                                <p class="mt-1 text-xs text-gray-500">{{ $payment->kode_pembayaran }}</p>
-                                            @endif
                                         </div>
                                     </div>
                                 </article>

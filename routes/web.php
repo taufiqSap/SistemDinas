@@ -10,7 +10,6 @@ use App\Http\Controllers\ProfileController;
 use App\Models\Booking as BookingModel;
 use App\Models\Fasilitas;
 use App\Models\Kegiatan;
-use App\Models\Pembayaran;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -28,7 +27,6 @@ Route::get('/dashboard', function () {
         $activeKegiatanCount = Schema::hasColumn('kegiatan', 'status')
             ? Kegiatan::where('status', 'active')->count()
             : Kegiatan::count();
-        $paymentCount = Pembayaran::count();
         $recentBookings = BookingModel::query()
             ->select([
                 'id',
@@ -38,7 +36,6 @@ Route::get('/dashboard', function () {
                 'tanggal_sewa',
                 'tanggal_selesai',
                 'status_booking',
-                'total_harga',
             ])
             ->with([
                 'kegiatan:id,nama_kegiatan',
@@ -54,7 +51,6 @@ Route::get('/dashboard', function () {
             'confirmedBooking',
             'fasilitasCount',
             'activeKegiatanCount',
-            'paymentCount',
             'recentBookings'
         );
     });
@@ -90,12 +86,6 @@ Route::get('/dashboard', function () {
                 'value' => $dashboardData['activeKegiatanCount'],
                 'note' => 'Siap dipilih',
                 'tone' => 'bg-sky-400/15 text-sky-200 ring-sky-400/20',
-            ],
-            [
-                'label' => 'Pembayaran',
-                'value' => $dashboardData['paymentCount'],
-                'note' => 'Tercatat di sistem',
-                'tone' => 'bg-rose-400/15 text-rose-200 ring-rose-400/20',
             ],
         ],
         'recentBookings' => $dashboardData['recentBookings'],
@@ -135,8 +125,6 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/fasilitas/{id}', [FasilitasController::class, 'show'])->name('fasilitas.show');
     Route::get('/booking/history', [BookingController::class, 'history'])->name('booking.history');
     Route::get('/booking/create', [BookingController::class, 'create'])->name('booking.create');
-    Route::get('/booking/payment', [BookingController::class, 'showPayment'])->name('booking.payment.show');
-    Route::post('/booking/payment', [BookingController::class, 'payment'])->name('booking.payment');
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 });
 

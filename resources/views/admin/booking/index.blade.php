@@ -22,12 +22,6 @@
                         @endforeach
                     </select>
 
-                    <select name="bukti" class="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white">
-                        <option value="">Semua Bukti</option>
-                        <option value="ada" @selected(($filters['bukti'] ?? '') === 'ada')>Sudah Upload</option>
-                        <option value="belum" @selected(($filters['bukti'] ?? '') === 'belum')>Belum Upload</option>
-                    </select>
-
                     <button class="rounded-full bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950">Filter</button>
                 </form>
             </div>
@@ -41,7 +35,6 @@
                                 <th class="px-4 py-4 font-semibold">User</th>
                                 <th class="px-4 py-4 font-semibold">Fasilitas</th>
                                 <th class="px-4 py-4 font-semibold">Jadwal</th>
-                                <th class="px-4 py-4 font-semibold">Bukti Bayar</th>
                                 <th class="px-4 py-4 font-semibold">Status</th>
                                 <th class="px-4 py-4 font-semibold text-right">Aksi</th>
                             </tr>
@@ -53,20 +46,6 @@
                                     <td class="px-4 py-4 text-slate-300">{{ $booking->user?->nama ?? '-' }}</td>
                                     <td class="px-4 py-4 text-slate-300">{{ $booking->fasilitas?->nama_fasilitas ?? '-' }}</td>
                                     <td class="px-4 py-4 text-slate-300">{{ \Carbon\Carbon::parse($booking->tanggal_sewa)->format('d M Y') }} - {{ \Carbon\Carbon::parse($booking->tanggal_selesai)->format('d M Y') }}</td>
-                                    <td class="px-4 py-4">
-                                        @php($payment = $booking->pembayaran->first())
-                                        @if ($payment?->bukti_pembayaran)
-                                            <span class="inline-flex items-center gap-2 rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200">
-                                                <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                                                Ada Bukti
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center gap-2 rounded-full bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-200">
-                                                <span class="h-2 w-2 rounded-full bg-amber-400"></span>
-                                                Belum Ada
-                                            </span>
-                                        @endif
-                                    </td>
                                     <td class="px-4 py-4 text-slate-300">{{ ucfirst($booking->status_booking) }}</td>
                                     <td class="px-4 py-4 text-right">
                                         <a href="{{ route('admin.bookings.show', $booking) }}" class="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-2 text-xs font-semibold text-cyan-100">Detail</a>
@@ -74,7 +53,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-4 py-10 text-center text-slate-400">Belum ada booking.</td>
+                                    <td colspan="6" class="px-4 py-10 text-center text-slate-400">Belum ada booking.</td>
                                 </tr>
                             @endforelse
                         </tbody>

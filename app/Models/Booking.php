@@ -20,7 +20,6 @@ class Booking extends Model
         'durasi_hari',
         'total_harga',
         'status_booking',
-        'deadline_pembayaran',
     ];
 
     public function kegiatan()
@@ -41,15 +40,5 @@ class Booking extends Model
     public function tipeSewa()
     {
         return $this->belongsTo(TipeSewa::class, 'tipe_sewa_id');
-    }
-
-    public function pembayaran()
-    {
-        return $this->hasMany(Pembayaran::class);
-    }
-
-    public function latestPembayaran()
-    {
-        return $this->hasOne(Pembayaran::class)->latestOfMany();
     }
 }

@@ -57,8 +57,7 @@
 							class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 focus:border-[#c62828] focus:ring-[#c62828]"
 						>
 							<option value="name_asc" @selected($filters['sort'] === 'name_asc')>Nama A-Z</option>
-							<option value="price_asc" @selected($filters['sort'] === 'price_asc')>Harga Termurah</option>
-							<option value="price_desc" @selected($filters['sort'] === 'price_desc')>Harga Tertinggi</option>
+							<option value="name_desc" @selected($filters['sort'] === 'name_desc')>Nama Z-A</option>
 						</select>
 
 						<button
@@ -112,11 +111,8 @@
 
 								<div class="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
 									<div>
-										<p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Mulai dari</p>
-										<p class="text-lg font-black text-[#c62828]">
-											Rp {{ number_format((float) $item->harga_mulai, 0, ',', '.') }}
-											<span class="text-xs font-normal text-slate-400">/hari</span>
-										</p>
+										<p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Biaya Sewa</p>
+										<p class="text-lg font-black text-emerald-600">Gratis</p>
 									</div>
 
 									<a

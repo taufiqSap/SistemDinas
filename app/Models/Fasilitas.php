@@ -14,6 +14,7 @@ class Fasilitas extends Model
         'deskripsi',
         'kapasitas',
         'spesifikasi',
+        'alamat',
         'status_fasilitas',
         'gambar_fasilitas',
     ];
@@ -21,11 +22,6 @@ class Fasilitas extends Model
     public function kategori()
     {
         return $this->belongsTo(Kategori::class);
-    }
-
-    public function hargaSewas()
-    {
-        return $this->hasMany(HargaSewa::class, 'fasilitas_id');
     }
 
     public function getGambarFasilitasUrlAttribute(): string

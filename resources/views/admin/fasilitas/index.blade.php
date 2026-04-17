@@ -11,7 +11,7 @@
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200/80">Master Data</p>
                     <h2 class="mt-2 text-2xl font-bold text-white">Fasilitas</h2>
-                    <p class="mt-1 text-sm text-slate-400">Kelola fasilitas, status, dan harga per tipe sewa.</p>
+                    <p class="mt-1 text-sm text-slate-400">Kelola fasilitas dan status ketersediaan.</p>
                 </div>
 
                 <a href="{{ route('admin.fasilitas.create') }}" class="inline-flex items-center justify-center rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
@@ -27,7 +27,6 @@
                                 <th class="px-4 py-4 font-semibold">Nama</th>
                                 <th class="px-4 py-4 font-semibold">Kategori</th>
                                 <th class="px-4 py-4 font-semibold">Kapasitas</th>
-                                <th class="px-4 py-4 font-semibold">Harga Mulai</th>
                                 <th class="px-4 py-4 font-semibold">Status</th>
                                 <th class="px-4 py-4 font-semibold text-right">Aksi</th>
                             </tr>
@@ -38,7 +37,6 @@
                                     <td class="px-4 py-4 font-semibold text-white">{{ $item->nama_fasilitas }}</td>
                                     <td class="px-4 py-4 text-slate-300">{{ $item->nama_kategori ?? '-' }}</td>
                                     <td class="px-4 py-4 text-slate-300">{{ $item->kapasitas }}</td>
-                                    <td class="px-4 py-4 text-slate-300">Rp {{ number_format((float) $item->harga_mulai, 0, ',', '.') }}</td>
                                     <td class="px-4 py-4 text-slate-300">{{ ucfirst($item->status_fasilitas) }}</td>
                                     <td class="px-4 py-4 text-right">
                                         <div class="inline-flex items-center gap-2">
@@ -53,7 +51,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-10 text-center text-slate-400">Belum ada data fasilitas.</td>
+                                    <td colspan="5" class="px-4 py-10 text-center text-slate-400">Belum ada data fasilitas.</td>
                                 </tr>
                             @endforelse
                         </tbody>

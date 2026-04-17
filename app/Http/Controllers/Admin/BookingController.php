@@ -20,7 +20,6 @@ class BookingController extends Controller
                 'fasilitas:id,nama_fasilitas',
                 'tipeSewa:id,nama_tipe',
                 'kegiatan:id,nama_kegiatan',
-                'pembayaran:id,booking_id,bukti_pembayaran',
             ])
             ->latest();
 
@@ -28,23 +27,10 @@ class BookingController extends Controller
             $query->where('status_booking', $request->string('status'));
         }
 
-        if ($request->filled('bukti')) {
-            if ($request->string('bukti') === 'ada') {
-                $query->whereHas('pembayaran', function ($relation) {
-                    $relation->whereNotNull('bukti_pembayaran')->where('bukti_pembayaran', '!=', '');
-                });
-            } elseif ($request->string('bukti') === 'belum') {
-                $query->whereDoesntHave('pembayaran', function ($relation) {
-                    $relation->whereNotNull('bukti_pembayaran')->where('bukti_pembayaran', '!=', '');
-                });
-            }
-        }
-
         return view('admin.booking.index', [
             'bookings' => $query->paginate(10)->withQueryString(),
             'filters' => [
                 'status' => (string) $request->get('status', ''),
-                'bukti' => (string) $request->get('bukti', ''),
             ],
             'statusOptions' => ['pending', 'confirmed', 'cancelled'],
         ]);
@@ -57,7 +43,6 @@ class BookingController extends Controller
             'fasilitas:id,nama_fasilitas,status_fasilitas',
             'tipeSewa:id,nama_tipe',
             'kegiatan:id,nama_kegiatan',
-            'pembayaran:id,booking_id,bukti_pembayaran,status_pembayaran,jumlah_pembayaran,kode_pembayaran,metode_pembayaran,tanggal_pembayaran,alasan_penolakan',
         ]);
 
         return view('admin.booking.show', [
@@ -74,9 +59,6 @@ class BookingController extends Controller
 
         $booking->update([
             'status_booking' => $validated['status_booking'],
-            'deadline_pembayaran' => $validated['status_booking'] === 'confirmed' && ! $booking->deadline_pembayaran
-                ? now()->addDays(3)
-                : $booking->deadline_pembayaran,
         ]);
 
         Cache::flush();

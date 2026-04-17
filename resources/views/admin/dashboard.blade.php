@@ -20,16 +20,11 @@
                     <p class="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200/80">Dashboard Admin</p>
                     <h2 class="mt-3 text-3xl font-black tracking-tight text-white sm:text-4xl">Ringkasan operasional Dinas Pariwisata</h2>
                     <p class="mt-4 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
-                        Pantau booking masuk, status verifikasi, data fasilitas, kegiatan aktif, dan pembayaran yang sudah tercatat dari satu halaman.
+                        Pantau booking masuk, status verifikasi, data fasilitas, dan kegiatan aktif dari satu halaman.
                     </p>
 
                     <div class="mt-6 flex flex-wrap gap-3">
-                        <a href="{{ route('profile.edit') }}" class="rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
-                            Kelola Profil
-                        </a>
-                        <a href="{{ url('/') }}" class="rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
-                            Lihat Beranda
-                        </a>
+
                     </div>
                 </div>
 
@@ -80,7 +75,6 @@
                                 <th class="px-4 py-4 font-semibold">Fasilitas</th>
                                 <th class="px-4 py-4 font-semibold">Jadwal</th>
                                 <th class="px-4 py-4 font-semibold">Status</th>
-                                <th class="px-4 py-4 font-semibold text-right">Total</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/10 bg-slate-950/40">
@@ -99,13 +93,10 @@
                                             {{ $statusLabels[$booking->status_booking] ?? ucfirst($booking->status_booking) }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-4 text-right font-semibold text-white">
-                                        Rp {{ number_format((float) $booking->total_harga, 0, ',', '.') }}
-                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-10 text-center text-slate-400">
+                                    <td colspan="5" class="px-4 py-10 text-center text-slate-400">
                                         Belum ada data booking yang masuk.
                                     </td>
                                 </tr>
@@ -123,7 +114,7 @@
                 <div class="mt-5 space-y-4 text-sm leading-6 text-slate-300">
                     <p>1. Periksa booking yang masih pending sebelum jadwal berjalan.</p>
                     <p>2. Cocokkan fasilitas dan kegiatan yang dipilih user dengan ketersediaan data master.</p>
-                    <p>3. Validasi pembayaran setelah bukti pembayaran masuk.</p>
+                    <p>3. Tetapkan status booking sesuai keputusan verifikasi lapangan.</p>
                     <p>4. Gunakan menu profil untuk menyesuaikan akun admin saat testing.</p>
                 </div>
             </article>
@@ -143,10 +134,6 @@
                     <div class="flex items-center justify-between gap-4 rounded-2xl bg-slate-950/30 px-4 py-3">
                         <dt>Kegiatan aktif</dt>
                         <dd class="font-semibold text-white">{{ number_format($stats[4]['value']) }}</dd>
-                    </div>
-                    <div class="flex items-center justify-between gap-4 rounded-2xl bg-slate-950/30 px-4 py-3">
-                        <dt>Pembayaran tercatat</dt>
-                        <dd class="font-semibold text-white">{{ number_format($stats[5]['value']) }}</dd>
                     </div>
                 </dl>
             </article>

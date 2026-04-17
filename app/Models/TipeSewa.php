@@ -12,9 +12,4 @@ class TipeSewa extends Model
         'nama_tipe',
         'deskripsi',
     ];
-
-    public function hargaSewas()
-    {
-        return $this->hasMany(HargaSewa::class, 'tipe_sewa_id');
-    }
 }
