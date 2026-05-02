@@ -22,7 +22,6 @@ return new class extends Migration
             $table->integer('durasi_hari');
             $table->decimal('total_harga', 10, 2);
             $table->enum('status_booking', ['pending', 'confirmed', 'cancelled'])->default('pending');
-            $table->timestamp('deadline_pembayaran')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
