@@ -101,6 +101,7 @@ class DatabaseSeeder extends Seeder
                 [
                     'kategori_id' => $kategoriDummyId,
                     'deskripsi' => 'Fasilitas contoh untuk testing dashboard dan booking.',
+                    'alamat' => 'Lokasi contoh, Kota Blitar',
                     'kapasitas' => '100 orang',
                     'spesifikasi' => 'Dummy spec: kursi, meja, proyektor.',
                     'status_fasilitas' => 'available',

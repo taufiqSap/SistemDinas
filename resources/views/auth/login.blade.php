@@ -82,7 +82,7 @@
                                 <div class="flex items-center justify-between">
                                     <label for="password" class="text-sm font-semibold text-gray-800">Kata Sandi</label>
                                     @if (\Illuminate\Support\Facades\Route::has('password.request'))
-                                        <a class="text-xs font-semibold text-[#C6352F] hover:underline" href="{{ route('password.request') }}">Lupa Kata Sandi?</a>
+                                        <a class="text-xs font-semibold text-[#C6352F] transition hover:underline" href="{{ route('password.request') }}">Lupa sandi?</a>
                                     @endif
                                 </div>
                                 <div class="relative flex items-center">
@@ -93,12 +93,11 @@
                                     </button>
                                 </div>
                                 <x-input-error :messages="$errors->get('password')" class="mt-1 text-sm" />
+                                @if (\Illuminate\Support\Facades\Route::has('password.request'))
+                                    <p class="pl-1 text-xs text-gray-400">Jika Anda lupa sandi, gunakan tautan di kanan atas untuk reset akun.</p>
+                                @endif
                             </div>
 
-                            <div class="animate-fadein-delay2 flex items-center gap-2">
-                                <input id="remember" type="checkbox" name="remember" class="h-4 w-4 cursor-pointer rounded border-gray-300 accent-[#C6352F]" />
-                                <label for="remember" class="cursor-pointer select-none text-sm text-gray-600">Ingat saya</label>
-                            </div>
 
                             <div class="animate-fadein-delay2 pt-1">
                                 <button type="submit" class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#FFD700] text-sm font-bold uppercase tracking-wide text-gray-900 shadow transition-all hover:brightness-105 active:scale-[0.98]">

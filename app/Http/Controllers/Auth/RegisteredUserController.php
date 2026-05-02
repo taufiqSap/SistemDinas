@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,14 +45,14 @@ class RegisteredUserController extends Controller
             'alamat' => $request->alamat,
         ]);
 
-        event(new Registered($user));
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         Auth::login($user);
 
-        $redirectRoute = $user->role === 'admin'
-            ? 'dashboard'
-            : 'fasilitas.index';
-
-        return redirect()->route($redirectRoute);
+        return redirect()->route('verification.notice')->with('status', 'verification-link-sent');
     }
 }
