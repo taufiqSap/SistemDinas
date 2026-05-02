@@ -40,33 +40,6 @@
 							class="w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-12 pr-4 text-sm text-slate-800 focus:border-[#c62828] focus:ring-[#c62828]"
 						>
 					</div>
-
-					<div class="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:w-auto">
-						<select
-							name="kategori"
-							class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 focus:border-[#c62828] focus:ring-[#c62828]"
-						>
-							<option value="">Semua Kategori</option>
-							@foreach ($kategoriList as $kategori)
-								<option value="{{ $kategori }}" @selected($filters['kategori'] === $kategori)>{{ $kategori }}</option>
-							@endforeach
-						</select>
-
-						<select
-							name="sort"
-							class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 focus:border-[#c62828] focus:ring-[#c62828]"
-						>
-							<option value="name_asc" @selected($filters['sort'] === 'name_asc')>Nama A-Z</option>
-							<option value="name_desc" @selected($filters['sort'] === 'name_desc')>Nama Z-A</option>
-						</select>
-
-						<button
-							type="submit"
-							class="inline-flex items-center justify-center rounded-xl bg-[#c62828] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#b71c1c]"
-						>
-							Terapkan Filter
-						</button>
-					</div>
 				</div>
 			</form>
 

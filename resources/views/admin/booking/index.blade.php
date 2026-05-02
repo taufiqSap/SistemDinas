@@ -14,15 +14,21 @@
                     <p class="mt-1 text-sm text-slate-400">Pantau dan ubah status booking dari user.</p>
                 </div>
 
-                <form method="GET" class="flex items-center gap-2">
-                    <select name="status" class="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white">
-                        <option value="">Semua Status</option>
-                        @foreach ($statusOptions as $status)
-                            <option value="{{ $status }}" @selected($filters['status'] === $status)>{{ ucfirst($status) }}</option>
-                        @endforeach
-                    </select>
+                <form method="GET" class="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <div class="w-full">
+                        <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari kode atau nama user" class="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-cyan-400 focus:ring-cyan-400">
+                    </div>
 
-                    <button class="rounded-full bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950">Filter</button>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <select name="status" class="hidden sm:block rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white">
+                            <option value="">Semua Status</option>
+                            @foreach ($statusOptions as $status)
+                                <option value="{{ $status }}" @selected($filters['status'] === $status)>{{ ucfirst($status) }}</option>
+                            @endforeach
+                        </select>
+
+                        <button class="hidden sm:inline-flex rounded-full bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950">Filter</button>
+                    </div>
                 </form>
             </div>
 

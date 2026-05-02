@@ -220,17 +220,6 @@
                                     <p id="match-text" class="hidden pl-1 text-xs"></p>
                                 </div>
 
-                                <div class="animate-fadein-delay4 flex items-start gap-2.5">
-                                    <input id="terms" type="checkbox" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-gray-300 accent-[#C6352F]" />
-                                    <label for="terms" class="select-none text-sm leading-relaxed text-gray-600">
-                                        Saya menyetujui
-                                        <a href="#" class="font-semibold text-[#C6352F] hover:underline">Syarat &amp; Ketentuan</a>
-                                        serta
-                                        <a href="#" class="font-semibold text-[#C6352F] hover:underline">Kebijakan Privasi</a>
-                                        yang berlaku.
-                                    </label>
-                                </div>
-
                                 <div class="animate-fadein-delay4 flex gap-3 pt-2">
                                     <button type="button" onclick="goToStep1()" class="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-gray-100 text-sm font-bold text-gray-700 transition-all hover:bg-gray-200 active:scale-[0.98]">
                                         <span class="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -386,7 +375,6 @@
             document.getElementById('register-form').addEventListener('submit', function (event) {
                 const p1 = document.getElementById('pass1').value;
                 const p2 = document.getElementById('pass2').value;
-                const terms = document.getElementById('terms').checked;
 
                 if (!p1 || !p2) {
                     event.preventDefault();
@@ -404,11 +392,6 @@
                     event.preventDefault();
                     showWarningPopup('Kata sandi minimal 8 karakter.');
                     return;
-                }
-
-                if (!terms) {
-                    event.preventDefault();
-                    showWarningPopup('Harap setujui syarat dan ketentuan terlebih dahulu.');
                 }
             });
 
