@@ -7,16 +7,23 @@
         @endif
 
         <section class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-slate-950/30 backdrop-blur-xl">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200/80">Master Data</p>
-                    <h2 class="mt-2 text-2xl font-bold text-white">Tipe Sewa</h2>
-                    <p class="mt-1 text-sm text-slate-400">Kelola jenis sewa yang dapat dipilih saat booking.</p>
+            <div class="flex flex-col gap-4">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200/80">Master Data</p>
+                        <h2 class="mt-2 text-2xl font-bold text-white">Tipe Sewa</h2>
+                        <p class="mt-1 text-sm text-slate-400">Kelola jenis sewa yang dapat dipilih saat booking.</p>
+                    </div>
+
+                    <a href="{{ route('admin.tipe-sewa.create') }}" class="inline-flex items-center justify-center rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
+                        Tambah Tipe Sewa
+                    </a>
                 </div>
 
-                <a href="{{ route('admin.tipe-sewa.create') }}" class="inline-flex items-center justify-center rounded-full bg-cyan-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
-                    Tambah Tipe Sewa
-                </a>
+                <form method="GET" class="mt-3 flex w-full gap-2">
+                    <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari nama atau deskripsi" class="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-cyan-400 focus:ring-cyan-400">
+                    <button class="hidden sm:inline-flex rounded-full bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950">Cari</button>
+                </form>
             </div>
 
             <div class="mt-6 overflow-hidden rounded-2xl border border-white/10">

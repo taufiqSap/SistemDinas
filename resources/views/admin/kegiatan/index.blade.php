@@ -30,6 +30,12 @@
             </div>
 
             <div class="mt-6 overflow-hidden rounded-2xl border border-white/10">
+                <div class="p-4 sm:p-6">
+                    <form method="GET" class="flex w-full gap-2">
+                        <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari nama atau deskripsi kegiatan" class="w-full rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:border-cyan-400 focus:ring-cyan-400">
+                        <button class="hidden sm:inline-flex rounded-full bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950">Cari</button>
+                    </form>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-white/10 text-left text-sm">
                         <thead class="bg-white/5 text-xs uppercase tracking-[0.2em] text-slate-400">

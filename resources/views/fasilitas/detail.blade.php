@@ -45,29 +45,22 @@
     @endphp
 
     <x-slot name="header">
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <div class="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
                     <span>Detail Aset</span>
                     <span class="text-slate-300">/</span>
                     <span>{{ $kategoriNama }}</span>
                 </div>
-                <h1 class="mt-2 text-2xl font-black tracking-tight text-slate-900 md:text-3xl">{{ $namaFasilitas }}</h1>
+                <h1 class="mt-2 break-words text-2xl font-black tracking-tight text-slate-900 sm:text-[2rem] md:text-3xl">{{ $namaFasilitas }}</h1>
                 <p class="mt-1 text-sm text-slate-600">Ringkasan aset, fasilitas, dan form awal untuk proses booking.</p>
             </div>
 
-            <div class="flex flex-wrap gap-3">
-                <a href="{{ route('fasilitas.index') }}" class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
-                    Kembali ke Daftar
-                </a>
-                <a href="#form-booking" class="inline-flex items-center justify-center rounded-full bg-[#c62828] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#b71c1c]">
-                    Mulai Booking
-                </a>
-            </div>
+            
         </div>
     </x-slot>
 
-    <section class="bg-gradient-to-b from-slate-50 to-white py-8">
+    <section class="bg-gradient-to-b from-slate-50 to-white py-5 sm:py-8">
         <div class="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
             @if (session('success'))
                 <div id="booking-success-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -102,10 +95,10 @@
                 </div>
             @endif
 
-            <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
+            <div class="grid grid-cols-1 gap-5 sm:gap-8 lg:grid-cols-12">
                 <div class="lg:col-span-8 space-y-8">
-                    <article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.08)]">
-                        <div class="relative aspect-[16/9] overflow-hidden bg-slate-100">
+                    <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.08)] sm:rounded-3xl">
+                        <div class="relative aspect-[4/3] overflow-hidden bg-slate-100 sm:aspect-[16/9]">
                             <img src="{{ $gambarUtama }}" alt="{{ $namaFasilitas }}" class="h-full w-full object-cover transition duration-700 hover:scale-105">
                             <div class="absolute left-4 top-4 flex flex-wrap gap-2">
                                 <span class="inline-flex items-center rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-white {{ $status['badge'] }}">
@@ -115,23 +108,23 @@
                                     {{ $kategoriNama }}
                                 </span>
                             </div>
-                            <div class="absolute bottom-4 right-4 rounded-full bg-slate-900/80 px-4 py-2 text-xs font-semibold text-white backdrop-blur">
+                            <div class="absolute bottom-4 right-4 hidden rounded-full bg-slate-900/80 px-4 py-2 text-xs font-semibold text-white backdrop-blur sm:block">
                                 Siap dipakai untuk proses booking
                             </div>
                         </div>
 
-                        <div class="p-6 md:p-8">
+                        <div class="p-5 sm:p-6 md:p-8">
                             <div class="flex flex-col gap-4 border-b border-slate-100 pb-6 md:flex-row md:items-start md:justify-between">
                                 <div class="max-w-3xl">
                                     <p class="text-xs font-black uppercase tracking-[0.25em] text-[#c62828]">{{ $kategoriNama }}</p>
-                                    <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-900 md:text-4xl">{{ $namaFasilitas }}</h2>
+                                    <h2 class="mt-2 break-words text-2xl font-black tracking-tight text-slate-900 sm:text-3xl md:text-4xl">{{ $namaFasilitas }}</h2>
                                     <p class="mt-3 flex items-start gap-2 text-sm leading-6 text-slate-600 md:text-base">
                                         <span class="material-symbols-outlined mt-0.5 text-[18px] text-[#c62828]">location_on</span>
                                         {{ $alamat }}
                                     </p>
                                 </div>
 
-                                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:w-auto">
+                                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:w-auto">
                                     <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                                         <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Kapasitas</p>
                                         <p class="mt-1 text-sm font-bold text-slate-900">{{ $kapasitas }}</p>
@@ -215,9 +208,9 @@
                                             Galeri Singkat
                                         </h3>
 
-                                        <div class="mt-4 flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                        <div class="mt-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide sm:gap-3">
                                             @for ($i = 0; $i < 4; $i++)
-                                                <div class="h-24 w-36 flex-none overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+                                                <div class="h-20 w-28 flex-none overflow-hidden rounded-xl border border-slate-200 bg-slate-100 sm:h-24 sm:w-32 md:w-36 md:rounded-2xl">
                                                     <img src="{{ $gambarUtama }}" alt="{{ $namaFasilitas }} {{ $i + 1 }}" class="h-full w-full object-cover">
                                                 </div>
                                             @endfor
@@ -225,26 +218,26 @@
                                     </section>
                                 </div>
 
-                                <aside class="space-y-4 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                                <aside class="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 lg:sticky lg:top-24 sm:rounded-3xl sm:p-5">
                                     <div class="rounded-2xl bg-white p-4 shadow-sm">
-                                        <div class="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                                            <span class="text-sm font-semibold text-slate-500">Status Aset</span>
+                                        <div class="flex flex-col gap-3 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
+                                            <span class="shrink-0 text-sm font-semibold text-slate-500">Status Aset</span>
                                             <span class="inline-flex items-center gap-2 text-sm font-bold text-slate-900">
                                                 <span class="h-2.5 w-2.5 rounded-full {{ $status['dot'] }}"></span>
                                                 {{ $status['label'] }}
                                             </span>
                                         </div>
                                         <div class="mt-4 space-y-3 text-sm text-slate-600">
-                                            <div class="flex items-center justify-between">
-                                                <span>Kategori</span>
-                                                <span class="font-bold text-slate-900">{{ $kategoriNama }}</span>
+                                            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                                                <span class="shrink-0">Kategori</span>
+                                                <span class="break-words font-bold text-slate-900">{{ $kategoriNama }}</span>
                                             </div>
-                                            <div class="flex items-center justify-between">
-                                                <span>Kapasitas</span>
+                                            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                                                <span class="shrink-0">Kapasitas</span>
                                                 <span class="font-bold text-slate-900">{{ $kapasitas }}</span>
                                             </div>
-                                            <div class="flex items-center justify-between">
-                                                <span>Harga Satuan</span>
+                                            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                                                <span class="shrink-0">Harga Satuan</span>
                                                 <span id="harga_satuan_info" class="font-black text-slate-500">Pilih tipe sewa</span>
                                             </div>
                                         </div>
@@ -252,13 +245,8 @@
 
                                     <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
                                         <p class="font-bold">Catatan booking</p>
-                                        <p class="mt-2 leading-6">Harga final dapat menyesuaikan tipe sewa, kegiatan, dan kebutuhan tambahan. Form di bawah mengarahkan proses booking awal.</p>
+                                        <p class="mt-2 break-words leading-6">Booking anda akan langsung diubah jadwaljika ada acara dinas dadakan.</p>
                                     </div>
-
-                                    <a href="#form-booking" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#c62828] px-5 py-3 text-sm font-black text-white transition hover:bg-[#b71c1c]">
-                                        <span class="material-symbols-outlined text-[18px]">edit_calendar</span>
-                                        Ajukan Booking
-                                    </a>
                                 </aside>
                             </div>
                         </div>
@@ -266,9 +254,9 @@
                 </div>
 
                 <div class="lg:col-span-4">
-                    <div id="form-booking" class="sticky top-24 space-y-6">
-                        <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.08)]">
-                            <div class="border-b border-slate-100 p-6">
+                    <div id="form-booking" class="space-y-6 lg:sticky lg:top-24">
+                        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.08)] sm:rounded-3xl">
+                            <div class="border-b border-slate-100 p-5 sm:p-6">
                                 <div class="flex items-baseline justify-between gap-4">
                                     <div>
                                         <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Booking Awal</p>
@@ -281,7 +269,7 @@
                                 </div>
                             </div>
 
-                            <form method="POST" action="{{ route('booking.store') }}" class="space-y-5 p-6">
+                            <form method="POST" action="{{ route('booking.store') }}" class="space-y-5 p-5 sm:p-6">
                                 @csrf
 
                                 <input type="hidden" name="fasilitas_id" value="{{ old('fasilitas_id', $fasilitasId) }}">
@@ -335,7 +323,7 @@
                             </form>
                         </div>
 
-                        <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-5">
                             <h4 class="flex items-center gap-2 text-sm font-black text-slate-900">
                                 <span class="material-symbols-outlined text-[#c62828]">gavel</span>
                                 Ketentuan Singkat
