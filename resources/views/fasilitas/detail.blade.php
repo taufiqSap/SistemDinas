@@ -5,6 +5,9 @@
     <style>
         :root {
             color-scheme: light;
+            --accent-red: #c62828;
+            --text-strong: #0f172a;
+            --text-soft: #475569;
         }
 
         .material-symbols-outlined {
@@ -47,13 +50,13 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-                <div class="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
+                <div class="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-slate-600">
                     <span>Detail Aset</span>
                     <span class="text-slate-300">/</span>
                     <span>{{ $kategoriNama }}</span>
                 </div>
-                <h1 class="mt-2 break-words text-2xl font-black tracking-tight text-slate-900 sm:text-[2rem] md:text-3xl">{{ $namaFasilitas }}</h1>
-                <p class="mt-1 text-sm text-slate-600">Ringkasan aset, fasilitas, dan form awal untuk proses booking.</p>
+                <h1 class="mt-2 break-words text-2xl font-black tracking-tight text-slate-950 sm:text-[2rem] md:text-3xl">{{ $namaFasilitas }}</h1>
+                <p class="mt-1 text-sm text-slate-700">Ringkasan aset, fasilitas, dan form awal untuk proses booking.</p>
             </div>
 
             
@@ -85,7 +88,7 @@
             @endif
 
             @if ($errors->any())
-                <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
                     <p class="font-semibold">Periksa kembali data booking.</p>
                     <ul class="mt-2 list-disc space-y-1 ps-5">
                         @foreach ($errors->all() as $error)
@@ -108,7 +111,7 @@
                                     {{ $kategoriNama }}
                                 </span>
                             </div>
-                            <div class="absolute bottom-4 right-4 hidden rounded-full bg-slate-900/80 px-4 py-2 text-xs font-semibold text-white backdrop-blur sm:block">
+                            <div class="absolute bottom-4 right-4 hidden rounded-full bg-slate-900/90 px-4 py-2 text-xs font-semibold text-white backdrop-blur sm:block">
                                 Siap dipakai untuk proses booking
                             </div>
                         </div>
@@ -116,26 +119,26 @@
                         <div class="p-5 sm:p-6 md:p-8">
                             <div class="flex flex-col gap-4 border-b border-slate-100 pb-6 md:flex-row md:items-start md:justify-between">
                                 <div class="max-w-3xl">
-                                    <p class="text-xs font-black uppercase tracking-[0.25em] text-[#c62828]">{{ $kategoriNama }}</p>
-                                    <h2 class="mt-2 break-words text-2xl font-black tracking-tight text-slate-900 sm:text-3xl md:text-4xl">{{ $namaFasilitas }}</h2>
-                                    <p class="mt-3 flex items-start gap-2 text-sm leading-6 text-slate-600 md:text-base">
+                                    <p class="text-xs font-black uppercase tracking-[0.25em] text-[var(--accent-red)]">{{ $kategoriNama }}</p>
+                                    <h2 class="mt-2 break-words text-2xl font-black tracking-tight text-[var(--text-strong)] sm:text-3xl md:text-4xl">{{ $namaFasilitas }}</h2>
+                                    <p class="mt-3 flex items-start gap-2 text-sm leading-6 text-[var(--text-soft)] md:text-base">
                                         <span class="material-symbols-outlined mt-0.5 text-[18px] text-[#c62828]">location_on</span>
                                         {{ $alamat }}
                                     </p>
                                 </div>
 
                                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:w-auto">
-                                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Kapasitas</p>
-                                        <p class="mt-1 text-sm font-bold text-slate-900">{{ $kapasitas }}</p>
+                                    <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Kapasitas</p>
+                                        <p class="mt-1 text-sm font-bold text-slate-950">{{ $kapasitas }}</p>
                                     </div>
-                                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Durasi</p>
-                                        <p class="mt-1 text-sm font-bold text-slate-900">Fleksibel</p>
+                                    <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Durasi</p>
+                                        <p class="mt-1 text-sm font-bold text-slate-950">Fleksibel</p>
                                     </div>
-                                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Area</p>
-                                        <p class="mt-1 text-sm font-bold text-slate-900">Representatif</p>
+                                    <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Area</p>
+                                        <p class="mt-1 text-sm font-bold text-slate-950">Representatif</p>
                                     </div>
                                 </div>
                             </div>
@@ -143,18 +146,18 @@
                             <div class="mt-6 grid gap-6 lg:grid-cols-3">
                                 <div class="lg:col-span-2 space-y-8">
                                     <section>
-                                        <h3 class="flex items-center gap-2 text-lg font-black text-slate-900">
+                                        <h3 class="flex items-center gap-2 text-lg font-black text-slate-950">
                                             <span class="h-5 w-1 rounded-full bg-[#c62828]"></span>
                                             Deskripsi Aset
                                         </h3>
-                                        <div class="mt-4 space-y-4 text-sm leading-7 text-slate-600 md:text-base">
+                                        <div class="mt-4 space-y-4 text-sm leading-7 text-slate-700 md:text-base">
                                             <p>{{ $deskripsi }}</p>
                                             <p>{{ $spesifikasi }}</p>
                                         </div>
                                     </section>
 
                                     <section>
-                                        <h3 class="flex items-center gap-2 text-lg font-black text-slate-900">
+                                        <h3 class="flex items-center gap-2 text-lg font-black text-slate-950">
                                             <span class="h-5 w-1 rounded-full bg-[#c62828]"></span>
                                             Fasilitas Utama
                                         </h3>
@@ -165,8 +168,8 @@
                                                     <span class="material-symbols-outlined">ac_unit</span>
                                                 </div>
                                                 <div>
-                                                    <h4 class="text-sm font-bold text-slate-900">Pendingin Ruangan</h4>
-                                                    <p class="mt-1 text-xs leading-5 text-slate-500">Area utama nyaman untuk kegiatan formal dan nonformal.</p>
+                                                    <h4 class="text-sm font-bold text-slate-950">Pendingin Ruangan</h4>
+                                                    <p class="mt-1 text-xs leading-5 text-slate-600">Area utama nyaman untuk kegiatan formal dan nonformal.</p>
                                                 </div>
                                             </div>
 
@@ -175,8 +178,8 @@
                                                     <span class="material-symbols-outlined">speaker</span>
                                                 </div>
                                                 <div>
-                                                    <h4 class="text-sm font-bold text-slate-900">Sistem Audio</h4>
-                                                    <p class="mt-1 text-xs leading-5 text-slate-500">Mendukung seminar, rapat, dan acara pertunjukan.</p>
+                                                    <h4 class="text-sm font-bold text-slate-950">Sistem Audio</h4>
+                                                    <p class="mt-1 text-xs leading-5 text-slate-600">Mendukung seminar, rapat, dan acara pertunjukan.</p>
                                                 </div>
                                             </div>
 
@@ -185,8 +188,8 @@
                                                     <span class="material-symbols-outlined">podium</span>
                                                 </div>
                                                 <div>
-                                                    <h4 class="text-sm font-bold text-slate-900">Panggung / Area Utama</h4>
-                                                    <p class="mt-1 text-xs leading-5 text-slate-500">Cocok untuk kegiatan seremonial maupun hiburan.</p>
+                                                    <h4 class="text-sm font-bold text-slate-950">Panggung / Area Utama</h4>
+                                                    <p class="mt-1 text-xs leading-5 text-slate-600">Cocok untuk kegiatan seremonial maupun hiburan.</p>
                                                 </div>
                                             </div>
 
@@ -195,15 +198,15 @@
                                                     <span class="material-symbols-outlined">local_parking</span>
                                                 </div>
                                                 <div>
-                                                    <h4 class="text-sm font-bold text-slate-900">Area Parkir</h4>
-                                                    <p class="mt-1 text-xs leading-5 text-slate-500">Mendukung mobilitas tamu dan panitia acara.</p>
+                                                    <h4 class="text-sm font-bold text-slate-950">Area Parkir</h4>
+                                                    <p class="mt-1 text-xs leading-5 text-slate-600">Mendukung mobilitas tamu dan panitia acara.</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </section>
 
                                     <section>
-                                        <h3 class="flex items-center gap-2 text-lg font-black text-slate-900">
+                                        <h3 class="flex items-center gap-2 text-lg font-black text-slate-950">
                                             <span class="h-5 w-1 rounded-full bg-[#c62828]"></span>
                                             Galeri Singkat
                                         </h3>
@@ -218,34 +221,34 @@
                                     </section>
                                 </div>
 
-                                <aside class="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 lg:sticky lg:top-24 sm:rounded-3xl sm:p-5">
+                                <aside class="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-24 sm:rounded-3xl sm:p-5">
                                     <div class="rounded-2xl bg-white p-4 shadow-sm">
                                         <div class="flex flex-col gap-3 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
-                                            <span class="shrink-0 text-sm font-semibold text-slate-500">Status Aset</span>
-                                            <span class="inline-flex items-center gap-2 text-sm font-bold text-slate-900">
+                                            <span class="shrink-0 text-sm font-semibold text-slate-600">Status Aset</span>
+                                            <span class="inline-flex items-center gap-2 text-sm font-bold text-slate-950">
                                                 <span class="h-2.5 w-2.5 rounded-full {{ $status['dot'] }}"></span>
                                                 {{ $status['label'] }}
                                             </span>
                                         </div>
-                                        <div class="mt-4 space-y-3 text-sm text-slate-600">
+                                        <div class="mt-4 space-y-3 text-sm text-slate-700">
                                             <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                                                 <span class="shrink-0">Kategori</span>
-                                                <span class="break-words font-bold text-slate-900">{{ $kategoriNama }}</span>
+                                                <span class="break-words font-bold text-slate-950">{{ $kategoriNama }}</span>
                                             </div>
                                             <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                                                 <span class="shrink-0">Kapasitas</span>
-                                                <span class="font-bold text-slate-900">{{ $kapasitas }}</span>
+                                                <span class="font-bold text-slate-950">{{ $kapasitas }}</span>
                                             </div>
                                             <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                                                 <span class="shrink-0">Harga Satuan</span>
-                                                <span id="harga_satuan_info" class="font-black text-slate-500">Pilih tipe sewa</span>
+                                                <span id="harga_satuan_info" class="font-black text-slate-700">Pilih tipe sewa</span>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
                                         <p class="font-bold">Catatan booking</p>
-                                        <p class="mt-2 break-words leading-6">Booking anda akan langsung diubah jadwaljika ada acara dinas dadakan.</p>
+                                        <p class="mt-2 break-words leading-6">Booking anda dapat disesuaikan jika ada agenda dinas mendadak.</p>
                                     </div>
                                 </aside>
                             </div>
@@ -259,11 +262,11 @@
                             <div class="border-b border-slate-100 p-5 sm:p-6">
                                 <div class="flex items-baseline justify-between gap-4">
                                     <div>
-                                        <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-400">Booking Awal</p>
-                                        <h3 class="mt-2 text-xl font-black text-slate-900">Form Permohonan Sewa</h3>
+                                        <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-500">Booking Awal</p>
+                                        <h3 class="mt-2 text-xl font-black text-slate-950">Form Permohonan Sewa</h3>
                                     </div>
                                     <div class="text-right">
-                                        <p class="text-xs font-semibold text-slate-400">Biaya Sewa</p>
+                                        <p class="text-xs font-semibold text-slate-500">Biaya Sewa</p>
                                         <p id="harga_satuan_badge" class="text-2xl font-black text-emerald-600">Gratis</p>
                                     </div>
                                 </div>
@@ -275,8 +278,8 @@
                                 <input type="hidden" name="fasilitas_id" value="{{ old('fasilitas_id', $fasilitasId) }}">
 
                                 <div>
-                                    <label for="tipe_sewa_id" class="mb-1.5 block text-sm font-bold text-slate-700">Tipe Sewa</label>
-                                    <select id="tipe_sewa_id" name="tipe_sewa_id" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                    <label for="tipe_sewa_id" class="mb-1.5 block text-sm font-bold text-slate-800">Tipe Sewa</label>
+                                    <select id="tipe_sewa_id" name="tipe_sewa_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
                                         <option value="">Pilih tipe sewa</option>
                                         @forelse (($tipeSewas ?? []) as $tipeSewa)
                                             <option value="{{ $tipeSewa->id }}" @selected(old('tipe_sewa_id') == $tipeSewa->id)>{{ $tipeSewa->nama_tipe }}</option>
@@ -287,8 +290,8 @@
                                 </div>
 
                                 <div>
-                                    <label for="kegiatan_id" class="mb-1.5 block text-sm font-bold text-slate-700">Kegiatan</label>
-                                    <select id="kegiatan_id" name="kegiatan_id" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                    <label for="kegiatan_id" class="mb-1.5 block text-sm font-bold text-slate-800">Kegiatan</label>
+                                    <select id="kegiatan_id" name="kegiatan_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
                                         <option value="">Pilih kegiatan</option>
                                         @forelse (($kegiatans ?? []) as $kegiatan)
                                             <option value="{{ $kegiatan->id }}" @selected(old('kegiatan_id') == $kegiatan->id)>{{ $kegiatan->nama_kegiatan }}</option>
@@ -300,20 +303,20 @@
 
                                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
-                                        <label for="tanggal_sewa" class="mb-1.5 block text-sm font-bold text-slate-700">Tanggal Mulai</label>
-                                        <input id="tanggal_sewa" name="tanggal_sewa" type="date" value="{{ old('tanggal_sewa') }}" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                        <label for="tanggal_sewa" class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Mulai</label>
+                                        <input id="tanggal_sewa" name="tanggal_sewa" type="date" value="{{ old('tanggal_sewa') }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
                                     </div>
 
                                     <div>
-                                        <label for="durasi_hari" class="mb-1.5 block text-sm font-bold text-slate-700">Durasi Hari</label>
-                                        <input id="durasi_hari" name="durasi_hari" type="number" min="1" value="{{ old('durasi_hari', 1) }}" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                        <label for="durasi_hari" class="mb-1.5 block text-sm font-bold text-slate-800">Durasi Hari</label>
+                                        <input id="durasi_hari" name="durasi_hari" type="number" min="1" value="{{ old('durasi_hari', 1) }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label for="tanggal_selesai" class="mb-1.5 block text-sm font-bold text-slate-700">Tanggal Selesai</label>
-                                    <input id="tanggal_selesai" type="date" value="{{ old('tanggal_selesai') }}" class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-800" readonly>
-                                    <p class="mt-2 text-xs text-slate-500">Tanggal selesai dihitung otomatis dari tanggal mulai dan durasi.</p>
+                                    <label for="tanggal_selesai" class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Selesai</label>
+                                    <input id="tanggal_selesai" type="date" value="{{ old('tanggal_selesai') }}" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900" readonly>
+                                    <p class="mt-2 text-xs text-slate-600">Tanggal selesai dihitung otomatis dari tanggal mulai dan durasi.</p>
                                 </div>
 
                                 <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#c62828] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#c62828]/20 transition hover:bg-[#b71c1c]">
@@ -324,18 +327,18 @@
                         </div>
 
                         <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-5">
-                            <h4 class="flex items-center gap-2 text-sm font-black text-slate-900">
+                            <h4 class="flex items-center gap-2 text-sm font-black text-slate-950">
                                 <span class="material-symbols-outlined text-[#c62828]">gavel</span>
                                 Ketentuan Singkat
                             </h4>
-                            <ul class="mt-4 space-y-3 text-sm text-slate-600">
+                            <ul class="mt-4 space-y-3 text-sm text-slate-700">
                 
                                 <li class="flex items-start gap-2">
-                                    <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300"></span>
+                                    <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
                                     Dilarang merusak properti gedung.
                                 </li>
                                 <li class="flex items-start gap-2">
-                                    <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300"></span>
+                                    <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
                                     Izin keramaian diurus oleh penyewa.
                                 </li>
                             </ul>

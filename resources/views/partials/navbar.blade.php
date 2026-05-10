@@ -7,8 +7,8 @@
                 class="h-11 w-11 rounded-full bg-white/90 object-contain p-1 shadow-sm"
             />
             <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-yellow-100">Pemerintah Kota Blitar</p>
-                <h1 class="text-lg font-bold text-white">Dinas Kebudayaan dan Pariwisata</h1>
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-yellow-100">SELARAS</p>
+                <h1 class="text-lg font-bold text-white">DISBUDPAR</h1>
             </div>
         </a>
 

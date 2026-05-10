@@ -62,14 +62,10 @@
                 <div class="hero-overlay absolute inset-0"></div>
 
                 <div class="relative z-10 px-6 py-16 sm:px-10 sm:py-20 lg:px-14">
-                    <p class="rise-up text-sm font-semibold uppercase tracking-[0.2em] text-yellow-200">Sistem Layanan Aset</p>
+                    <p class="rise-up text-sm font-semibold uppercase tracking-[0.2em] text-yellow-200">SELARAS</p>
                     <h2 class="display-title rise-up rise-delay-1 mt-3 max-w-3xl text-4xl font-bold leading-tight text-white sm:text-5xl">
-                        Penyewaan Fasilitas Dinas Secara Transparan, Cepat, dan Akuntabel
+                        Sistem Penyewaan Fasilitas Dinas Secara Cepat dan Transparan
                     </h2>
-                    <p class="rise-up rise-delay-2 mt-5 max-w-2xl text-base text-white/90 sm:text-lg">
-                        Jelajahi fasilitas pemerintah Kota Blitar untuk kegiatan publik, komunitas, dan kebutuhan resmi lainnya.
-                    </p>
-
                 </div>
             </div>
         </section>
@@ -179,7 +175,12 @@
                         $isFilled = $bookingCount > 0;
                     @endphp
 
-                    <article class="rounded-xl border p-4 shadow-sm transition hover:-translate-y-0.5 {{ $isFilled ? 'border-amber-200 bg-amber-50/70' : 'border-emerald-200 bg-emerald-50/70' }}">
+                    <button
+                        type="button"
+                        data-jadwal-card
+                        data-date="{{ $key }}"
+                        class="w-full text-left rounded-xl border p-4 shadow-sm transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-red-200 {{ $isFilled ? 'border-amber-200 bg-amber-50/70' : 'border-emerald-200 bg-emerald-50/70' }}"
+                    >
                         <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">{{ $date->translatedFormat('D') }}</p>
                         <p class="mt-1 text-2xl font-extrabold text-[var(--brand-ink)]">{{ $day }}</p>
 
@@ -192,9 +193,160 @@
                                 Tersedia
                             </p>
                         @endif
-                    </article>
+                    </button>
                 @endfor
+            </div>
+
+            <div id="jadwal-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/55 p-4" role="dialog" aria-modal="true" aria-labelledby="jadwal-modal-title">
+                <div class="w-full max-w-3xl rounded-2xl bg-white shadow-2xl">
+                    <div class="flex items-start justify-between border-b border-slate-200 px-5 py-4">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-red)]">Detail Jadwal Reservasi</p>
+                            <h4 id="jadwal-modal-title" class="mt-1 text-lg font-bold text-slate-900">Memuat...</h4>
+                        </div>
+                        <button type="button" id="jadwal-modal-close" class="rounded-md p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700" aria-label="Tutup popup">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="max-h-[70vh] overflow-auto px-5 py-4">
+                        <p id="jadwal-modal-loading" class="text-sm font-medium text-slate-500">Memuat data booking...</p>
+                        <p id="jadwal-modal-error" class="hidden rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-700"></p>
+                        <div id="jadwal-modal-empty" class="hidden rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">
+                            Tidak ada booking pada tanggal ini.
+                        </div>
+                        <div id="jadwal-modal-list" class="hidden space-y-3"></div>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
+
+    @push('scripts')
+    <script>
+        (() => {
+            const modal = document.getElementById('jadwal-modal');
+            const closeButton = document.getElementById('jadwal-modal-close');
+            const title = document.getElementById('jadwal-modal-title');
+            const loading = document.getElementById('jadwal-modal-loading');
+            const error = document.getElementById('jadwal-modal-error');
+            const empty = document.getElementById('jadwal-modal-empty');
+            const list = document.getElementById('jadwal-modal-list');
+            const cards = document.querySelectorAll('[data-jadwal-card]');
+
+            const statusLabel = {
+                pending: 'Pending',
+                confirmed: 'Dikonfirmasi',
+                cancelled: 'Dibatalkan'
+            };
+
+            const statusClass = {
+                pending: 'bg-amber-100 text-amber-800',
+                confirmed: 'bg-emerald-100 text-emerald-800',
+                cancelled: 'bg-red-100 text-red-800'
+            };
+
+            const resetModal = () => {
+                loading.classList.remove('hidden');
+                error.classList.add('hidden');
+                empty.classList.add('hidden');
+                list.classList.add('hidden');
+                list.innerHTML = '';
+            };
+
+            const openModal = () => {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            };
+
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            };
+
+            const bookingShowBaseUrl = @json(route('booking.show', ['date' => '__DATE__']));
+
+            const buildItemHtml = (item) => {
+                const status = item.status_booking || 'pending';
+                const badgeClass = statusClass[status] || 'bg-slate-100 text-slate-700';
+                const badgeText = statusLabel[status] || status;
+
+                return '<article class="rounded-xl border border-slate-200 bg-slate-50 p-4">'
+                    + '<div class="mb-2 flex items-center justify-between gap-2">'
+                    + '<p class="text-sm font-bold text-slate-800">' + item.kode_booking + '</p>'
+                    + '<span class="rounded-full px-2 py-1 text-xs font-semibold ' + badgeClass + '">' + badgeText + '</span>'
+                    + '</div>'
+                    + '<div class="grid gap-2 text-sm text-slate-700 sm:grid-cols-2">'
+                    + '<p><span class="font-semibold text-slate-900">Pemesan:</span> ' + item.nama_pemesan + '</p>'
+                    + '<p><span class="font-semibold text-slate-900">Agenda:</span> ' + item.agenda + '</p>'
+                    + '<p><span class="font-semibold text-slate-900">Fasilitas:</span> ' + item.fasilitas + '</p>'
+                    + '<p><span class="font-semibold text-slate-900">Tipe Sewa:</span> ' + item.tipe_sewa + '</p>'
+                    + '<p><span class="font-semibold text-slate-900">Mulai:</span> ' + item.tanggal_sewa + '</p>'
+                    + '<p><span class="font-semibold text-slate-900">Selesai:</span> ' + item.tanggal_selesai + ' (' + item.durasi_hari + ' hari)</p>'
+                    + '</div>'
+                    + '</article>';
+            };
+
+            cards.forEach((card) => {
+                card.addEventListener('click', async () => {
+                    const date = card.getAttribute('data-date');
+
+                    if (!date) {
+                        return;
+                    }
+
+                    openModal();
+                    resetModal();
+
+                    try {
+                        const response = await fetch(bookingShowBaseUrl.replace('__DATE__', date), {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+
+                        const payload = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(payload.message || 'Gagal mengambil detail booking.');
+                        }
+
+                        title.textContent = 'Jadwal ' + payload.tanggal_label;
+                        loading.classList.add('hidden');
+
+                        if (!payload.bookings || payload.bookings.length === 0) {
+                            empty.classList.remove('hidden');
+                            return;
+                        }
+
+                        list.innerHTML = payload.bookings.map(buildItemHtml).join('');
+                        list.classList.remove('hidden');
+                    } catch (exception) {
+                        loading.classList.add('hidden');
+                        error.textContent = exception.message || 'Terjadi kesalahan saat memuat data.';
+                        error.classList.remove('hidden');
+                        title.textContent = 'Detail Jadwal Reservasi';
+                    }
+                });
+            });
+
+            closeButton.addEventListener('click', closeModal);
+
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeModal();
+                }
+            });
+        })();
+    </script>
+    @endpush
 </x-app-layout>

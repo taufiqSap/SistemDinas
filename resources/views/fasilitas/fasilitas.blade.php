@@ -7,6 +7,14 @@
 		.material-symbols-outlined {
 			font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
 		}
+
+		.facility-section {
+			background: linear-gradient(180deg, #fff7f7 0%, #ffffff 34%, #ffffff 100%);
+		}
+
+		.facility-hero {
+			box-shadow: 0 18px 60px rgba(198, 40, 40, 0.12);
+		}
 	</style>
 @endpush
 
@@ -18,27 +26,33 @@
 		</div>
 	</x-slot>
 
-	<section class="min-h-screen bg-slate-50 py-10">
+	<section class="facility-section min-h-screen py-10">
 		<div class="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
-			<div class="mb-10 rounded-2xl bg-gradient-to-r from-[#c62828] to-[#8e1717] px-6 py-8 text-white shadow-xl md:px-10">
+			<div class="facility-hero mb-10 rounded-3xl bg-gradient-to-r from-[#c62828] to-[#8e1717] px-6 py-8 text-white md:px-10">
 				<p class="text-xs font-semibold uppercase tracking-[0.25em] text-yellow-200">Portal Penyewaan Aset</p>
 				<h1 class="mt-3 text-3xl font-black leading-tight md:text-5xl">Temukan Fasilitas untuk Acara Anda</h1>
-				<p class="mt-4 max-w-3xl text-sm leading-relaxed text-white/90 md:text-base">
+				<p class="mt-4 max-w-3xl text-sm leading-relaxed text-white/95 md:text-base">
 					Jelajahi gedung dan ruangan yang tersedia, lalu pilih aset untuk langsung lanjut ke form booking.
 				</p>
 			</div>
 
-			<form method="GET" action="{{ route('fasilitas.index') }}" class="sticky top-24 z-30 mb-10 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm backdrop-blur md:p-5">
+			<form method="GET" action="{{ route('fasilitas.index') }}" class="sticky top-24 z-30 mb-10 rounded-2xl border border-red-100 bg-white p-4 shadow-sm md:p-5">
 				<div class="flex flex-col gap-4 lg:flex-row lg:items-center">
 					<div class="relative flex-1">
-						<span class="material-symbols-outlined pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+						<span class="material-symbols-outlined pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">search</span>
 						<input
 							type="text"
 							name="q"
 							value="{{ $filters['q'] }}"
 							placeholder="Cari nama fasilitas atau kategori..."
-							class="w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-12 pr-4 text-sm text-slate-800 focus:border-[#c62828] focus:ring-[#c62828]"
+							class="w-full rounded-xl border border-slate-200 bg-white py-3.5 pl-12 pr-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#c62828] focus:ring-[#c62828]"
 						>
+					</div>
+
+					<div class="flex shrink-0 items-center gap-2">
+						<button type="submit" class="inline-flex items-center justify-center rounded-xl bg-[#c62828] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#a81f1f]">
+							Cari
+						</button>
 					</div>
 				</div>
 			</form>
@@ -71,26 +85,26 @@
 							</div>
 
 							<div class="flex flex-1 flex-col p-5">
-								<p class="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">{{ $item->nama_kategori ?? 'Tanpa Kategori' }}</p>
+								<p class="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">{{ $item->nama_kategori ?? 'Tanpa Kategori' }}</p>
 								<h3 class="mb-3 text-lg font-extrabold leading-tight text-slate-900 transition group-hover:text-[#c62828]">{{ $item->nama_fasilitas }}</h3>
 
-								<div class="mb-4 space-y-2 text-sm text-slate-600">
+								<div class="mb-4 space-y-2 text-sm text-slate-700">
 									<div class="flex items-center gap-2">
 										<span class="material-symbols-outlined text-[19px] text-[#c62828]">groups</span>
 										<span>Kapasitas {{ $item->kapasitas }}</span>
 									</div>
-									<p class="line-clamp-2 text-slate-500">{{ $item->deskripsi ?: 'Belum ada deskripsi fasilitas.' }}</p>
+									<p class="line-clamp-2 text-slate-600">{{ $item->deskripsi ?: 'Belum ada deskripsi fasilitas.' }}</p>
 								</div>
 
 								<div class="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
 									<div>
-										<p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Biaya Sewa</p>
+										<p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Biaya Sewa</p>
 										<p class="text-lg font-black text-emerald-600">Gratis</p>
 									</div>
 
 									<a
 										href="{{ route('fasilitas.show', ['id' => $item->id]) }}"
-										class="inline-flex items-center justify-center rounded-full bg-slate-100 p-2.5 text-[#c62828] transition hover:bg-[#c62828] hover:text-white"
+									class="inline-flex items-center justify-center rounded-full bg-red-50 p-2.5 text-[#c62828] transition hover:bg-[#c62828] hover:text-white"
 										title="Lihat detail fasilitas"
 									>
 										<span class="material-symbols-outlined">arrow_forward</span>

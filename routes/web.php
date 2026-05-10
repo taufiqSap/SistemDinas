@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Schema;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+Route::get('/booking/show/{date}', [BookingController::class, 'show'])->name('booking.show');
 
 Route::get('/dashboard', function () {
     $dashboardData = Cache::remember('admin.dashboard.summary', now()->addSeconds(60), function () {

@@ -7,6 +7,7 @@ use App\Models\Fasilitas;
 use App\Models\Kegiatan;
 use App\Models\TipeSewa;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,50 @@ use Illuminate\Support\Facades\Schema;
 
 class Booking extends Controller
 {
+    public function show(string $date): JsonResponse
+    {
+        try {
+            $selectedDate = Carbon::createFromFormat('Y-m-d', $date)->startOfDay();
+        } catch (\Throwable $exception) {
+            return response()->json([
+                'message' => 'Format tanggal tidak valid.',
+            ], 422);
+        }
+
+        $bookings = BookingModel::query()
+            ->where('status_booking', '!=', 'cancelled')
+            ->whereDate('tanggal_sewa', '<=', $selectedDate->toDateString())
+            ->whereDate('tanggal_selesai', '>=', $selectedDate->toDateString())
+            ->with([
+                'user:id,nama',
+                'fasilitas:id,nama_fasilitas',
+                'tipeSewa:id,nama_tipe',
+                'kegiatan:id,nama_kegiatan',
+            ])
+            ->orderBy('tanggal_sewa')
+            ->get()
+            ->map(function (BookingModel $booking) {
+                return [
+                    'kode_booking' => $booking->kode_booking,
+                    'nama_pemesan' => $booking->user?->nama ?? '-',
+                    'agenda' => $booking->kegiatan?->nama_kegiatan ?? '-',
+                    'fasilitas' => $booking->fasilitas?->nama_fasilitas ?? '-',
+                    'tipe_sewa' => $booking->tipeSewa?->nama_tipe ?? '-',
+                    'tanggal_sewa' => Carbon::parse($booking->tanggal_sewa)->translatedFormat('d F Y'),
+                    'tanggal_selesai' => Carbon::parse($booking->tanggal_selesai)->translatedFormat('d F Y'),
+                    'durasi_hari' => (int) $booking->durasi_hari,
+                    'status_booking' => $booking->status_booking,
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'tanggal' => $selectedDate->toDateString(),
+            'tanggal_label' => $selectedDate->translatedFormat('d F Y'),
+            'bookings' => $bookings,
+        ]);
+    }
+
     public function history(Request $request)
     {
         $query = BookingModel::query()

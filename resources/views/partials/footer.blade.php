@@ -64,8 +64,7 @@
         <div class="flex flex-col items-center justify-between gap-4 border-t border-slate-800 pt-8 md:flex-row">
             <p class="text-sm text-slate-500">© {{ date('Y') }} Dinas Kebudayaan dan Pariwisata Kota Blitar. All rights reserved.</p>
             <div class="flex gap-6 text-sm text-slate-500">
-                <a href="#" class="transition-colors hover:text-[#dc2626]">Kebijakan Privasi</a>
-                <a href="#" class="transition-colors hover:text-[#dc2626]">Syarat &amp; Ketentuan</a>
+
             </div>
         </div>
     </div>

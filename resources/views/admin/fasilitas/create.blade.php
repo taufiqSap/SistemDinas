@@ -1,12 +1,12 @@
 <x-admin-layout title="Tambah Fasilitas">
-    <section class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-slate-950/30 backdrop-blur-xl">
+    <section class="rounded-3xl border border-red-100 bg-white p-6 shadow-sm shadow-red-100/60">
         <div class="mb-6">
-            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200/80">Master Data</p>
-            <h2 class="mt-2 text-2xl font-bold text-white">Tambah Fasilitas</h2>
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-red-500">Master Data</p>
+            <h2 class="mt-2 text-2xl font-bold text-slate-950">Tambah Fasilitas</h2>
         </div>
 
         @if ($errors->any())
-            <div class="mb-6 rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
+            <div class="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
                 <ul class="list-disc ps-5 space-y-1">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
