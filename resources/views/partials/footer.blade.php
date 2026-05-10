@@ -1,6 +1,6 @@
 <footer class="mt-12 border-t-4 border-[#dc2626] bg-[#111921] pb-8 pt-16 text-white">
     <div class="mx-auto max-w-[1280px] px-4 lg:px-10">
-        <div class="mb-12 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
+        <div class="mb-12 grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-2">
             <div class="space-y-6">
                 <div class="flex items-center gap-3">
                     <div class="h-12 w-12 shrink-0 rounded-md bg-white p-1">
@@ -16,32 +16,10 @@
                     </div>
                 </div>
                 <p class="text-sm leading-relaxed text-slate-400">
-                    Platform resmi penyewaan aset daerah Kota Blitar. Mewujudkan tata kelola aset yang transparan dan akuntabel.
+                    Platform resmi penyewaan aset daerah Kota Blitar. Mewujudkan tata kelola aset yang transparan dan cepat.
                 </p>
             </div>
-
-            <div class="lg:justify-self-center">
-                <h4 class="relative mb-6 inline-block text-lg font-bold after:absolute after:-bottom-2 after:left-0 after:h-0.5 after:w-8 after:bg-[#dc2626]">Menu Utama</h4>
-                <ul class="space-y-3 text-sm text-slate-400">
-                    <li class="flex items-center gap-2">
-                        <span aria-hidden="true">›</span>
-                        <a href="{{ route('home') }}" class="transition-colors hover:text-[#dc2626]">Beranda</a>
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span aria-hidden="true">›</span>
-                        <a href="{{ route('fasilitas.index') }}" class="transition-colors hover:text-[#dc2626]">Katalog Aset</a>
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span aria-hidden="true">›</span>
-                        <a href="{{ route('home') }}#jadwal" class="transition-colors hover:text-[#dc2626]">Cek Jadwal</a>
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <span aria-hidden="true">›</span>
-                        <a href="{{ route('fasilitas.index') }}" class="transition-colors hover:text-[#dc2626]">Prosedur Sewa</a>
-                    </li>
-                </ul>
-            </div>
-
+            
             <div class="lg:justify-self-end lg:max-w-sm">
                 <h4 class="relative mb-6 inline-block text-lg font-bold after:absolute after:-bottom-2 after:left-0 after:h-0.5 after:w-8 after:bg-[#dc2626]">Hubungi Kami</h4>
                 <ul class="space-y-4 text-sm text-slate-400">
