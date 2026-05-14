@@ -54,7 +54,7 @@
                             <span class="material-symbols-outlined text-3xl text-white">lock_person</span>
                         </div>
                         <h1 class="text-2xl font-extrabold tracking-tight text-white">Selamat Datang</h1>
-                        <p class="mt-1 text-sm text-white/75">Masuk untuk menyewa aset kota Blitar</p>
+                        <p class="mt-1 text-sm text-white/75">Masuk untuk menyewa aset DISBUDPAR</p>
                     </div>
 
                     <div class="border-b border-gray-100 px-8">
