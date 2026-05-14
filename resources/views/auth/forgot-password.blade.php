@@ -35,10 +35,47 @@
             .animate-fadein-delay { animation: fadein 0.5s 0.15s ease both; }
             .animate-fadein-delay2 { animation: fadein 0.5s 0.3s ease both; }
             .animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
+            @keyframes slideInDown {
+                0% { opacity: 0; transform: scale(0.9) translateY(-30px); }
+                100% { opacity: 1; transform: scale(1) translateY(0); }
+            }
+            @keyframes slideOutUp {
+                0% { opacity: 1; transform: scale(1) translateY(0); }
+                100% { opacity: 0; transform: scale(0.9) translateY(-30px); }
+            }
+            @keyframes scaleCheckmark {
+                0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+                50% { transform: scale(1.2) rotate(0deg); }
+                100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            }
+            .toast-enter { animation: slideInDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+            .toast-exit { animation: slideOutUp 0.4s ease-in forwards; }
+            .checkmark-animate { animation: scaleCheckmark 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
         </style>
     @endpush
 
     <div class="bg-[#F5F5F0] text-gray-900 antialiased">
+        <!-- Success Modal Notification -->
+        @if (session('status'))
+            <div id="successToast" class="toast-enter fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+                <div class="relative flex flex-col items-center gap-4 rounded-2xl bg-white px-8 py-8 shadow-2xl max-w-sm w-full">
+                    <div class="flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                        <svg class="checkmark-animate h-8 w-8 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xl font-bold text-gray-800">Berhasil Terkirim!</p>
+                        <p class="mt-2 text-sm text-gray-600">Periksa email Anda untuk tautan reset kata sandi</p>
+                    </div>
+                    <button onclick="closeToast()" class="mt-2 rounded-lg bg-green-50 px-6 py-2 text-sm font-semibold text-green-700 hover:bg-green-100 transition">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        @endif
+
         <main class="relative flex min-h-[calc(100vh-80px)] items-center justify-center p-4 py-12">
             <div class="absolute inset-0 z-0">
                 <img alt="Landmark Kota Blitar" class="h-full w-full object-cover" src="{{ asset('images/bg.png') }}" />
@@ -64,8 +101,6 @@
                     </div>
 
                     <div class="px-8 py-6">
-                        <x-auth-session-status class="mb-4 rounded-lg bg-green-50 p-3 text-sm font-medium text-green-700" :status="session('status')" />
-
                         <form method="POST" action="{{ route('password.email') }}" class="flex flex-col gap-5">
                             @csrf
 
@@ -111,4 +146,24 @@
             </div>
         </main>
     </div>
+
+    @push('scripts')
+        <script>
+            function closeToast() {
+                const toast = document.getElementById('successToast');
+                if (toast) {
+                    toast.classList.remove('toast-enter');
+                    toast.classList.add('toast-exit');
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 400);
+                }
+            }
+
+            // Auto close toast after 5 seconds
+            if (document.getElementById('successToast')) {
+                setTimeout(closeToast, 5000);
+            }
+        </script>
+    @endpush
 </x-guest-layout>
