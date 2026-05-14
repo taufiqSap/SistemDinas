@@ -35,10 +35,47 @@
             .animate-fadein-delay { animation: fadein 0.5s 0.15s ease both; }
             .animate-fadein-delay2 { animation: fadein 0.5s 0.3s ease both; }
             .animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
+            @keyframes modalScaleIn {
+                0% { opacity: 0; transform: translateY(-18px) scale(0.96); }
+                100% { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            @keyframes modalScaleOut {
+                0% { opacity: 1; transform: translateY(0) scale(1); }
+                100% { opacity: 0; transform: translateY(-18px) scale(0.96); }
+            }
+            @keyframes scaleCheckmark {
+                0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+                50% { transform: scale(1.2) rotate(0deg); }
+                100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            }
+            .modal-enter { animation: modalScaleIn 0.32s ease-out both; }
+            .modal-exit { animation: modalScaleOut 0.24s ease-in both; }
+            .checkmark-scale { animation: scaleCheckmark 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
         </style>
     @endpush
 
     <div class="bg-[#F5F5F0] text-gray-900 antialiased">
+        @if(session('password_reset_success'))
+            <div id="resetSuccessModal" class="modal-enter fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div class="absolute inset-0 bg-slate-950/40 backdrop-blur-md"></div>
+                <div class="relative w-full max-w-sm overflow-hidden rounded-3xl bg-white shadow-2xl">
+                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100/50 px-8 pt-10 pb-8 text-center">
+                        <div class="mx-auto mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100">
+                            <svg class="checkmark-scale h-10 w-10 text-emerald-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-900">Password Berhasil Diganti</h2>
+                        <p class="mt-3 text-sm text-slate-600 leading-relaxed">Kata sandi Anda telah diubah dengan aman. Silakan masuk kembali menggunakan password baru Anda.</p>
+                    </div>
+                    <div class="px-8 py-6">
+                        <button onclick="closeResetModal()" class="flex h-12 w-full items-center justify-center rounded-xl bg-[#FFD700] text-sm font-bold uppercase tracking-wide text-slate-900 shadow-lg transition-all hover:brightness-105 active:scale-[0.98]">
+                            Lanjutkan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
         <main class="relative flex min-h-[calc(100vh-80px)] items-center justify-center p-4 py-12">
             <div class="absolute inset-0 z-0">
                 <img alt="Landmark Kota Blitar" class="h-full w-full object-cover" src="{{ asset('images/bg.png') }}" />
@@ -64,7 +101,9 @@
                     </div>
 
                     <div class="px-8 py-6">
-                        <x-auth-session-status class="mb-4 text-sm font-medium text-green-600" :status="session('status')" />
+                        @unless(session('password_reset_success'))
+                            <x-auth-session-status class="mb-4 text-sm font-medium text-green-600" :status="session('status')" />
+                        @endunless
 
                         <form method="POST" action="{{ route('login') }}" class="flex flex-col gap-5">
                             @csrf
@@ -129,6 +168,21 @@
                 input.type = input.type === 'password' ? 'text' : 'password';
                 icon.textContent = input.type === 'password' ? 'visibility' : 'visibility_off';
             }
+
+            function closeResetModal() {
+                const modal = document.getElementById('resetSuccessModal');
+                if (!modal) return;
+                modal.classList.remove('modal-enter');
+                modal.classList.add('modal-exit');
+                setTimeout(() => modal.remove(), 240);
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const modal = document.getElementById('resetSuccessModal');
+                if (modal) {
+                    setTimeout(closeResetModal, 3800);
+                }
+            });
         </script>
     @endpush
 </x-guest-layout>
