@@ -173,7 +173,7 @@ class Booking extends Controller
             ]);
         });
 
-        return redirect()->route('booking.create')->with('success', 'Booking gratis berhasil dibuat.');
+        return redirect()->back()->with('success', 'Booking gratis berhasil dibuat.');
     }
 
     private function resolveBookingSummary(array $validated): array

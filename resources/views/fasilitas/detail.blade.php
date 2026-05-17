@@ -35,14 +35,14 @@
             'maintenance' => ['label' => 'Perawatan', 'badge' => 'bg-slate-500', 'dot' => 'bg-slate-500'],
         ];
 
-        $namaFasilitas = data_get($fasilitas, 'nama_fasilitas', 'Gedung Kesenian Aryo Blitar');
-        $kategoriNama = data_get($fasilitas, 'kategori.nama_kategori', 'Gedung Pertemuan');
+        $namaFasilitas = data_get($fasilitas, 'nama_fasilitas', '');
+        $kategoriNama = data_get($fasilitas, 'kategori.nama_kategori', '');
         $statusFasilitas = data_get($fasilitas, 'status_fasilitas', 'available');
         $status = $statusMap[$statusFasilitas] ?? ['label' => 'Tidak Diketahui', 'badge' => 'bg-slate-500', 'dot' => 'bg-slate-500'];
-        $kapasitas = data_get($fasilitas, 'kapasitas', '500 Orang');
-        $deskripsi = data_get($fasilitas, 'deskripsi', 'Gedung representatif untuk acara resmi, pertunjukan, dan kegiatan masyarakat dengan akses mudah serta fasilitas yang memadai.');
-        $spesifikasi = data_get($fasilitas, 'spesifikasi', 'Luas area representatif, area parkir memadai, sistem tata suara, pencahayaan, dan akses utama yang mudah dijangkau.');
-        $alamat = data_get($fasilitas, 'alamat', 'Alamat belum tersedia');
+        $kapasitas = data_get($fasilitas, 'kapasitas', '');
+        $deskripsi = data_get($fasilitas, 'deskripsi', '');
+        $spesifikasi = data_get($fasilitas, 'spesifikasi', '');
+        $alamat = data_get($fasilitas, 'alamat', '');
         $gambarUtama = data_get($fasilitas, 'gambar_fasilitas_url');
         $fasilitasId = data_get($fasilitas, 'id');
     @endphp
@@ -66,22 +66,27 @@
     <section class="bg-gradient-to-b from-slate-50 to-white py-5 sm:py-8">
         <div class="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
             @if (session('success'))
-                <div id="booking-success-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                    <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-                        <div class="flex items-start gap-3">
-                            <span class="material-symbols-outlined mt-0.5 text-3xl text-emerald-600">check_circle</span>
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-900">Booking berhasil dibuat</h3>
-                                <p class="mt-2 text-sm leading-6 text-slate-600">
-                                    Tunggu konfirmasi admin. Anda akan mendapatkan notifikasi WA.
+                <div id="booking-success-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="booking-success-title">
+                    <div class="w-full max-w-[92vw] overflow-hidden rounded-2xl bg-white shadow-2xl sm:max-w-md">
+                        <div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:p-6">
+                            <div class="flex items-center justify-center sm:block">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-12 w-12 text-emerald-600 sm:h-14 sm:w-14" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="9" stroke-width="1.5" class="text-emerald-600" fill="#ecfdf5" />
+                                    <path d="M9 12.5l1.8 1.8L15 10" stroke="#059669" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                            <div class="min-w-0 flex-1 text-center sm:text-left">
+                                <h3 id="booking-success-title" class="text-base font-bold text-slate-900 sm:text-lg">Booking berhasil dibuat</h3>
+                                <p class="mt-2 text-sm leading-6 text-slate-600 sm:text-[15px]">
+                                    Anda akan menerima pesan konfirmasi dari admin.
                                 </p>
                             </div>
                         </div>
 
-                        <div class="mt-5 flex justify-end">
-                            <button id="close-booking-success-popup" type="button" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+                        <div class="flex flex-col gap-2 border-t border-slate-100 p-4 sm:flex-row sm:justify-end sm:p-6">
+                            <a href="{{ route('fasilitas.index') }}" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 sm:w-auto">
                                 Oke
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -153,55 +158,6 @@
                                         <div class="mt-4 space-y-4 text-sm leading-7 text-slate-700 md:text-base">
                                             <p>{{ $deskripsi }}</p>
                                             <p>{{ $spesifikasi }}</p>
-                                        </div>
-                                    </section>
-
-                                    <section>
-                                        <h3 class="flex items-center gap-2 text-lg font-black text-slate-950">
-                                            <span class="h-5 w-1 rounded-full bg-[#c62828]"></span>
-                                            Fasilitas Utama
-                                        </h3>
-
-                                        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                            <div class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                                                <div class="rounded-xl bg-red-50 p-3 text-[#c62828]">
-                                                    <span class="material-symbols-outlined">ac_unit</span>
-                                                </div>
-                                                <div>
-                                                    <h4 class="text-sm font-bold text-slate-950">Pendingin Ruangan</h4>
-                                                    <p class="mt-1 text-xs leading-5 text-slate-600">Area utama nyaman untuk kegiatan formal dan nonformal.</p>
-                                                </div>
-                                            </div>
-
-                                            <div class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                                                <div class="rounded-xl bg-red-50 p-3 text-[#c62828]">
-                                                    <span class="material-symbols-outlined">speaker</span>
-                                                </div>
-                                                <div>
-                                                    <h4 class="text-sm font-bold text-slate-950">Sistem Audio</h4>
-                                                    <p class="mt-1 text-xs leading-5 text-slate-600">Mendukung seminar, rapat, dan acara pertunjukan.</p>
-                                                </div>
-                                            </div>
-
-                                            <div class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                                                <div class="rounded-xl bg-red-50 p-3 text-[#c62828]">
-                                                    <span class="material-symbols-outlined">podium</span>
-                                                </div>
-                                                <div>
-                                                    <h4 class="text-sm font-bold text-slate-950">Panggung / Area Utama</h4>
-                                                    <p class="mt-1 text-xs leading-5 text-slate-600">Cocok untuk kegiatan seremonial maupun hiburan.</p>
-                                                </div>
-                                            </div>
-
-                                            <div class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                                                <div class="rounded-xl bg-red-50 p-3 text-[#c62828]">
-                                                    <span class="material-symbols-outlined">local_parking</span>
-                                                </div>
-                                                <div>
-                                                    <h4 class="text-sm font-bold text-slate-950">Area Parkir</h4>
-                                                    <p class="mt-1 text-xs leading-5 text-slate-600">Mendukung mobilitas tamu dan panitia acara.</p>
-                                                </div>
-                                            </div>
                                         </div>
                                     </section>
 
@@ -320,8 +276,8 @@
                                 </div>
 
                                 <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#c62828] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#c62828]/20 transition hover:bg-[#b71c1c]">
-                                    <span class="material-symbols-outlined">check_circle</span>
-                                    Ajukan Booking Gratis
+                                    <span class="material-symbols-outlined"></span>
+                                    Ajukan Booking 
                                 </button>
                             </form>
                         </div>
@@ -399,17 +355,12 @@
             setTanggalSelesai();
 
             const successPopup = document.getElementById('booking-success-popup');
-            const closeSuccessPopupBtn = document.getElementById('close-booking-success-popup');
+            const fasilitasUrl = @json(route('fasilitas.index'));
 
-            if (successPopup && closeSuccessPopupBtn) {
-                const closePopup = () => {
-                    successPopup.classList.add('hidden');
-                };
-
-                closeSuccessPopupBtn.addEventListener('click', closePopup);
+            if (successPopup) {
                 successPopup.addEventListener('click', (event) => {
                     if (event.target === successPopup) {
-                        closePopup();
+                        window.location.href = fasilitasUrl;
                     }
                 });
             }

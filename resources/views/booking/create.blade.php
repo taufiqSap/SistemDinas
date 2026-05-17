@@ -13,20 +13,25 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     @if (session('success'))
-                        <div id="booking-success-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                            <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-                                <div class="flex items-start gap-3">
-                                    <span class="material-symbols-outlined mt-0.5 text-3xl text-emerald-600">check_circle</span>
-                                    <div>
-                                        <h3 class="text-lg font-bold text-slate-900">Booking berhasil dibuat</h3>
-                                        <p class="mt-2 text-sm leading-6 text-slate-600">
+                        <div id="booking-success-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="booking-success-title">
+                            <div class="w-full max-w-[92vw] overflow-hidden rounded-2xl bg-white shadow-2xl sm:max-w-md">
+                                <div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:p-6">
+                                    <div class="flex items-center justify-center sm:block">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-12 w-12 text-emerald-600 sm:h-14 sm:w-14" fill="none" stroke="currentColor">
+                                            <circle cx="12" cy="12" r="9" stroke-width="1.5" class="text-emerald-600" fill="#ecfdf5" />
+                                            <path d="M9 12.5l1.8 1.8L15 10" stroke="#059669" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <div class="min-w-0 flex-1 text-center sm:text-left">
+                                        <h3 id="booking-success-title" class="text-base font-bold text-slate-900 sm:text-lg">Booking berhasil dibuat</h3>
+                                        <p class="mt-2 text-sm leading-6 text-slate-600 sm:text-[15px]">
                                             Tunggu konfirmasi admin. Anda akan mendapatkan notifikasi WA.
                                         </p>
                                     </div>
                                 </div>
 
-                                <div class="mt-5 flex justify-end">
-                                    <button id="close-booking-success-popup" type="button" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+                                <div class="flex flex-col gap-2 border-t border-slate-100 p-4 sm:flex-row sm:justify-end sm:p-6">
+                                    <button id="close-booking-success-popup" type="button" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 sm:w-auto">
                                         Oke
                                     </button>
                                 </div>
@@ -144,17 +149,11 @@
 
             const successPopup = document.getElementById('booking-success-popup');
             const closeSuccessPopupBtn = document.getElementById('close-booking-success-popup');
+            const fasilitasUrl = @json(route('fasilitas.index'));
 
             if (successPopup && closeSuccessPopupBtn) {
-                const closePopup = () => {
-                    successPopup.classList.add('hidden');
-                };
-
-                closeSuccessPopupBtn.addEventListener('click', closePopup);
-                successPopup.addEventListener('click', (event) => {
-                    if (event.target === successPopup) {
-                        closePopup();
-                    }
+                closeSuccessPopupBtn.addEventListener('click', () => {
+                    window.location.href = fasilitasUrl;
                 });
             }
         })();
