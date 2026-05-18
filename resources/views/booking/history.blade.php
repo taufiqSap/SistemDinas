@@ -38,10 +38,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="border-b border-gray-100 p-6">
                     <form method="GET" action="{{ route('booking.history') }}" class="grid gap-4 md:grid-cols-3">
-                        <div>
-                            <label for="q" class="mb-1.5 block text-sm font-semibold text-gray-700">Cari booking</label>
-                            <input id="q" name="q" type="text" value="{{ $filters['q'] ?? '' }}" placeholder="Kode, fasilitas, tipe, atau kegiatan" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        </div>
+                       
 
                         <div>
                             <label for="status" class="mb-1.5 block text-sm font-semibold text-gray-700">Status booking</label>
