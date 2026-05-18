@@ -186,7 +186,7 @@
 
                         @if ($isFilled)
                             <p class="mt-2 inline-flex rounded-full bg-amber-100 px-2 py-1 text-xs font-bold text-amber-800">
-                                Terisi ({{ $bookingCount }})
+                                Terisi
                             </p>
                         @else
                             <p class="mt-2 inline-flex rounded-full bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-800">
@@ -322,7 +322,20 @@
                             return;
                         }
 
-                        list.innerHTML = payload.bookings.map(buildItemHtml).join('');
+                        // Deduplicate bookings by pemesan (show only one per pemesan)
+                        const bookings = payload.bookings || [];
+                        const seen = new Set();
+                        const uniqueBookings = [];
+
+                        for (const b of bookings) {
+                            const key = b.nama_pemesan || b.user_id || b.kode_booking || JSON.stringify(b);
+                            if (!seen.has(key)) {
+                                seen.add(key);
+                                uniqueBookings.push(b);
+                            }
+                        }
+
+                        list.innerHTML = uniqueBookings.map(buildItemHtml).join('');
                         list.classList.remove('hidden');
                     } catch (exception) {
                         loading.classList.add('hidden');
