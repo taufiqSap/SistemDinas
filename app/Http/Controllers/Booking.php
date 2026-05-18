@@ -40,6 +40,7 @@ class Booking extends Controller
             ->map(function (BookingModel $booking) {
                 return [
                     'kode_booking' => $booking->kode_booking,
+                    'user_id' => $booking->user_id,
                     'nama_pemesan' => $booking->user?->nama ?? '-',
                     'agenda' => $booking->kegiatan?->nama_kegiatan ?? '-',
                     'fasilitas' => $booking->fasilitas?->nama_fasilitas ?? '-',
@@ -156,6 +157,25 @@ class Booking extends Controller
         ]);
 
         $bookingSummary = $this->resolveBookingSummary($validated);
+
+        // Validate conflicts: do not allow creating a booking that overlaps
+        // with existing bookings from OTHER users for the same facility.
+        $tanggalSewa = Carbon::parse($validated['tanggal_sewa'])->startOfDay();
+        $tanggalSelesai = Carbon::parse($bookingSummary['tanggal_selesai'])->startOfDay();
+
+        $conflictExists = BookingModel::query()
+            ->where('status_booking', '!=', 'cancelled')
+            ->where('fasilitas_id', $validated['fasilitas_id'])
+            ->where('user_id', '!=', $request->user()->id)
+            ->whereDate('tanggal_sewa', '<=', $tanggalSelesai->toDateString())
+            ->whereDate('tanggal_selesai', '>=', $tanggalSewa->toDateString())
+            ->exists();
+
+        if ($conflictExists) {
+            return redirect()->back()
+                ->withErrors(['tanggal_sewa' => 'Tanggal yang dipilih bentrok dengan booking pengguna lain.'])
+                ->withInput();
+        }
 
         DB::transaction(function () use ($request, $validated, $bookingSummary) {
             BookingModel::create([

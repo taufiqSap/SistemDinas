@@ -94,6 +94,14 @@
 										<span>Kapasitas {{ $item->kapasitas }}</span>
 									</div>
 									<p class="line-clamp-2 text-slate-600">{{ $item->deskripsi ?: 'Belum ada deskripsi fasilitas.' }}</p>
+									<div class="flex items-center gap-2 text-slate-600">
+										<span class="material-symbols-outlined text-[18px] text-[#c62828]">location_on</span>
+										<span class="line-clamp-1">{{ $item->alamat ?: 'Alamat belum tersedia.' }}</span>
+									</div>
+									<div class="flex items-center gap-2 text-slate-600">
+										<span class="material-symbols-outlined text-[18px] text-[#c62828]">info</span>
+										<span class="line-clamp-2">{{ $item->spesifikasi ?: 'Spesifikasi belum tersedia.' }}</span>
+									</div>
 								</div>
 
 								<div class="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">

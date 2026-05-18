@@ -106,37 +106,5 @@
                 </div>
             </div>
         </section>
-
-        <section class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-            <article class="rounded-3xl border border-red-100 bg-white p-6 shadow-sm shadow-red-100/60">
-                <p class="text-xs font-semibold uppercase tracking-[0.25em] text-red-500">Panduan cepat</p>
-                <h3 class="mt-2 text-2xl font-bold text-slate-900">Langkah kerja admin</h3>
-                <div class="mt-5 space-y-4 text-sm leading-6 text-slate-700">
-                    <p>1. Periksa booking yang masih pending sebelum jadwal berjalan.</p>
-                    <p>2. Cocokkan fasilitas dan kegiatan yang dipilih user dengan ketersediaan data master.</p>
-                    <p>3. Tetapkan status booking sesuai keputusan verifikasi lapangan.</p>
-                    <p>4. Gunakan menu profil untuk menyesuaikan akun admin bila diperlukan.</p>
-                </div>
-            </article>
-
-            <article class="rounded-3xl border border-red-100 bg-red-50 p-6 shadow-sm shadow-red-100/60">
-                <p class="text-xs font-semibold uppercase tracking-[0.25em] text-red-500">Status sistem</p>
-                <h3 class="mt-2 text-2xl font-bold text-slate-900">Sumber data aktif</h3>
-                <dl class="mt-5 space-y-4 text-sm text-slate-700">
-                    <div class="flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-3 shadow-sm">
-                        <dt>Total booking</dt>
-                        <dd class="font-semibold text-slate-900">{{ number_format($stats[0]['value']) }}</dd>
-                    </div>
-                    <div class="flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-3 shadow-sm">
-                        <dt>Fasilitas tersedia</dt>
-                        <dd class="font-semibold text-slate-900">{{ number_format($stats[3]['value']) }}</dd>
-                    </div>
-                    <div class="flex items-center justify-between gap-4 rounded-2xl bg-white px-4 py-3 shadow-sm">
-                        <dt>Kegiatan aktif</dt>
-                        <dd class="font-semibold text-slate-900">{{ number_format($stats[4]['value']) }}</dd>
-                    </div>
-                </dl>
-            </article>
-        </section>
     </div>
 </x-admin-layout>

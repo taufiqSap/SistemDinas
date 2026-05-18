@@ -12,7 +12,9 @@
         <div>
             <label for="kategori_id" class="mb-1 block text-sm font-semibold text-slate-800">Kategori</label>
             <select id="kategori_id" name="kategori_id" class="w-full rounded-2xl border border-red-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-red-500 focus:ring-red-200" required>
-                <option value="">Pilih kategori</option>
+                @if (! $isEdit && ! old('kategori_id'))
+                    <option value="" disabled selected hidden>Pilih kategori</option>
+                @endif
                 @foreach ($kategoriList as $kategori)
                     <option value="{{ $kategori->id }}" @selected(old('kategori_id', $fasilitas->kategori_id ?? '') == $kategori->id)>{{ $kategori->nama_kategori }}</option>
                 @endforeach

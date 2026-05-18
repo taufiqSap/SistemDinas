@@ -37,7 +37,7 @@ class FasilitasController extends Controller
     {
         return view('admin.fasilitas.create', [
             'kategoriList' => Kategori::orderBy('nama_kategori')->get(),
-            'statusOptions' => ['available', 'rented', 'maintenance'],
+            'statusOptions' => ['available',  'maintenance'],
         ]);
     }
 
@@ -50,7 +50,7 @@ class FasilitasController extends Controller
             'kapasitas' => ['required', 'string', 'max:255'],
             'spesifikasi' => ['required', 'string'],
             'alamat' => ['required', 'string'],
-            'status_fasilitas' => ['required', Rule::in(['available', 'rented', 'maintenance'])],
+            'status_fasilitas' => ['required', Rule::in(['available', 'maintenance'])],
             'gambar_fasilitas' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
@@ -77,7 +77,7 @@ class FasilitasController extends Controller
         return view('admin.fasilitas.edit', [
             'fasilitas' => $fasilitas,
             'kategoriList' => Kategori::orderBy('nama_kategori')->get(),
-            'statusOptions' => ['available', 'rented', 'maintenance'],
+            'statusOptions' => ['available','maintenance'],
         ]);
     }
 
@@ -90,7 +90,7 @@ class FasilitasController extends Controller
             'kapasitas' => ['required', 'string', 'max:255'],
             'spesifikasi' => ['required', 'string'],
             'alamat' => ['required', 'string'],
-            'status_fasilitas' => ['required', Rule::in(['available', 'rented', 'maintenance'])],
+            'status_fasilitas' => ['required', Rule::in(['available', 'maintenance'])],
             'gambar_fasilitas' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 

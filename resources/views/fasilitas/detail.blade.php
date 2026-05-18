@@ -132,20 +132,7 @@
                                     </p>
                                 </div>
 
-                                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:w-auto">
-                                    <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Kapasitas</p>
-                                        <p class="mt-1 text-sm font-bold text-slate-950">{{ $kapasitas }}</p>
-                                    </div>
-                                    <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Durasi</p>
-                                        <p class="mt-1 text-sm font-bold text-slate-950">Fleksibel</p>
-                                    </div>
-                                    <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-                                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Area</p>
-                                        <p class="mt-1 text-sm font-bold text-slate-950">Representatif</p>
-                                    </div>
-                                </div>
+                    
                             </div>
 
                             <div class="mt-6 grid gap-6 lg:grid-cols-3">
@@ -158,50 +145,13 @@
                                         <div class="mt-4 space-y-4 text-sm leading-7 text-slate-700 md:text-base">
                                             <p>{{ $deskripsi }}</p>
                                             <p>{{ $spesifikasi }}</p>
+                                            <p><span class="font-semibold text-slate-900">Kapasitas:</span> {{ $kapasitas }}</p>
                                         </div>
                                     </section>
 
-                                    <section>
-                                        <h3 class="flex items-center gap-2 text-lg font-black text-slate-950">
-                                            <span class="h-5 w-1 rounded-full bg-[#c62828]"></span>
-                                            Galeri Singkat
-                                        </h3>
-
-                                        <div class="mt-4 flex gap-2 overflow-x-auto pb-2 scrollbar-hide sm:gap-3">
-                                            @for ($i = 0; $i < 4; $i++)
-                                                <div class="h-20 w-28 flex-none overflow-hidden rounded-xl border border-slate-200 bg-slate-100 sm:h-24 sm:w-32 md:w-36 md:rounded-2xl">
-                                                    <img src="{{ $gambarUtama }}" alt="{{ $namaFasilitas }} {{ $i + 1 }}" class="h-full w-full object-cover">
-                                                </div>
-                                            @endfor
-                                        </div>
-                                    </section>
                                 </div>
 
                                 <aside class="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:sticky lg:top-24 sm:rounded-3xl sm:p-5">
-                                    <div class="rounded-2xl bg-white p-4 shadow-sm">
-                                        <div class="flex flex-col gap-3 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
-                                            <span class="shrink-0 text-sm font-semibold text-slate-600">Status Aset</span>
-                                            <span class="inline-flex items-center gap-2 text-sm font-bold text-slate-950">
-                                                <span class="h-2.5 w-2.5 rounded-full {{ $status['dot'] }}"></span>
-                                                {{ $status['label'] }}
-                                            </span>
-                                        </div>
-                                        <div class="mt-4 space-y-3 text-sm text-slate-700">
-                                            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                                                <span class="shrink-0">Kategori</span>
-                                                <span class="break-words font-bold text-slate-950">{{ $kategoriNama }}</span>
-                                            </div>
-                                            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                                                <span class="shrink-0">Kapasitas</span>
-                                                <span class="font-bold text-slate-950">{{ $kapasitas }}</span>
-                                            </div>
-                                            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                                                <span class="shrink-0">Harga Satuan</span>
-                                                <span id="harga_satuan_info" class="font-black text-slate-700">Pilih tipe sewa</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
                                         <p class="font-bold">Catatan booking</p>
                                         <p class="mt-2 break-words leading-6">Booking anda dapat disesuaikan jika ada agenda dinas mendadak.</p>
@@ -228,58 +178,94 @@
                                 </div>
                             </div>
 
-                            <form method="POST" action="{{ route('booking.store') }}" class="space-y-5 p-5 sm:p-6">
-                                @csrf
+                            @if ($statusFasilitas !== 'maintenance')
+                                <form method="POST" action="{{ route('booking.store') }}" class="space-y-5 p-5 sm:p-6">
+                                    @csrf
 
-                                <input type="hidden" name="fasilitas_id" value="{{ old('fasilitas_id', $fasilitasId) }}">
+                                    <input type="hidden" name="fasilitas_id" value="{{ old('fasilitas_id', $fasilitasId) }}">
 
-                                <div>
-                                    <label for="tipe_sewa_id" class="mb-1.5 block text-sm font-bold text-slate-800">Tipe Sewa</label>
-                                    <select id="tipe_sewa_id" name="tipe_sewa_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
-                                        <option value="">Pilih tipe sewa</option>
-                                        @forelse (($tipeSewas ?? []) as $tipeSewa)
-                                            <option value="{{ $tipeSewa->id }}" @selected(old('tipe_sewa_id') == $tipeSewa->id)>{{ $tipeSewa->nama_tipe }}</option>
-                                        @empty
-                                            <option value="" disabled>Data tipe sewa belum tersedia</option>
-                                        @endforelse
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label for="kegiatan_id" class="mb-1.5 block text-sm font-bold text-slate-800">Kegiatan</label>
-                                    <select id="kegiatan_id" name="kegiatan_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
-                                        <option value="">Pilih kegiatan</option>
-                                        @forelse (($kegiatans ?? []) as $kegiatan)
-                                            <option value="{{ $kegiatan->id }}" @selected(old('kegiatan_id') == $kegiatan->id)>{{ $kegiatan->nama_kegiatan }}</option>
-                                        @empty
-                                            <option value="" disabled>Data kegiatan belum tersedia</option>
-                                        @endforelse
-                                    </select>
-                                </div>
-
-                                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
-                                        <label for="tanggal_sewa" class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Mulai</label>
-                                        <input id="tanggal_sewa" name="tanggal_sewa" type="date" value="{{ old('tanggal_sewa') }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                        <label for="tipe_sewa_id" class="mb-1.5 block text-sm font-bold text-slate-800">Tipe Sewa</label>
+                                        <select id="tipe_sewa_id" name="tipe_sewa_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                            @forelse (($tipeSewas ?? []) as $tipeSewa)
+                                                <option value="{{ $tipeSewa->id }}" @selected(old('tipe_sewa_id') == $tipeSewa->id)>{{ $tipeSewa->nama_tipe }}</option>
+                                            @empty
+                                                <option value="" disabled>Data tipe sewa belum tersedia</option>
+                                            @endforelse
+                                        </select>
                                     </div>
 
                                     <div>
-                                        <label for="durasi_hari" class="mb-1.5 block text-sm font-bold text-slate-800">Durasi Hari</label>
-                                        <input id="durasi_hari" name="durasi_hari" type="number" min="1" value="{{ old('durasi_hari', 1) }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                        <label for="kegiatan_id" class="mb-1.5 block text-sm font-bold text-slate-800">Kegiatan</label>
+                                        <select id="kegiatan_id" name="kegiatan_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                            @forelse (($kegiatans ?? []) as $kegiatan)
+                                                <option value="{{ $kegiatan->id }}" @selected(old('kegiatan_id') == $kegiatan->id)>{{ $kegiatan->nama_kegiatan }}</option>
+                                            @empty
+                                                <option value="" disabled>Data kegiatan belum tersedia</option>
+                                            @endforelse
+                                        </select>
                                     </div>
-                                </div>
 
-                                <div>
-                                    <label for="tanggal_selesai" class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Selesai</label>
-                                    <input id="tanggal_selesai" type="date" value="{{ old('tanggal_selesai') }}" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900" readonly>
-                                    <p class="mt-2 text-xs text-slate-600">Tanggal selesai dihitung otomatis dari tanggal mulai dan durasi.</p>
-                                </div>
+                                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                        <div>
+                                            <label for="tanggal_sewa" class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Mulai</label>
+                                            <input id="tanggal_sewa" name="tanggal_sewa" type="date" value="{{ old('tanggal_sewa') }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                        </div>
 
-                                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#c62828] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#c62828]/20 transition hover:bg-[#b71c1c]">
-                                    <span class="material-symbols-outlined"></span>
-                                    Ajukan Booking 
-                                </button>
-                            </form>
+                                        <div>
+                                            <label for="durasi_hari" class="mb-1.5 block text-sm font-bold text-slate-800">Durasi Hari</label>
+                                            <input id="durasi_hari" name="durasi_hari" type="number" min="1" value="{{ old('durasi_hari', 1) }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label for="tanggal_selesai" class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Selesai</label>
+                                        <input id="tanggal_selesai" type="date" value="{{ old('tanggal_selesai') }}" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900" readonly>
+                                        <p class="mt-2 text-xs text-slate-600">Tanggal selesai dihitung otomatis dari tanggal mulai dan durasi.</p>
+                                    </div>
+
+                                    <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#c62828] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#c62828]/20 transition hover:bg-[#b71c1c]">
+                                        <span class="material-symbols-outlined"></span>
+                                        Ajukan Booking 
+                                    </button>
+                                </form>
+                            @else
+                                <div class="space-y-5 p-5 sm:p-6">
+                                    <input type="hidden" name="fasilitas_id" value="{{ $fasilitasId }}">
+
+                                    <div>
+                                        <label class="mb-1.5 block text-sm font-bold text-slate-800">Tipe Sewa</label>
+                                        <div class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">-</div>
+                                    </div>
+
+                                    <div>
+                                        <label class="mb-1.5 block text-sm font-bold text-slate-800">Kegiatan</label>
+                                        <div class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">-</div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                        <div>
+                                            <label class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Mulai</label>
+                                            <input type="date" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">
+                                        </div>
+
+                                        <div>
+                                            <label class="mb-1.5 block text-sm font-bold text-slate-800">Durasi Hari</label>
+                                            <input type="number" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Selesai</label>
+                                        <input type="date" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">
+                                        <p class="mt-2 text-xs text-slate-600">Fasilitas sedang menjalani perawatan.</p>
+                                    </div>
+
+                                    <button type="button" disabled class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-400 px-5 py-3.5 text-sm font-black text-white shadow-sm">
+                                        Sedang dalam perawatan
+                                    </button>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-5">
