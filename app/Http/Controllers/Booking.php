@@ -173,8 +173,6 @@ class Booking extends Controller
                 'tanggal_sewa' => $validated['tanggal_sewa'],
                 'tanggal_selesai' => $bookingSummary['tanggal_selesai'],
                 'durasi_hari' => $validated['durasi_hari'],
-                // Semua penyewaan digratiskan sesuai kebijakan terbaru.
-                'total_harga' => 0,
                 'status_booking' => 'pending',
             ]);
         });

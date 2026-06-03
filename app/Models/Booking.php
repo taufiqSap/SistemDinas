@@ -18,7 +18,6 @@ class Booking extends Model
         'tanggal_sewa',
         'tanggal_selesai',
         'durasi_hari',
-        'total_harga',
         'status_booking',
     ];
 

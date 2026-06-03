@@ -33,9 +33,8 @@ class KategoriController extends Controller
         public function store(Request $request): RedirectResponse
         {
             $validated = $request->validate([
-                'nama_kategori' => ['required', 'string', 'max:255', Rule::unique('kategori', 'nama_kategori')],
-                'deskripsi' => ['nullable', 'string'],
-                'status' => ['required', Rule::in(['active', 'inactive'])],
+            'nama_kategori' => ['required', 'string', 'max:255', Rule::unique('kategori', 'nama_kategori')],
+            'deskripsi' => ['nullable', 'string'],
             ]);
 
             Kategori::create($validated);
@@ -55,9 +54,8 @@ class KategoriController extends Controller
         public function update(Request $request, Kategori $kategori): RedirectResponse
         {
             $validated = $request->validate([
-                'nama_kategori' => ['required', 'string', 'max:255', Rule::unique('kategori', 'nama_kategori')->ignore($kategori->id)],
-                'deskripsi' => ['nullable', 'string'],
-                'status' => ['required', Rule::in(['active', 'inactive'])],
+            'nama_kategori' => ['required', 'string', 'max:255', Rule::unique('kategori', 'nama_kategori')->ignore($kategori->id)],
+            'deskripsi' => ['nullable', 'string'],
             ]);
 
             $kategori->update($validated);
