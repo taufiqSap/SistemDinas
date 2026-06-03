@@ -26,6 +26,38 @@
             background: linear-gradient(118deg, rgba(27, 31, 39, 0.78) 0%, rgba(198, 40, 40, 0.82) 58%, rgba(251, 192, 45, 0.65) 100%);
         }
 
+        .chat-admin-float {
+            position: fixed;
+            right: 1.25rem;
+            bottom: 1.25rem;
+            z-index: 60;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: #ffffff;
+            box-shadow: 0 18px 36px rgba(18, 140, 126, 0.28);
+            transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+        }
+
+        .chat-admin-float:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 22px 44px rgba(18, 140, 126, 0.34);
+            filter: brightness(1.02);
+        }
+
+        .chat-admin-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(8px);
+        }
+
         @media (prefers-reduced-motion: no-preference) {
             .rise-up {
                 animation: riseUp 700ms ease-out forwards;
@@ -56,6 +88,11 @@
     @endpush
 
     <div class="welcome-page min-h-screen py-6">
+        @php
+            $adminWhatsAppNumber = '6285737644100';
+            $adminChatUrl = 'https://wa.me/' . $adminWhatsAppNumber . '?text=' . rawurlencode('Halo Admin, saya ingin bertanya tentang layanan penyewaan fasilitas.');
+        @endphp
+
         <section class="mx-auto mt-6 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
             <div class="relative overflow-hidden rounded-2xl shadow-2xl">
                 <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset('images/bg.png') }}');"></div>
@@ -69,6 +106,23 @@
                 </div>
             </div>
         </section>
+
+        @if ($adminChatUrl)
+            <a
+                href="{{ $adminChatUrl }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="chat-admin-float fixed bottom-5 right-5 px-4 py-3"
+                aria-label="Chat admin via WhatsApp"
+            >
+                <span class="chat-admin-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="h-6 w-6 fill-current" aria-hidden="true">
+                        <path d="M19.11 17.42c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.79-1.67-2.09-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.02 1-1.02 2.44s1.05 2.84 1.2 3.04c.15.2 2.07 3.16 5 4.43.7.3 1.25.48 1.68.62.7.22 1.34.19 1.85.11.56-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.18-1.42-.07-.11-.27-.18-.57-.33zM16.01 5.33c-5.9 0-10.7 4.8-10.7 10.7 0 1.88.49 3.72 1.42 5.33L6 26.67l5.45-1.4c1.56.85 3.31 1.3 5.07 1.3h.01c5.9 0 10.7-4.8 10.7-10.7 0-2.86-1.11-5.55-3.13-7.57a10.63 10.63 0 0 0-7.59-2.97zm0 19.48h-.01a8.7 8.7 0 0 1-4.44-1.22l-.32-.19-3.23.83.86-3.14-.21-.33a8.69 8.69 0 0 1-1.34-4.63c0-4.79 3.89-8.68 8.68-8.68 2.32 0 4.5.9 6.14 2.54a8.62 8.62 0 0 1 2.54 6.14c0 4.79-3.89 8.68-8.67 8.68z" />
+                    </svg>
+                </span>
+                <span class="pr-1 text-sm font-bold">Chat Admin</span>
+            </a>
+        @endif
 
         <section id="jadwal" class="mx-auto mb-16 mt-12 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
             @php
@@ -282,7 +336,6 @@
                     + '<p><span class="font-semibold text-slate-900">Pemesan:</span> ' + item.nama_pemesan + '</p>'
                     + '<p><span class="font-semibold text-slate-900">Agenda:</span> ' + item.agenda + '</p>'
                     + '<p><span class="font-semibold text-slate-900">Fasilitas:</span> ' + item.fasilitas + '</p>'
-                    + '<p><span class="font-semibold text-slate-900">Tipe Sewa:</span> ' + item.tipe_sewa + '</p>'
                     + '<p><span class="font-semibold text-slate-900">Mulai:</span> ' + item.tanggal_sewa + '</p>'
                     + '<p><span class="font-semibold text-slate-900">Selesai:</span> ' + item.tanggal_selesai + ' (' + item.durasi_hari + ' hari)</p>'
                     + '</div>'
@@ -324,13 +377,13 @@
 
                         // Deduplicate bookings by pemesan (show only one per pemesan)
                         const bookings = payload.bookings || [];
-                        const seen = new Set();
+                        const seen = [];
                         const uniqueBookings = [];
 
                         for (const b of bookings) {
                             const key = b.nama_pemesan || b.user_id || b.kode_booking || JSON.stringify(b);
-                            if (!seen.has(key)) {
-                                seen.add(key);
+                            if (!seen.includes(key)) {
+                                seen.push(key);
                                 uniqueBookings.push(b);
                             }
                         }

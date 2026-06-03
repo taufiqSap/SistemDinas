@@ -16,17 +16,15 @@ return new class extends Migration
             $table->string('kode_booking')->unique();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('fasilitas_id');
-            $table->unsignedBigInteger('tipe_sewa_id');
             $table->date('tanggal_sewa');
             $table->date('tanggal_selesai');
             $table->integer('durasi_hari');
-            $table->decimal('total_harga', 10, 2);
             $table->enum('status_booking', ['pending', 'confirmed', 'cancelled'])->default('pending');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('fasilitas_id')->references('id')->on('fasilitas')->onDelete('cascade');
-            $table->foreign('tipe_sewa_id')->references('id')->on('tipe_sewa')->onDelete('cascade');
+
         });
     }
 

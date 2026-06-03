@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between gap-4">
             <div>
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">Buat Booking</h2>
-                <p class="mt-1 text-sm text-gray-600">Pilih fasilitas, tipe sewa, dan kegiatan dari master data.</p>
+                <p class="mt-1 text-sm text-gray-600">Pilih fasilitas dan kegiatan dari master data.</p>
             </div>
         </div>
     </x-slot>
@@ -65,16 +65,6 @@
                             </div>
 
                             <div>
-                                <x-input-label for="tipe_sewa_id" value="Tipe Sewa" />
-                                <select id="tipe_sewa_id" name="tipe_sewa_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
-                                    <option value="">Pilih tipe sewa</option>
-                                    @foreach ($tipeSewas as $tipeSewa)
-                                        <option value="{{ $tipeSewa->id }}" @selected(old('tipe_sewa_id') == $tipeSewa->id)>{{ $tipeSewa->nama_tipe }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div>
                                 <x-input-label for="kegiatan_id" value="Kegiatan" />
                                 <select id="kegiatan_id" name="kegiatan_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                                     <option value="">Pilih kegiatan</option>
@@ -117,12 +107,11 @@
     <script>
         (function () {
             const fasilitasId = document.getElementById('fasilitas_id');
-            const tipeSewaId = document.getElementById('tipe_sewa_id');
             const tanggalSewa = document.getElementById('tanggal_sewa');
             const durasiHari = document.getElementById('durasi_hari');
             const tanggalSelesai = document.getElementById('tanggal_selesai');
 
-            if (!fasilitasId || !tipeSewaId || !tanggalSewa || !durasiHari || !tanggalSelesai) {
+            if (!fasilitasId || !tanggalSewa || !durasiHari || !tanggalSelesai) {
                 return;
             }
 

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Booking as BookingModel;
 use App\Models\Fasilitas;
 use App\Models\Kegiatan;
-use App\Models\TipeSewa;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -32,7 +31,6 @@ class Booking extends Controller
             ->with([
                 'user:id,nama',
                 'fasilitas:id,nama_fasilitas',
-                'tipeSewa:id,nama_tipe',
                 'kegiatan:id,nama_kegiatan',
             ])
             ->orderBy('tanggal_sewa')
@@ -44,7 +42,6 @@ class Booking extends Controller
                     'nama_pemesan' => $booking->user?->nama ?? '-',
                     'agenda' => $booking->kegiatan?->nama_kegiatan ?? '-',
                     'fasilitas' => $booking->fasilitas?->nama_fasilitas ?? '-',
-                    'tipe_sewa' => $booking->tipeSewa?->nama_tipe ?? '-',
                     'tanggal_sewa' => Carbon::parse($booking->tanggal_sewa)->translatedFormat('d F Y'),
                     'tanggal_selesai' => Carbon::parse($booking->tanggal_selesai)->translatedFormat('d F Y'),
                     'durasi_hari' => (int) $booking->durasi_hari,
@@ -66,7 +63,6 @@ class Booking extends Controller
             ->where('user_id', $request->user()->id)
             ->with([
                 'fasilitas:id,nama_fasilitas',
-                'tipeSewa:id,nama_tipe',
                 'kegiatan:id,nama_kegiatan',
             ]);
 
@@ -80,9 +76,6 @@ class Booking extends Controller
                 $builder->where('kode_booking', 'like', "%{$keyword}%")
                     ->orWhereHas('fasilitas', function ($relation) use ($keyword) {
                         $relation->where('nama_fasilitas', 'like', "%{$keyword}%");
-                    })
-                    ->orWhereHas('tipeSewa', function ($relation) use ($keyword) {
-                        $relation->where('nama_tipe', 'like', "%{$keyword}%");
                     })
                     ->orWhereHas('kegiatan', function ($relation) use ($keyword) {
                         $relation->where('nama_kegiatan', 'like', "%{$keyword}%");
@@ -135,14 +128,9 @@ class Booking extends Controller
             return Fasilitas::orderBy('nama_fasilitas')->get();
         });
 
-        $tipeSewas = Cache::remember('booking.create.tipeSewas', now()->addMinutes(10), function () {
-            return TipeSewa::orderBy('nama_tipe')->get();
-        });
-
         return view('booking.create', [
             'kegiatans' => $kegiatans,
             'fasilitass' => $fasilitass,
-            'tipeSewas' => $tipeSewas,
         ]);
     }
 
@@ -150,7 +138,6 @@ class Booking extends Controller
     {
         $validated = $request->validate([
             'fasilitas_id' => ['required', 'integer', 'exists:fasilitas,id'],
-            'tipe_sewa_id' => ['required', 'integer', 'exists:tipe_sewa,id'],
             'kegiatan_id' => ['required', 'integer', 'exists:kegiatan,id'],
             'tanggal_sewa' => ['required', 'date'],
             'durasi_hari' => ['required', 'integer', 'min:1'],
@@ -182,7 +169,6 @@ class Booking extends Controller
                 'kode_booking' => $this->generateBookingCode(),
                 'user_id' => $request->user()->id,
                 'fasilitas_id' => $validated['fasilitas_id'],
-                'tipe_sewa_id' => $validated['tipe_sewa_id'],
                 'kegiatan_id' => $validated['kegiatan_id'],
                 'tanggal_sewa' => $validated['tanggal_sewa'],
                 'tanggal_selesai' => $bookingSummary['tanggal_selesai'],

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Fasilitas as FasilitasModel;
 use App\Models\Kategori;
 use App\Models\Kegiatan;
-use App\Models\TipeSewa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
@@ -87,7 +86,6 @@ class Fasilitas extends Controller
 
         return view('fasilitas.detail', [
             'fasilitas' => $fasilitas,
-            'tipeSewas' => TipeSewa::orderBy('nama_tipe')->get(),
             'kegiatans' => $kegiatanQuery->orderBy('nama_kegiatan')->get(),
         ]);
     }

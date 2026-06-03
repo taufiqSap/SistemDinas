@@ -18,7 +18,6 @@ class BookingController extends Controller
             ->with([
                 'user:id,nama,email',
                 'fasilitas:id,nama_fasilitas',
-                'tipeSewa:id,nama_tipe',
                 'kegiatan:id,nama_kegiatan',
             ])
             ->latest();
@@ -41,7 +40,6 @@ class BookingController extends Controller
         $booking->load([
             'user:id,nama,email,no_hp,alamat',
             'fasilitas:id,nama_fasilitas,status_fasilitas',
-            'tipeSewa:id,nama_tipe',
             'kegiatan:id,nama_kegiatan',
         ]);
 

@@ -51,8 +51,6 @@ class RegisteredUserController extends Controller
             report($e);
         }
 
-        Auth::login($user);
-
-        return redirect()->route('verification.notice')->with('status', 'verification-link-sent');
+            return redirect()->route('login')->with('status', 'Akun berhasil dibuat. Cek email untuk verifikasi sebelum masuk.');
     }
 }

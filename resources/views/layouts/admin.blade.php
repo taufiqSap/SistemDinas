@@ -148,14 +148,6 @@
                             <span class="sidebar-label ml-3 transition-all duration-200">Kegiatan</span>
                         </a>
 
-                        <a href="{{ route('admin.tipe-sewa.index') }}" class="sidebar-nav-link flex items-center rounded-xl px-3 py-3 transition {{ request()->routeIs('admin.tipe-sewa.*') ? 'bg-white text-red-700' : 'text-red-50 hover:bg-white/15' }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h10.5m-10.5 5.25h10.5M6.75 17.25h6" />
-                            </svg>
-                            <span class="sidebar-label ml-3 transition-all duration-200">Tipe Sewa</span>
-                        </a>
-
-                        
                     </nav>
 
                     <form method="POST" action="{{ route('logout') }}" class="mt-3 border-t border-white/20 pt-3">

@@ -23,7 +23,6 @@
                         <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500">User</p><p class="mt-1 font-semibold text-slate-950">{{ $booking->user?->nama ?? '-' }}</p></div>
                         <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500">Email</p><p class="mt-1 font-semibold text-slate-950">{{ $booking->user?->email ?? '-' }}</p></div>
                         <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500">Fasilitas</p><p class="mt-1 font-semibold text-slate-950">{{ $booking->fasilitas?->nama_fasilitas ?? '-' }}</p></div>
-                        <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500">Tipe Sewa</p><p class="mt-1 font-semibold text-slate-950">{{ $booking->tipeSewa?->nama_tipe ?? '-' }}</p></div>
                         <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500">Kegiatan</p><p class="mt-1 font-semibold text-slate-950">{{ $booking->kegiatan?->nama_kegiatan ?? '-' }}</p></div>
                         <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500">Durasi</p><p class="mt-1 font-semibold text-slate-950">{{ $booking->durasi_hari }} hari</p></div>
                         <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500">Mulai</p><p class="mt-1 font-semibold text-slate-950">{{ \Carbon\Carbon::parse($booking->tanggal_sewa)->format('d M Y') }}</p></div>

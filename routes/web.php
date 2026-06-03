@@ -5,7 +5,6 @@ use App\Http\Controllers\Fasilitas as FasilitasController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\FasilitasController as AdminFasilitasController;
 use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
-use App\Http\Controllers\Admin\TipeSewaController as AdminTipeSewaController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Booking as BookingModel;
 use App\Models\Fasilitas;
@@ -94,13 +93,6 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified', 'role:admin'])->name('dashboard');
 
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
-    Route::get('/tipe-sewa', [AdminTipeSewaController::class, 'index'])->name('tipe-sewa.index');
-    Route::get('/tipe-sewa/create', [AdminTipeSewaController::class, 'create'])->name('tipe-sewa.create');
-    Route::post('/tipe-sewa', [AdminTipeSewaController::class, 'store'])->name('tipe-sewa.store');
-    Route::get('/tipe-sewa/{tipe_sewa}/edit', [AdminTipeSewaController::class, 'edit'])->name('tipe-sewa.edit');
-    Route::put('/tipe-sewa/{tipe_sewa}', [AdminTipeSewaController::class, 'update'])->name('tipe-sewa.update');
-    Route::delete('/tipe-sewa/{tipe_sewa}', [AdminTipeSewaController::class, 'destroy'])->name('tipe-sewa.destroy');
-
     Route::get('/fasilitas', [AdminFasilitasController::class, 'index'])->name('fasilitas.index');
     Route::get('/fasilitas/create', [AdminFasilitasController::class, 'create'])->name('fasilitas.create');
     Route::post('/fasilitas', [AdminFasilitasController::class, 'store'])->name('fasilitas.store');

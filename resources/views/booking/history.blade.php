@@ -79,7 +79,6 @@
                                     <tr>
                                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Kode</th>
                                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Fasilitas</th>
-                                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Tipe</th>
                                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Kegiatan</th>
                                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Tanggal</th>
                                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Booking</th>
@@ -97,7 +96,6 @@
                                         <tr>
                                             <td class="px-4 py-4 font-medium text-gray-900">{{ $booking->kode_booking }}</td>
                                             <td class="px-4 py-4 text-gray-700">{{ $booking->fasilitas?->nama_fasilitas ?? '-' }}</td>
-                                            <td class="px-4 py-4 text-gray-700">{{ $booking->tipeSewa?->nama_tipe ?? '-' }}</td>
                                             <td class="px-4 py-4 text-gray-700">{{ $booking->kegiatan?->nama_kegiatan ?? '-' }}</td>
                                             <td class="px-4 py-4 text-gray-700">{{ $booking->tanggal_sewa }} - {{ $booking->tanggal_selesai }}</td>
                                             <td class="px-4 py-4">
@@ -132,10 +130,6 @@
                                         <div>
                                             <p class="text-xs uppercase tracking-[0.16em] text-gray-400">Fasilitas</p>
                                             <p class="mt-1 font-medium">{{ $booking->fasilitas?->nama_fasilitas ?? '-' }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs uppercase tracking-[0.16em] text-gray-400">Tipe</p>
-                                            <p class="mt-1 font-medium">{{ $booking->tipeSewa?->nama_tipe ?? '-' }}</p>
                                         </div>
                                         <div>
                                             <p class="text-xs uppercase tracking-[0.16em] text-gray-400">Kegiatan</p>

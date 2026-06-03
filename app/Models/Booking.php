@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Kegiatan;
+use App\Models\Fasilitas;
 
 class Booking extends Model
 {
@@ -13,7 +14,6 @@ class Booking extends Model
         'kode_booking',
         'user_id',
         'fasilitas_id',
-        'tipe_sewa_id',
         'kegiatan_id',
         'tanggal_sewa',
         'tanggal_selesai',
@@ -35,10 +35,5 @@ class Booking extends Model
     public function fasilitas()
     {
         return $this->belongsTo(Fasilitas::class);
-    }
-
-    public function tipeSewa()
-    {
-        return $this->belongsTo(TipeSewa::class, 'tipe_sewa_id');
     }
 }

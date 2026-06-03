@@ -185,17 +185,6 @@
                                     <input type="hidden" name="fasilitas_id" value="{{ old('fasilitas_id', $fasilitasId) }}">
 
                                     <div>
-                                        <label for="tipe_sewa_id" class="mb-1.5 block text-sm font-bold text-slate-800">Tipe Sewa</label>
-                                        <select id="tipe_sewa_id" name="tipe_sewa_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
-                                            @forelse (($tipeSewas ?? []) as $tipeSewa)
-                                                <option value="{{ $tipeSewa->id }}" @selected(old('tipe_sewa_id') == $tipeSewa->id)>{{ $tipeSewa->nama_tipe }}</option>
-                                            @empty
-                                                <option value="" disabled>Data tipe sewa belum tersedia</option>
-                                            @endforelse
-                                        </select>
-                                    </div>
-
-                                    <div>
                                         <label for="kegiatan_id" class="mb-1.5 block text-sm font-bold text-slate-800">Kegiatan</label>
                                         <select id="kegiatan_id" name="kegiatan_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
                                             @forelse (($kegiatans ?? []) as $kegiatan)
@@ -232,11 +221,6 @@
                             @else
                                 <div class="space-y-5 p-5 sm:p-6">
                                     <input type="hidden" name="fasilitas_id" value="{{ $fasilitasId }}">
-
-                                    <div>
-                                        <label class="mb-1.5 block text-sm font-bold text-slate-800">Tipe Sewa</label>
-                                        <div class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">-</div>
-                                    </div>
 
                                     <div>
                                         <label class="mb-1.5 block text-sm font-bold text-slate-800">Kegiatan</label>
@@ -298,23 +282,11 @@
             const tanggalSewa = document.getElementById('tanggal_sewa');
             const durasiHari = document.getElementById('durasi_hari');
             const tanggalSelesai = document.getElementById('tanggal_selesai');
-            const tipeSewaId = document.getElementById('tipe_sewa_id');
-            const hargaSatuanInfo = document.getElementById('harga_satuan_info');
             const hargaSatuanBadge = document.getElementById('harga_satuan_badge');
 
-            if (!tanggalSewa || !durasiHari || !tanggalSelesai || !tipeSewaId || !hargaSatuanInfo || !hargaSatuanBadge) {
+            if (!tanggalSewa || !durasiHari || !tanggalSelesai || !hargaSatuanBadge) {
                 return;
             }
-
-            const setHargaSatuan = () => {
-                hargaSatuanInfo.textContent = 'Gratis';
-                hargaSatuanInfo.classList.remove('text-slate-500');
-                hargaSatuanInfo.classList.add('text-emerald-600');
-
-                hargaSatuanBadge.textContent = 'Gratis';
-                hargaSatuanBadge.classList.remove('text-slate-400');
-                hargaSatuanBadge.classList.add('text-emerald-600');
-            };
 
             const setTanggalSelesai = () => {
                 if (!tanggalSewa.value || !durasiHari.value) {
@@ -335,9 +307,6 @@
 
             tanggalSewa.addEventListener('change', setTanggalSelesai);
             durasiHari.addEventListener('input', setTanggalSelesai);
-            tipeSewaId.addEventListener('change', setHargaSatuan);
-
-            setHargaSatuan();
             setTanggalSelesai();
 
             const successPopup = document.getElementById('booking-success-popup');
