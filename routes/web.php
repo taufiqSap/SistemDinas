@@ -5,6 +5,7 @@ use App\Http\Controllers\Fasilitas as FasilitasController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\FasilitasController as AdminFasilitasController;
 use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
+use App\Http\Controllers\Admin\KategoriController as AdminKategoriController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Booking as BookingModel;
 use App\Models\Fasilitas;
@@ -106,6 +107,14 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::get('/kegiatan/{kegiatan}/edit', [AdminKegiatanController::class, 'edit'])->name('kegiatan.edit');
     Route::put('/kegiatan/{kegiatan}', [AdminKegiatanController::class, 'update'])->name('kegiatan.update');
     Route::delete('/kegiatan/{kegiatan}', [AdminKegiatanController::class, 'destroy'])->name('kegiatan.destroy');
+
+    // Kategori CRUD
+    Route::get('/kategori', [AdminKategoriController::class, 'index'])->name('kategori.index');
+    Route::get('/kategori/create', [AdminKategoriController::class, 'create'])->name('kategori.create');
+    Route::post('/kategori', [AdminKategoriController::class, 'store'])->name('kategori.store');
+    Route::get('/kategori/{kategori}/edit', [AdminKategoriController::class, 'edit'])->name('kategori.edit');
+    Route::put('/kategori/{kategori}', [AdminKategoriController::class, 'update'])->name('kategori.update');
+    Route::delete('/kategori/{kategori}', [AdminKategoriController::class, 'destroy'])->name('kategori.destroy');
 
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
