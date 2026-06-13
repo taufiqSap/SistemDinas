@@ -50,7 +50,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('booking.store') }}" class="space-y-6">
+                    <form id="booking-form" method="POST" action="{{ route('booking.store') }}" class="space-y-6">
                         @csrf
 
                         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -94,7 +94,7 @@
                         </div>
 
                         <div class="flex justify-end">
-                            <x-primary-button>Ajukan Booking Gratis</x-primary-button>
+                            <x-primary-button id="submit-booking-btn">Ajukan Booking Gratis</x-primary-button>
                         </div>
                     </form>
                 </div>
@@ -110,6 +110,8 @@
             const tanggalSewa = document.getElementById('tanggal_sewa');
             const durasiHari = document.getElementById('durasi_hari');
             const tanggalSelesai = document.getElementById('tanggal_selesai');
+            const bookingForm = document.getElementById('booking-form');
+            const submitBookingBtn = document.getElementById('submit-booking-btn');
 
             if (!fasilitasId || !tanggalSewa || !durasiHari || !tanggalSelesai) {
                 return;
@@ -144,6 +146,14 @@
                 closeSuccessPopupBtn.addEventListener('click', () => {
                     window.location.href = fasilitasUrl;
                 });
+            }
+
+            if (bookingForm && submitBookingBtn) {
+                bookingForm.addEventListener('submit', () => {
+                    submitBookingBtn.setAttribute('disabled', 'disabled');
+                    submitBookingBtn.classList.add('opacity-60', 'cursor-not-allowed');
+                    submitBookingBtn.textContent = 'Memproses...';
+                }, { once: true });
             }
         })();
     </script>
