@@ -217,7 +217,7 @@
                                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <div>
                                             <label for="tanggal_sewa" class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Mulai</label>
-                                            <input id="tanggal_sewa" name="tanggal_sewa" type="date" value="{{ old('tanggal_sewa') }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                            <input id="tanggal_sewa" name="tanggal_sewa" type="date" value="{{ old('tanggal_sewa', request('tanggal_sewa')) }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
                                         </div>
 
                                         <div>

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Schema;
 
 class Booking extends Controller
 {
-    public function show(string $date): JsonResponse
+    public function show(Request $request, string $date): JsonResponse
     {
         try {
             $selectedDate = Carbon::createFromFormat('Y-m-d', $date)->startOfDay();
@@ -24,10 +24,16 @@ class Booking extends Controller
             ], 422);
         }
 
-        $bookings = BookingModel::query()
+        $bookingsQuery = BookingModel::query()
             ->where('status_booking', '!=', 'cancelled')
             ->whereDate('tanggal_sewa', '<=', $selectedDate->toDateString())
-            ->whereDate('tanggal_selesai', '>=', $selectedDate->toDateString())
+            ->whereDate('tanggal_selesai', '>=', $selectedDate->toDateString());
+
+        if ($request->filled('fasilitas_id')) {
+            $bookingsQuery->where('fasilitas_id', (int) $request->input('fasilitas_id'));
+        }
+
+        $bookings = $bookingsQuery
             ->with([
                 'user:id,nama',
                 'fasilitas:id,nama_fasilitas',

@@ -77,7 +77,7 @@
 
                             <div>
                                 <x-input-label for="tanggal_sewa" value="Tanggal Sewa" />
-                                <x-text-input id="tanggal_sewa" name="tanggal_sewa" type="date" class="mt-1 block w-full" :value="old('tanggal_sewa')" required />
+                                <x-text-input id="tanggal_sewa" name="tanggal_sewa" type="date" class="mt-1 block w-full" :value="old('tanggal_sewa', request('tanggal_sewa'))" required />
                             </div>
 
                             <div>

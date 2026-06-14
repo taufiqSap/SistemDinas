@@ -126,6 +126,18 @@
 
         <section id="jadwal" class="mx-auto mb-16 mt-12 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
             @php
+                $fasilitasList = \App\Models\Fasilitas::query()
+                    ->where('status_fasilitas', 'available')
+                    ->orderBy('nama_fasilitas')
+                    ->get(['id', 'nama_fasilitas']);
+
+                $selectedFasilitasId = request()->integer('fasilitas_id');
+                if ($selectedFasilitasId === 0 && $fasilitasList->isNotEmpty()) {
+                    $selectedFasilitasId = (int) $fasilitasList->first()->id;
+                }
+
+                $selectedFasilitas = $fasilitasList->firstWhere('id', $selectedFasilitasId);
+
                 $monthInput = request('month');
                 $startOfMonth = now()->startOfMonth();
 
@@ -143,10 +155,21 @@
                 $nextMonth = $startOfMonth->copy()->addMonth()->format('Y-m');
                 $monthLabel = $startOfMonth->translatedFormat('F Y');
 
-                $bookingPeriods = \App\Models\Booking::query()
+                $jadwalQueryParams = array_filter([
+                    'month' => $startOfMonth->format('Y-m'),
+                    'fasilitas_id' => $selectedFasilitasId > 0 ? $selectedFasilitasId : null,
+                ]);
+
+                $bookingPeriodsQuery = \App\Models\Booking::query()
                     ->where('status_booking', '!=', 'cancelled')
                     ->whereDate('tanggal_sewa', '<=', $endOfMonth->toDateString())
-                    ->whereDate('tanggal_selesai', '>=', $startOfMonth->toDateString())
+                    ->whereDate('tanggal_selesai', '>=', $startOfMonth->toDateString());
+
+                if ($selectedFasilitasId > 0) {
+                    $bookingPeriodsQuery->where('fasilitas_id', $selectedFasilitasId);
+                }
+
+                $bookingPeriods = $bookingPeriodsQuery
                     ->get(['id', 'tanggal_sewa', 'tanggal_selesai']);
 
                 $bookedDates = [];
@@ -169,12 +192,28 @@
 
                 $filledDays = count($bookedDates);
                 $emptyDays = $daysInMonth - $filledDays;
+
+                $fasilitasDetail = null;
+                if ($selectedFasilitasId > 0) {
+                    $fasilitasDetail = \App\Models\Fasilitas::query()
+                        ->with('kategori:id,nama_kategori')
+                        ->find($selectedFasilitasId);
+                }
+
+                $fasilitasDetailUrl = $selectedFasilitasId > 0
+                    ? route('fasilitas.show', $selectedFasilitasId) . '#form-booking'
+                    : route('fasilitas.index');
+
+                $canBook = auth()->check() && auth()->user()->role === 'user';
             @endphp
 
             <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-red)]">Kalender Ketersediaan</p>
                     <h3 class="mt-2 text-3xl font-extrabold text-[var(--brand-ink)]">Jadwal Bulan {{ $monthLabel }}</h3>
+                    @if ($selectedFasilitas)
+                        <p class="mt-1 text-sm font-semibold text-slate-600">Fasilitas: {{ $selectedFasilitas->nama_fasilitas }}</p>
+                    @endif
                 </div>
                 <div class="flex items-center gap-2 text-xs font-semibold">
                     <span class="rounded-full bg-emerald-100 px-3 py-1 text-emerald-700">Tersedia: {{ $emptyDays }} hari</span>
@@ -182,22 +221,46 @@
                 </div>
             </div>
 
+            @if ($fasilitasList->isNotEmpty())
+                <div class="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur">
+                    <form method="GET" action="{{ route('home') }}#jadwal" class="flex flex-wrap items-end gap-3">
+                        <input type="hidden" name="month" value="{{ $startOfMonth->format('Y-m') }}">
+                        <div class="min-w-[220px] flex-1">
+                            <label for="fasilitas_id" class="mb-2 block text-sm font-semibold text-slate-700">Pilih Fasilitas</label>
+                            <select
+                                id="fasilitas_id"
+                                name="fasilitas_id"
+                                class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-medium text-slate-700 focus:border-[var(--brand-red)] focus:outline-none focus:ring-2 focus:ring-red-100"
+                                onchange="this.form.submit()"
+                            >
+                                @foreach ($fasilitasList as $fasilitas)
+                                    <option value="{{ $fasilitas->id }}" @selected($selectedFasilitasId === (int) $fasilitas->id)>
+                                        {{ $fasilitas->nama_fasilitas }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <p class="pb-1 text-xs font-medium text-slate-500">Jadwal di bawah menyesuaikan fasilitas yang dipilih.</p>
+                    </form>
+                </div>
+            @endif
+
             <div class="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="inline-flex items-center rounded-xl border border-slate-200 bg-slate-50 p-1">
-                        <a href="{{ route('home', array_merge(request()->except('month'), ['month' => $prevMonth])) }}#jadwal" class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white hover:text-slate-900">
+                        <a href="{{ route('home', array_merge($jadwalQueryParams, ['month' => $prevMonth])) }}#jadwal" class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white hover:text-slate-900">
                             Bulan Sebelumnya
                         </a>
                         <span class="px-2 text-sm font-bold text-slate-500">{{ $monthLabel }}</span>
-                        <a href="{{ route('home', array_merge(request()->except('month'), ['month' => $nextMonth])) }}#jadwal" class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white hover:text-slate-900">
+                        <a href="{{ route('home', array_merge($jadwalQueryParams, ['month' => $nextMonth])) }}#jadwal" class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white hover:text-slate-900">
                             Bulan Berikutnya
                         </a>
                     </div>
 
-                    <form method="GET" action="{{ route('home') }}" class="flex items-center gap-2">
-                        @foreach (request()->except('month') as $key => $value)
-                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                        @endforeach
+                    <form method="GET" action="{{ route('home') }}#jadwal" class="flex items-center gap-2">
+                        @if ($selectedFasilitasId > 0)
+                            <input type="hidden" name="fasilitas_id" value="{{ $selectedFasilitasId }}">
+                        @endif
                         <label for="month" class="text-sm font-semibold text-slate-600">Pilih Bulan</label>
                         <input id="month" name="month" type="month" value="{{ $startOfMonth->format('Y-m') }}" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus:border-[var(--brand-red)] focus:outline-none focus:ring-2 focus:ring-red-100">
                         <button type="submit" class="rounded-lg bg-slate-800 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-700">
@@ -251,6 +314,78 @@
                 @endfor
             </div>
 
+            @if ($fasilitasDetail)
+                <div id="detail-fasilitas" class="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                    <div class="grid grid-cols-1 lg:grid-cols-2">
+                        <div class="relative aspect-[4/3] overflow-hidden bg-slate-100 lg:aspect-auto lg:min-h-[320px]">
+                            <img
+                                src="{{ $fasilitasDetail->gambar_fasilitas_url }}"
+                                alt="{{ $fasilitasDetail->nama_fasilitas }}"
+                                class="h-full w-full object-cover"
+                            >
+                            <div class="absolute left-4 top-4">
+                                <span class="inline-flex rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-700 backdrop-blur">
+                                    {{ $fasilitasDetail->kategori?->nama_kategori ?? 'Fasilitas' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col justify-between p-5 sm:p-6 lg:p-8">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-red)]">Detail Fasilitas</p>
+                                <h4 class="mt-2 text-2xl font-extrabold text-[var(--brand-ink)]">{{ $fasilitasDetail->nama_fasilitas }}</h4>
+
+                                @if ($fasilitasDetail->alamat)
+                                    <p class="mt-3 flex items-start gap-2 text-sm leading-6 text-slate-600">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand-red)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s7-4.5 7-11a7 7 0 1 0-14 0c0 6.5 7 11 7 11z" />
+                                            <circle cx="12" cy="10" r="2.5" />
+                                        </svg>
+                                        {{ $fasilitasDetail->alamat }}
+                                    </p>
+                                @endif
+
+                                @if ($fasilitasDetail->deskripsi)
+                                    <p class="mt-4 text-sm leading-7 text-slate-700">{{ $fasilitasDetail->deskripsi }}</p>
+                                @endif
+
+                                <div class="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
+                                    <span class="rounded-full bg-slate-100 px-3 py-1 text-slate-700">Kapasitas: {{ $fasilitasDetail->kapasitas }}</span>
+                                    <span class="rounded-full px-3 py-1 {{ $fasilitasDetail->status_fasilitas === 'available' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
+                                        {{ $fasilitasDetail->status_fasilitas === 'available' ? 'Tersedia' : 'Perawatan' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 border-t border-slate-100 pt-5">
+                                @if ($fasilitasDetail->status_fasilitas === 'available')
+                                    @if ($canBook)
+                                        <a
+                                            href="{{ $fasilitasDetailUrl }}"
+                                            class="inline-flex w-full items-center justify-center rounded-xl bg-[var(--brand-red)] px-5 py-3 text-sm font-bold text-white transition hover:bg-[var(--brand-deep)] focus:outline-none focus:ring-2 focus:ring-red-200 sm:w-auto"
+                                        >
+                                            Ajukan Booking
+                                        </a>
+                                    @else
+                                        <a
+                                            href="{{ $fasilitasDetailUrl }}"
+                                            class="inline-flex w-full items-center justify-center rounded-xl bg-[var(--brand-red)] px-5 py-3 text-sm font-bold text-white transition hover:bg-[var(--brand-deep)] focus:outline-none focus:ring-2 focus:ring-red-200 sm:w-auto"
+                                        >
+                                            Login untuk Booking
+                                        </a>
+                                        <p class="mt-2 text-xs font-medium text-slate-500">Anda perlu masuk terlebih dahulu sebelum mengajukan booking.</p>
+                                    @endif
+                                @else
+                                    <button type="button" disabled class="inline-flex w-full cursor-not-allowed items-center justify-center rounded-xl bg-slate-300 px-5 py-3 text-sm font-bold text-white sm:w-auto">
+                                        Fasilitas Sedang Perawatan
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <div id="jadwal-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/55 p-4" role="dialog" aria-modal="true" aria-labelledby="jadwal-modal-title">
                 <div class="w-full max-w-3xl rounded-2xl bg-white shadow-2xl">
                     <div class="flex items-start justify-between border-b border-slate-200 px-5 py-4">
@@ -268,8 +403,19 @@
                     <div class="max-h-[70vh] overflow-auto px-5 py-4">
                         <p id="jadwal-modal-loading" class="text-sm font-medium text-slate-500">Memuat data booking...</p>
                         <p id="jadwal-modal-error" class="hidden rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-700"></p>
-                        <div id="jadwal-modal-empty" class="hidden rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">
-                            Tidak ada booking pada tanggal ini.
+                        <div id="jadwal-modal-empty" class="hidden space-y-4">
+                            <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">
+                                Tidak ada booking pada tanggal ini.
+                            </div>
+                            <div id="jadwal-modal-booking" class="hidden">
+                                <a
+                                    id="jadwal-modal-booking-link"
+                                    href="{{ $fasilitasDetailUrl }}"
+                                    class="inline-flex w-full items-center justify-center rounded-xl bg-[var(--brand-red)] px-4 py-3 text-sm font-bold text-white transition hover:bg-[var(--brand-deep)]"
+                                >
+                                    {{ $canBook ? 'Ajukan Booking Tanggal Ini' : 'Login untuk Booking' }}
+                                </a>
+                            </div>
                         </div>
                         <div id="jadwal-modal-list" class="hidden space-y-3"></div>
                     </div>
@@ -321,6 +467,11 @@
             };
 
             const bookingShowBaseUrl = @json(route('booking.show', ['date' => '__DATE__']));
+            const selectedFasilitasId = @json($selectedFasilitasId > 0 ? $selectedFasilitasId : null);
+            const fasilitasDetailBaseUrl = @json($selectedFasilitasId > 0 ? route('fasilitas.show', $selectedFasilitasId) : route('fasilitas.index'));
+            const fasilitasAvailable = @json(($fasilitasDetail?->status_fasilitas ?? 'available') === 'available');
+            const modalBooking = document.getElementById('jadwal-modal-booking');
+            const modalBookingLink = document.getElementById('jadwal-modal-booking-link');
 
             const buildItemHtml = (item) => {
                 const status = item.status_booking || 'pending';
@@ -345,6 +496,7 @@
             cards.forEach((card) => {
                 card.addEventListener('click', async () => {
                     const date = card.getAttribute('data-date');
+                    const isAvailable = !card.classList.contains('border-amber-200');
 
                     if (!date) {
                         return;
@@ -353,8 +505,17 @@
                     openModal();
                     resetModal();
 
+                    if (modalBooking) {
+                        modalBooking.classList.add('hidden');
+                    }
+
                     try {
-                        const response = await fetch(bookingShowBaseUrl.replace('__DATE__', date), {
+                        const detailUrl = new URL(bookingShowBaseUrl.replace('__DATE__', date), window.location.origin);
+                        if (selectedFasilitasId) {
+                            detailUrl.searchParams.set('fasilitas_id', String(selectedFasilitasId));
+                        }
+
+                        const response = await fetch(detailUrl.toString(), {
                             headers: {
                                 'Accept': 'application/json',
                                 'X-Requested-With': 'XMLHttpRequest'
@@ -372,6 +533,15 @@
 
                         if (!payload.bookings || payload.bookings.length === 0) {
                             empty.classList.remove('hidden');
+
+                            if (isAvailable && fasilitasAvailable && modalBooking && modalBookingLink) {
+                                const detailUrl = new URL(fasilitasDetailBaseUrl, window.location.origin);
+                                detailUrl.searchParams.set('tanggal_sewa', date);
+                                detailUrl.hash = 'form-booking';
+                                modalBookingLink.href = detailUrl.toString();
+                                modalBooking.classList.remove('hidden');
+                            }
+
                             return;
                         }
 

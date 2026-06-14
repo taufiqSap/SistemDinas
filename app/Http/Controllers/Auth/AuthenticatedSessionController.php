@@ -32,7 +32,7 @@ class AuthenticatedSessionController extends Controller
             ? 'dashboard'
             : 'fasilitas.index';
 
-        return redirect()->route($redirectRoute);
+        return redirect()->intended(route($redirectRoute));
     }
 
     /**
