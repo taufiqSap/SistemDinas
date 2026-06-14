@@ -4,6 +4,7 @@ use App\Http\Controllers\Booking as BookingController;
 use App\Http\Controllers\Fasilitas as FasilitasController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\FasilitasController as AdminFasilitasController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
 use App\Http\Controllers\Admin\KategoriController as AdminKategoriController;
 use App\Http\Controllers\ProfileController;
@@ -91,15 +92,18 @@ Route::get('/dashboard', function () {
         ],
         'recentBookings' => $dashboardData['recentBookings'],
     ]);
-})->middleware(['auth', 'verified', 'role:admin'])->name('dashboard');
+})->middleware(['auth', 'verified', 'active', 'role:admin'])->name('dashboard');
 
-Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'active', 'role:admin'])->name('admin.')->group(function () {
     Route::get('/fasilitas', [AdminFasilitasController::class, 'index'])->name('fasilitas.index');
     Route::get('/fasilitas/create', [AdminFasilitasController::class, 'create'])->name('fasilitas.create');
     Route::post('/fasilitas', [AdminFasilitasController::class, 'store'])->name('fasilitas.store');
     Route::get('/fasilitas/{fasilitas}/edit', [AdminFasilitasController::class, 'edit'])->name('fasilitas.edit');
     Route::put('/fasilitas/{fasilitas}', [AdminFasilitasController::class, 'update'])->name('fasilitas.update');
     Route::delete('/fasilitas/{fasilitas}', [AdminFasilitasController::class, 'destroy'])->name('fasilitas.destroy');
+
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::patch('/users/{user}/toggle-status', [AdminUserController::class, 'toggleStatus'])->name('users.toggle-status');
 
     Route::get('/kegiatan', [AdminKegiatanController::class, 'index'])->name('kegiatan.index');
     Route::get('/kegiatan/create', [AdminKegiatanController::class, 'create'])->name('kegiatan.create');
@@ -122,7 +126,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
     Route::delete('/bookings/{booking}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
 });
 
-Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
+Route::middleware(['auth', 'verified', 'active', 'role:user'])->group(function () {
     Route::get('/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');
     Route::get('/fasilitas/{id}', [FasilitasController::class, 'show'])->name('fasilitas.show');
     Route::get('/booking/history', [BookingController::class, 'history'])->name('booking.history');
@@ -130,7 +134,7 @@ Route::middleware(['auth', 'verified', 'role:user'])->group(function () {
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

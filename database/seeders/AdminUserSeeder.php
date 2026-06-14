@@ -20,6 +20,7 @@ class AdminUserSeeder extends Seeder
                 'no_hp' => '081200000001',
                 'alamat' => 'Akun admin untuk testing',
                 'role' => 'admin',
+                'status' => 'aktif',
                 'email_verified_at' => now(),
             ]
         );

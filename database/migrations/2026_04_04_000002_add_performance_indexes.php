@@ -22,10 +22,6 @@ return new class extends Migration
             $table->index('status_fasilitas', 'fasilitas_status_fasilitas_index');
         });
 
-        Schema::table('kategori', function (Blueprint $table) {
-            $table->index('status', 'kategori_status_index');
-        });
-
         Schema::table('users', function (Blueprint $table) {
             $table->index('role', 'users_role_index');
         });
@@ -38,10 +34,6 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropIndex('users_role_index');
-        });
-
-        Schema::table('kategori', function (Blueprint $table) {
-            $table->dropIndex('kategori_status_index');
         });
 
         Schema::table('fasilitas', function (Blueprint $table) {

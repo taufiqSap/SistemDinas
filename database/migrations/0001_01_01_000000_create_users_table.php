@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('no_hp');
             $table->text('alamat');
             $table->enum('role', ['admin', 'user'])->default('user');
+            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
             $table->rememberToken();
             $table->timestamps();
         });

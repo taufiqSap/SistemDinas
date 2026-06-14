@@ -155,6 +155,13 @@
                             <span class="sidebar-label ml-3 transition-all duration-200">Kategori</span>
                         </a>
 
+                        <a href="{{ route('admin.users.index') }}" class="sidebar-nav-link flex items-center rounded-xl px-3 py-3 transition {{ request()->routeIs('admin.users.*') ? 'bg-white text-red-700' : 'text-red-50 hover:bg-white/15' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.49 7.49 0 0012 15.75a7.49 7.49 0 00-5.982 2.975M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm6 3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="sidebar-label ml-3 transition-all duration-200">User</span>
+                        </a>
+
                     </nav>
 
                     <form method="POST" action="{{ route('logout') }}" class="mt-3 border-t border-white/20 pt-3">

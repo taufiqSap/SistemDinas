@@ -48,13 +48,7 @@ class Fasilitas extends Controller
         $fasilitas = $query->paginate(8)->withQueryString();
 
         $kategoriList = Cache::remember('fasilitas.index.kategoriList', now()->addMinutes(10), function () {
-            $query = Kategori::query()->orderBy('nama_kategori');
-
-            if (Schema::hasColumn('kategori', 'status')) {
-                $query->where('status', 'active');
-            }
-
-            return $query->pluck('nama_kategori');
+            return Kategori::query()->orderBy('nama_kategori')->pluck('nama_kategori');
         });
 
         return view('fasilitas.fasilitas', [

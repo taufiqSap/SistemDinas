@@ -4,7 +4,6 @@ namespace App\Http\Requests\Auth;
 
 use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -51,6 +50,12 @@ class LoginRequest extends FormRequest
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
+            ]);
+        }
+
+        if (($user->status ?? 'aktif') === 'nonaktif') {
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda sedang nonaktif. Hubungi admin untuk mengaktifkan kembali.',
             ]);
         }
 
