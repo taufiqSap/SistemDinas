@@ -9,22 +9,26 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    
+        public function up(): void
     {
         Schema::create('booking', function (Blueprint $table) {
             $table->id();
             $table->string('kode_booking')->unique();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('fasilitas_id');
-            $table->date('tanggal_sewa');
-            $table->date('tanggal_selesai');
-            $table->integer('durasi_hari');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('fasilitas_id')->constrained('fasilitas')->onDelete('cascade');
+            
+            // Perubahan: Menggunakan datetime agar presisi per jam lintas hari
+            $table->dateTime('waktu_mulai'); 
+            $table->dateTime('waktu_selesai');
+            
+            // Tambahan kolom baru
+            $table->text('kegiatan'); // Isi kegiatan
+            $table->string('dokumen_pdf')->nullable(); // Path file PDF (nullable jika opsional, hapus jika wajib)
+            
             $table->enum('status_booking', ['pending', 'confirmed', 'cancelled'])->default('pending');
+            $table->text('alasan_pembatalan')->nullable();
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('fasilitas_id')->references('id')->on('fasilitas')->onDelete('cascade');
-
         });
     }
 

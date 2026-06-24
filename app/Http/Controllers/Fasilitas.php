@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Fasilitas as FasilitasModel;
 use App\Models\Kategori;
-use App\Models\Kegiatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Schema;
 
 class Fasilitas extends Controller
 {
@@ -73,14 +71,11 @@ class Fasilitas extends Controller
             ])
             ->firstOrFail();
 
-        $kegiatanQuery = Kegiatan::query();
-        if (Schema::hasColumn('kegiatan', 'status')) {
-            $kegiatanQuery->where('status', 'active');
-        }
+        // Bagian Kegiatan dihapus seluruhnya
 
         return view('fasilitas.detail', [
             'fasilitas' => $fasilitas,
-            'kegiatans' => $kegiatanQuery->orderBy('nama_kegiatan')->get(),
+            // Tidak mengirim variabel kegiatans
         ]);
     }
 }

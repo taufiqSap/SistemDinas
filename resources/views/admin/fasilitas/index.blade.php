@@ -32,6 +32,7 @@
                             <tr>
                                 <th class="px-4 py-4 font-semibold">Nama</th>
                                 <th class="px-4 py-4 font-semibold">Kategori</th>
+                                <th class="px-4 py-4 font-semibold">Deskripsi</th>
                                 <th class="px-4 py-4 font-semibold">Kapasitas</th>
                                 <th class="px-4 py-4 font-semibold">Status</th>
                                 <th class="px-4 py-4 font-semibold text-right">Aksi</th>
@@ -42,6 +43,7 @@
                                 <tr class="hover:bg-red-50">
                                     <td class="px-4 py-4 font-semibold text-slate-950">{{ $item->nama_fasilitas }}</td>
                                     <td class="px-4 py-4 text-slate-700">{{ $item->nama_kategori ?? '-' }}</td>
+                                    <td class="px-4 py-4 text-slate-700 max-w-[200px] truncate" title="{{ $item->deskripsi ?? '-' }}">{{ $item->deskripsi ?? '-' }}</td>
                                     <td class="px-4 py-4 text-slate-700">{{ $item->kapasitas }}</td>
                                     <td class="px-4 py-4 text-slate-700">{{ ucfirst($item->status_fasilitas) }}</td>
                                     <td class="px-4 py-4 text-right">
@@ -57,7 +59,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-10 text-center text-slate-500">Belum ada data fasilitas.</td>
+                                    <td colspan="6" class="px-4 py-10 text-center text-slate-500">Belum ada data fasilitas.</td>
                                 </tr>
                             @endforelse
                         </tbody>

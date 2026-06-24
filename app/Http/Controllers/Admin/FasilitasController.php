@@ -15,23 +15,24 @@ use Illuminate\View\View;
 class FasilitasController extends Controller
 {
     public function index(): View
-    {
-        $fasilitas = Fasilitas::query()
-            ->leftJoin('kategori', 'kategori.id', '=', 'fasilitas.kategori_id')
-            ->select([
-                'fasilitas.id',
-                'fasilitas.nama_fasilitas',
-                'fasilitas.status_fasilitas',
-                'fasilitas.kapasitas',
-                'kategori.nama_kategori',
-            ])
-            ->latest('fasilitas.created_at')
-            ->paginate(10);
+{
+    $fasilitas = Fasilitas::query()
+        ->leftJoin('kategori', 'kategori.id', '=', 'fasilitas.kategori_id')
+        ->select([
+            'fasilitas.id',
+            'fasilitas.nama_fasilitas',
+            'fasilitas.deskripsi',      // ✅ ditambahkan
+            'fasilitas.status_fasilitas',
+            'fasilitas.kapasitas',
+            'kategori.nama_kategori',
+        ])
+        ->latest('fasilitas.created_at')
+        ->paginate(10);
 
-        return view('admin.fasilitas.index', [
-            'fasilitas' => $fasilitas,
-        ]);
-    }
+    return view('admin.fasilitas.index', [
+        'fasilitas' => $fasilitas,
+    ]);
+}
 
     public function create(): View
     {

@@ -107,22 +107,20 @@
             </div>
         </section>
 
-        @if ($adminChatUrl)
-            <a
-                href="{{ $adminChatUrl }}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="chat-admin-float fixed bottom-5 right-5 px-4 py-3"
-                aria-label="Chat admin via WhatsApp"
-            >
-                <span class="chat-admin-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="h-6 w-6 fill-current" aria-hidden="true">
-                        <path d="M19.11 17.42c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.79-1.67-2.09-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.02 1-1.02 2.44s1.05 2.84 1.2 3.04c.15.2 2.07 3.16 5 4.43.7.3 1.25.48 1.68.62.7.22 1.34.19 1.85.11.56-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.18-1.42-.07-.11-.27-.18-.57-.33zM16.01 5.33c-5.9 0-10.7 4.8-10.7 10.7 0 1.88.49 3.72 1.42 5.33L6 26.67l5.45-1.4c1.56.85 3.31 1.3 5.07 1.3h.01c5.9 0 10.7-4.8 10.7-10.7 0-2.86-1.11-5.55-3.13-7.57a10.63 10.63 0 0 0-7.59-2.97zm0 19.48h-.01a8.7 8.7 0 0 1-4.44-1.22l-.32-.19-3.23.83.86-3.14-.21-.33a8.69 8.69 0 0 1-1.34-4.63c0-4.79 3.89-8.68 8.68-8.68 2.32 0 4.5.9 6.14 2.54a8.62 8.62 0 0 1 2.54 6.14c0 4.79-3.89 8.68-8.67 8.68z" />
-                    </svg>
-                </span>
-                <span class="pr-1 text-sm font-bold">Chat Admin</span>
-            </a>
-        @endif
+       @if ($adminChatUrl)
+    <a
+        href="{{ $adminChatUrl }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="fixed bottom-5 right-5 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-300"
+        aria-label="Chat admin via WhatsApp"
+        title="Chat Admin"
+    >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="h-7 w-7 fill-current" aria-hidden="true">
+            <path d="M19.11 17.42c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.79-1.67-2.09-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.02 1-1.02 2.44s1.05 2.84 1.2 3.04c.15.2 2.07 3.16 5 4.43.7.3 1.25.48 1.68.62.7.22 1.34.19 1.85.11.56-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.18-1.42-.07-.11-.27-.18-.57-.33zM16.01 5.33c-5.9 0-10.7 4.8-10.7 10.7 0 1.88.49 3.72 1.42 5.33L6 26.67l5.45-1.4c1.56.85 3.31 1.3 5.07 1.3h.01c5.9 0 10.7-4.8 10.7-10.7 0-2.86-1.11-5.55-3.13-7.57a10.63 10.63 0 0 0-7.59-2.97zm0 19.48h-.01a8.7 8.7 0 0 1-4.44-1.22l-.32-.19-3.23.83.86-3.14-.21-.33a8.69 8.69 0 0 1-1.34-4.63c0-4.79 3.89-8.68 8.68-8.68 2.32 0 4.5.9 6.14 2.54a8.62 8.62 0 0 1 2.54 6.14c0 4.79-3.89 8.68-8.67 8.68z" />
+        </svg>
+    </a>
+@endif
 
         <section id="jadwal" class="mx-auto mb-16 mt-12 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
             @php
@@ -160,22 +158,23 @@
                     'fasilitas_id' => $selectedFasilitasId > 0 ? $selectedFasilitasId : null,
                 ]);
 
-                $bookingPeriodsQuery = \App\Models\Booking::query()
+              $bookingPeriodsQuery = \App\Models\Booking::query()
                     ->where('status_booking', '!=', 'cancelled')
-                    ->whereDate('tanggal_sewa', '<=', $endOfMonth->toDateString())
-                    ->whereDate('tanggal_selesai', '>=', $startOfMonth->toDateString());
+                    ->whereDate('waktu_mulai', '<=', $endOfMonth->toDateString())
+                    ->whereDate('waktu_selesai', '>=', $startOfMonth->toDateString());
 
                 if ($selectedFasilitasId > 0) {
                     $bookingPeriodsQuery->where('fasilitas_id', $selectedFasilitasId);
                 }
 
                 $bookingPeriods = $bookingPeriodsQuery
-                    ->get(['id', 'tanggal_sewa', 'tanggal_selesai']);
+                    ->get(['id', 'waktu_mulai', 'waktu_selesai']); // Ubah kolom select
 
                 $bookedDates = [];
                 foreach ($bookingPeriods as $booking) {
-                    $start = \Illuminate\Support\Carbon::parse($booking->tanggal_sewa)->startOfDay();
-                    $end = \Illuminate\Support\Carbon::parse($booking->tanggal_selesai)->startOfDay();
+                    // Sesuaikan dengan nama kolom yang baru
+                    $start = \Illuminate\Support\Carbon::parse($booking->waktu_mulai)->startOfDay();
+                    $end = \Illuminate\Support\Carbon::parse($booking->waktu_selesai)->startOfDay();
 
                     if ($end->lt($start)) {
                         continue;
@@ -474,24 +473,25 @@
             const modalBookingLink = document.getElementById('jadwal-modal-booking-link');
 
             const buildItemHtml = (item) => {
-                const status = item.status_booking || 'pending';
-                const badgeClass = statusClass[status] || 'bg-slate-100 text-slate-700';
-                const badgeText = statusLabel[status] || status;
+    const status = item.status_booking || 'pending';
+    const badgeClass = statusClass[status] || 'bg-slate-100 text-slate-700';
+    const badgeText = statusLabel[status] || status;
 
-                return '<article class="rounded-xl border border-slate-200 bg-slate-50 p-4">'
-                    + '<div class="mb-2 flex items-center justify-between gap-2">'
-                    + '<p class="text-sm font-bold text-slate-800">' + item.kode_booking + '</p>'
-                    + '<span class="rounded-full px-2 py-1 text-xs font-semibold ' + badgeClass + '">' + badgeText + '</span>'
-                    + '</div>'
-                    + '<div class="grid gap-2 text-sm text-slate-700 sm:grid-cols-2">'
-                    + '<p><span class="font-semibold text-slate-900">Pemesan:</span> ' + item.nama_pemesan + '</p>'
-                    + '<p><span class="font-semibold text-slate-900">Agenda:</span> ' + item.agenda + '</p>'
-                    + '<p><span class="font-semibold text-slate-900">Fasilitas:</span> ' + item.fasilitas + '</p>'
-                    + '<p><span class="font-semibold text-slate-900">Mulai:</span> ' + item.tanggal_sewa + '</p>'
-                    + '<p><span class="font-semibold text-slate-900">Selesai:</span> ' + item.tanggal_selesai + ' (' + item.durasi_hari + ' hari)</p>'
-                    + '</div>'
-                    + '</article>';
-            };
+    return '<article class="rounded-xl border border-slate-200 bg-slate-50 p-4">'
+        + '<div class="mb-2 flex items-center justify-between gap-2">'
+        + '<p class="text-sm font-bold text-slate-800">' + item.kode_booking + '</p>'
+        + '<span class="rounded-full px-2 py-1 text-xs font-semibold ' + badgeClass + '">' + badgeText + '</span>'
+        + '</div>'
+        + '<div class="grid gap-2 text-sm text-slate-700 sm:grid-cols-2">'
+        + '<p><span class="font-semibold text-slate-900">Pemesan:</span> ' + item.nama_pemesan + '</p>'
+        + (item.lembaga ? '<p><span class="font-semibold text-slate-900">Lembaga:</span> ' + item.lembaga + '</p>' : '')
+        + '<p><span class="font-semibold text-slate-900">kegiatan:</span> ' + item.kegiatan + '</p>'
+        + '<p><span class="font-semibold text-slate-900">Fasilitas:</span> ' + item.fasilitas + '</p>'
+        + '<p><span class="font-semibold text-slate-900">Mulai:</span> ' + item.waktu_mulai + '</p>'
+        + '<p><span class="font-semibold text-slate-900">Selesai:</span> ' + item.waktu_selesai + '</p>'
+        + '</div>'
+        + '</article>';
+};
 
             cards.forEach((card) => {
                 card.addEventListener('click', async () => {

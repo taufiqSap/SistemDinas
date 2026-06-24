@@ -51,12 +51,6 @@
 @endpush
 
 <x-app-layout>
-	<x-slot name="header">
-		<div>
-			<h2 class="text-2xl font-extrabold tracking-tight text-slate-900">Daftar Aset Tersedia</h2>
-			<p class="mt-1 text-sm text-slate-600">Pilih fasilitas untuk melanjutkan proses booking.</p>
-		</div>
-	</x-slot>
 
 	@php
 		$adminWhatsAppNumber = '6285737644100';
@@ -95,21 +89,19 @@
 			</form>
 
 			@if ($adminChatUrl)
-				<a
-					href="{{ $adminChatUrl }}"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="chat-admin-float fixed bottom-5 right-5 px-4 py-3"
-					aria-label="Chat admin via WhatsApp"
-				>
-					<span class="chat-admin-icon">
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="h-6 w-6 fill-current" aria-hidden="true">
-							<path d="M19.11 17.42c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.79-1.67-2.09-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.02 1-1.02 2.44s1.05 2.84 1.2 3.04c.15.2 2.07 3.16 5 4.43.7.3 1.25.48 1.68.62.7.22 1.34.19 1.85.11.56-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.18-1.42-.07-.11-.27-.18-.57-.33zM16.01 5.33c-5.9 0-10.7 4.8-10.7 10.7 0 1.88.49 3.72 1.42 5.33L6 26.67l5.45-1.4c1.56.85 3.31 1.3 5.07 1.3h.01c5.9 0 10.7-4.8 10.7-10.7 0-2.86-1.11-5.55-3.13-7.57a10.63 10.63 0 0 0-7.59-2.97zm0 19.48h-.01a8.7 8.7 0 0 1-4.44-1.22l-.32-.19-3.23.83.86-3.14-.21-.33a8.69 8.69 0 0 1-1.34-4.63c0-4.79 3.89-8.68 8.68-8.68 2.32 0 4.5.9 6.14 2.54a8.62 8.62 0 0 1 2.54 6.14c0 4.79-3.89 8.68-8.67 8.68z" />
-						</svg>
-					</span>
-					<span class="pr-1 text-sm font-bold">Chat Admin</span>
-				</a>
-			@endif
+    <a
+        href="{{ $adminChatUrl }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="fixed bottom-5 right-5 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-300"
+        aria-label="Chat admin via WhatsApp"
+        title="Chat Admin"
+    >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="h-7 w-7 fill-current" aria-hidden="true">
+            <path d="M19.11 17.42c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.79-1.67-2.09-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.02 1-1.02 2.44s1.05 2.84 1.2 3.04c.15.2 2.07 3.16 5 4.43.7.3 1.25.48 1.68.62.7.22 1.34.19 1.85.11.56-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.18-1.42-.07-.11-.27-.18-.57-.33zM16.01 5.33c-5.9 0-10.7 4.8-10.7 10.7 0 1.88.49 3.72 1.42 5.33L6 26.67l5.45-1.4c1.56.85 3.31 1.3 5.07 1.3h.01c5.9 0 10.7-4.8 10.7-10.7 0-2.86-1.11-5.55-3.13-7.57a10.63 10.63 0 0 0-7.59-2.97zm0 19.48h-.01a8.7 8.7 0 0 1-4.44-1.22l-.32-.19-3.23.83.86-3.14-.21-.33a8.69 8.69 0 0 1-1.34-4.63c0-4.79 3.89-8.68 8.68-8.68 2.32 0 4.5.9 6.14 2.54a8.62 8.62 0 0 1 2.54 6.14c0 4.79-3.89 8.68-8.67 8.68z" />
+        </svg>
+    </a>
+@endif
 
 			@if ($fasilitas->count() === 0)
 				<div class="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-900">
@@ -118,67 +110,79 @@
 			@else
 				<div class="grid grid-cols-1 gap-7 sm:grid-cols-2 xl:grid-cols-4">
 					@foreach ($fasilitas as $item)
-						@php
-							$statusMap = [
-								'available' => ['label' => 'Tersedia', 'badge' => 'bg-emerald-500'],
-								'rented' => ['label' => 'Terbooking', 'badge' => 'bg-orange-500'],
-								'maintenance' => ['label' => 'Perawatan', 'badge' => 'bg-slate-500'],
-							];
-							$status = $statusMap[$item->status_fasilitas] ?? ['label' => 'Tidak Diketahui', 'badge' => 'bg-slate-500'];
-							$image = $item->gambar_fasilitas_url;
-						@endphp
+    @php
+        $statusMap = [
+            'available' => ['label' => 'Tersedia', 'badge' => 'bg-emerald-500'],
+            'rented' => ['label' => 'Terbooking', 'badge' => 'bg-orange-500'],
+            'maintenance' => ['label' => 'Perawatan', 'badge' => 'bg-slate-500'],
+        ];
+        $status = $statusMap[$item->status_fasilitas] ?? ['label' => 'Tidak Diketahui', 'badge' => 'bg-slate-500'];
+        $image = $item->gambar_fasilitas_url;
+    @endphp
 
-						<article class="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-2xl">
-							<div class="relative aspect-[16/10] overflow-hidden bg-slate-100">
-								<img src="{{ $image }}" alt="{{ $item->nama_fasilitas }}" class="h-full w-full object-cover transition duration-700 group-hover:scale-110">
-								<div class="absolute left-4 top-4">
-									<span class="inline-flex items-center rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white {{ $status['badge'] }}">
-										{{ $status['label'] }}
-									</span>
-								</div>
-							</div>
+    <a href="{{ route('fasilitas.show', ['id' => $item->id]) }}"
+       class="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 cursor-pointer">
 
-							<div class="flex flex-1 flex-col p-5">
-								<p class="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">{{ $item->nama_kategori ?? 'Tanpa Kategori' }}</p>
-								<h3 class="mb-3 text-lg font-extrabold leading-tight text-slate-900 transition group-hover:text-[#c62828]">{{ $item->nama_fasilitas }}</h3>
+        {{-- Gambar --}}
+        <div class="relative aspect-[16/10] overflow-hidden bg-slate-100">
+            <img src="{{ $image }}"
+                 alt="{{ $item->nama_fasilitas }}"
+                 class="h-full w-full object-cover transition duration-700 group-hover:scale-105">
 
-								<div class="mb-4 space-y-2 text-sm text-slate-700">
-									<div class="flex items-center gap-2">
-										<span class="material-symbols-outlined text-[19px] text-[#c62828]">groups</span>
-										<span>Kapasitas {{ $item->kapasitas }}</span>
-									</div>
-									<p class="line-clamp-2 text-slate-600">{{ $item->deskripsi ?: 'Belum ada deskripsi fasilitas.' }}</p>
-									@if (!empty($item->alamat))
-										<div class="flex items-center gap-2 text-slate-600">
-											<span class="material-symbols-outlined text-[18px] text-[#c62828]">location_on</span>
-											<span class="line-clamp-1">{{ $item->alamat }}</span>
-										</div>
-									@endif
-									@if (!empty($item->spesifikasi))
-										<div class="flex items-center gap-2 text-slate-600">
-											<span class="material-symbols-outlined text-[18px] text-[#c62828]">info</span>
-											<span class="line-clamp-2">{{ $item->spesifikasi }}</span>
-										</div>
-									@endif
-								</div>
+            {{-- Badge status --}}
+            <div class="absolute left-4 top-4">
+                <span class="inline-flex items-center rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white {{ $status['badge'] }}">
+                    {{ $status['label'] }}
+                </span>
+            </div>
 
-								<div class="mt-auto flex items-center justify-between border-t border-slate-100 pt-4">
-									<div>
-										<p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Biaya Sewa</p>
-										<p class="text-lg font-black text-emerald-600">Gratis</p>
-									</div>
+            {{-- Ikon panah muncul saat hover --}}
+            <div class="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-[#c62828] opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm">
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </div>
+        </div>
 
-									<a
-										href="{{ route('fasilitas.show', ['id' => $item->id]) }}"
-									class="inline-flex items-center justify-center rounded-full bg-red-50 p-2.5 text-[#c62828] transition hover:bg-[#c62828] hover:text-white"
-										title="Lihat detail fasilitas"
-									>
-										<span class="material-symbols-outlined">arrow_forward</span>
-									</a>
-								</div>
-							</div>
-						</article>
-					@endforeach
+        {{-- Konten --}}
+        <div class="flex flex-1 flex-col p-5">
+            <p class="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                {{ $item->nama_kategori ?? 'Tanpa Kategori' }}
+            </p>
+            <h3 class="mb-3 text-lg font-extrabold leading-tight text-slate-900 transition group-hover:text-[#c62828]">
+                {{ $item->nama_fasilitas }}
+            </h3>
+
+            <div class="mb-4 space-y-2 text-sm text-slate-700">
+                {{-- Kapasitas --}}
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[19px] text-[#c62828]">groups</span>
+                    <span>Kapasitas {{ $item->kapasitas }}</span>
+                </div>
+
+                {{-- Deskripsi --}}
+                <p class="line-clamp-2 text-slate-600">
+                    {{ $item->deskripsi ?: 'Belum ada deskripsi fasilitas.' }}
+                </p>
+
+                {{-- Alamat (jika ada) --}}
+                @if (!empty($item->alamat))
+                    <div class="flex items-center gap-2 text-slate-600">
+                        <span class="material-symbols-outlined text-[18px] text-[#c62828]">location_on</span>
+                        <span class="line-clamp-1">{{ $item->alamat }}</span>
+                    </div>
+                @endif
+
+                {{-- Spesifikasi (jika ada) --}}
+                @if (!empty($item->spesifikasi))
+                    <div class="flex items-center gap-2 text-slate-600">
+                        <span class="material-symbols-outlined text-[18px] text-[#c62828]">info</span>
+                        <span class="line-clamp-2">{{ $item->spesifikasi }}</span>
+                    </div>
+                @endif
+            </div>
+            {{-- Tidak ada tombol panah di sini lagi --}}
+        </div>
+    </a>
+@endforeach
 				</div>
 
 				<div class="mt-10">

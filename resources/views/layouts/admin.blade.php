@@ -131,7 +131,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3.75v3M15.75 3.75v3M4.5 9.75h15M5.25 6.75h13.5a.75.75 0 01.75.75v12a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75v-12a.75.75 0 01.75-.75z" />
                             </svg>
-                            <span class="sidebar-label ml-3 transition-all duration-200">Booking</span>
+                            <span class="sidebar-label ml-3 transition-all duration-200">pemesanan</span>
                         </a>
 
                         <a href="{{ route('admin.fasilitas.index') }}" class="sidebar-nav-link flex items-center rounded-xl px-3 py-3 transition {{ request()->routeIs('admin.fasilitas.*') ? 'bg-white text-red-700' : 'text-red-50 hover:bg-white/15' }}">
@@ -141,12 +141,6 @@
                             <span class="sidebar-label ml-3 transition-all duration-200">Fasilitas</span>
                         </a>
 
-                        <a href="{{ route('admin.kegiatan.index') }}" class="sidebar-nav-link flex items-center rounded-xl px-3 py-3 transition {{ request()->routeIs('admin.kegiatan.*') ? 'bg-white text-red-700' : 'text-red-50 hover:bg-white/15' }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6.75h-7.5m7.5 4.5h-7.5m7.5 4.5h-7.5M4.5 5.25A1.5 1.5 0 016 3.75h12a1.5 1.5 0 011.5 1.5v13.5a1.5 1.5 0 01-1.5 1.5H6a1.5 1.5 0 01-1.5-1.5V5.25z" />
-                            </svg>
-                            <span class="sidebar-label ml-3 transition-all duration-200">Kegiatan</span>
-                        </a>
 
                         <a href="{{ route('admin.kategori.index') }}" class="sidebar-nav-link flex items-center rounded-xl px-3 py-3 transition {{ request()->routeIs('admin.kategori.*') ? 'bg-white text-red-700' : 'text-red-50 hover:bg-white/15' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -155,13 +149,22 @@
                             <span class="sidebar-label ml-3 transition-all duration-200">Kategori</span>
                         </a>
 
-                        <a href="{{ route('admin.users.index') }}" class="sidebar-nav-link flex items-center rounded-xl px-3 py-3 transition {{ request()->routeIs('admin.users.*') ? 'bg-white text-red-700' : 'text-red-50 hover:bg-white/15' }}">
+                        <a href="{{ route('admin.users.index') }}" 
+                           class="sidebar-nav-link flex items-center rounded-xl px-3 py-3 transition {{ request()->routeIs('admin.users.*') ? 'bg-white text-red-700' : 'text-red-50 hover:bg-white/15' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.49 7.49 0 0012 15.75a7.49 7.49 0 00-5.982 2.975M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm6 3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
                             </svg>
-                            <span class="sidebar-label ml-3 transition-all duration-200">User</span>
+                            <span class="sidebar-label ml-3 transition-all duration-200">Kelola User</span>
                         </a>
 
+
+                    <a href="{{ route('profile.edit') }}" 
+                       class="sidebar-nav-link flex items-center rounded-xl px-3 py-3 transition {{ request()->routeIs('profile.edit') ? 'bg-white text-red-700' : 'text-red-50 hover:bg-white/15' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span class="sidebar-label ml-3 transition-all duration-200">Pengaturan Profil</span>
+                    </a>
                     </nav>
 
                     <form method="POST" action="{{ route('logout') }}" class="mt-3 border-t border-white/20 pt-3">

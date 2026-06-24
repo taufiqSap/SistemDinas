@@ -13,21 +13,29 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-    public function run(): void
+   public function run(): void
     {
-     
-        $this->call(AdminUserSeeder::class);
-
-
         User::updateOrCreate(
-            ['email' => 'admin.dummy@example.com'],
-            [
-                'nama' => 'Admin Dummy',
-                'password' => 'password', 
-                'no_hp' => '081200000002',
-                'alamat' => 'Admin dummy untuk testing',
+            ['email' => 'admin@example.com'],
+            [   'NIK' => '1234567890123456',
+                'nama' => 'Admin Testing',
+                'password' => 'password',
+                'no_hp' => '081200000001',
+                'alamat' => 'Akun admin untuk testing',
                 'role' => 'admin',
-                'status' => 'aktif', 
+                'status' => 'aktif',
+                'email_verified_at' => now(),
+            ],
+             ['email' => 'taufiq@gmail.com'],
+            [   'NIK' => '1234567890123457',
+                'nama' => 'taufiq',
+                'password' => 'password',
+                'no_hp' => '08120003243001',
+                'alamat' => 'Sentul',
+                'role' => 'user',
+                'status' => 'aktif',
+                'jenis_daftar' => 'lembaga',
+                'nama_lembaga' => 'Seni Budaya',
                 'email_verified_at' => now(),
             ]
         );

@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">History Booking</h2>
-                <p class="mt-1 text-sm text-gray-600">Daftar booking anda (seluruh penyewaan gratis).</p>
+                <p class="mt-1 text-sm text-gray-600">Daftar booking anda.</p>
             </div>
         </div>
     </x-slot>
@@ -38,8 +38,6 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="border-b border-gray-100 p-6">
                     <form method="GET" action="{{ route('booking.history') }}" class="grid gap-4 md:grid-cols-3">
-                       
-
                         <div>
                             <label for="status" class="mb-1.5 block text-sm font-semibold text-gray-700">Status booking</label>
                             <select id="status" name="status" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
@@ -73,6 +71,7 @@
                             </div>
                         </div>
                     @else
+                        <!-- Tabel Desktop -->
                         <div class="hidden lg:block overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 text-sm">
                                 <thead class="bg-gray-50">
@@ -80,8 +79,9 @@
                                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Kode</th>
                                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Fasilitas</th>
                                         <th class="px-4 py-3 text-left font-semibold text-gray-600">Kegiatan</th>
-                                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Tanggal</th>
-                                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Booking</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Jadwal (Mulai - Selesai)</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Status</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-600">Alasan Batal</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 bg-white">
@@ -96,10 +96,23 @@
                                         <tr>
                                             <td class="px-4 py-4 font-medium text-gray-900">{{ $booking->kode_booking }}</td>
                                             <td class="px-4 py-4 text-gray-700">{{ $booking->fasilitas?->nama_fasilitas ?? '-' }}</td>
-                                            <td class="px-4 py-4 text-gray-700">{{ $booking->kegiatan?->nama_kegiatan ?? '-' }}</td>
-                                            <td class="px-4 py-4 text-gray-700">{{ $booking->tanggal_sewa }} - {{ $booking->tanggal_selesai }}</td>
+                                            <td class="px-4 py-4 text-gray-700">{{ $booking->kegiatan ?? '-' }}</td>
+                                            <td class="px-4 py-4 text-gray-700 whitespace-nowrap">
+                                                {{ \Carbon\Carbon::parse($booking->waktu_mulai)->format('d M Y H:i') }}
+                                                -
+                                                {{ \Carbon\Carbon::parse($booking->waktu_selesai)->format('d M Y H:i') }}
+                                            </td>
                                             <td class="px-4 py-4">
-                                                <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $bookingStatusClass }}">{{ ucfirst($booking->status_booking) }}</span>
+                                                <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $bookingStatusClass }}">
+                                                    {{ ucfirst($booking->status_booking) }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-4 text-gray-700 max-w-[180px] truncate" title="{{ $booking->status_booking === 'cancelled' ? ($booking->alasan_pembatalan ?? '') : '' }}">
+                                                @if ($booking->status_booking === 'cancelled')
+                                                    {{ $booking->alasan_pembatalan ?? '-' }}
+                                                @else
+                                                    -
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
@@ -107,6 +120,7 @@
                             </table>
                         </div>
 
+                        <!-- Tampilan Mobile -->
                         <div class="grid gap-4 lg:hidden">
                             @foreach ($bookings as $booking)
                                 @php
@@ -133,11 +147,42 @@
                                         </div>
                                         <div>
                                             <p class="text-xs uppercase tracking-[0.16em] text-gray-400">Kegiatan</p>
-                                            <p class="mt-1 font-medium">{{ $booking->kegiatan?->nama_kegiatan ?? '-' }}</p>
+                                            <p class="mt-1 font-medium">{{ $booking->kegiatan ?? '-' }}</p>
                                         </div>
+                                        <div class="sm:col-span-2">
+                                            <p class="text-xs uppercase tracking-[0.16em] text-gray-400">Jadwal</p>
+                                            <p class="mt-1 font-medium">
+                                                {{ \Carbon\Carbon::parse($booking->waktu_mulai)->format('d M Y H:i') }}
+                                                -
+                                                {{ \Carbon\Carbon::parse($booking->waktu_selesai)->format('d M Y H:i') }}
+                                            </p>
+                                        </div>
+
+                                        <!-- Durasi -->
                                         <div>
-                                            <p class="text-xs uppercase tracking-[0.16em] text-gray-400">Tanggal</p>
-                                            <p class="mt-1 font-medium">{{ $booking->tanggal_sewa }} - {{ $booking->tanggal_selesai }}</p>
+                                            <p class="text-xs uppercase tracking-[0.16em] text-gray-400">Durasi</p>
+                                            <p class="mt-1 font-medium">
+                                                @php
+                                                    $mulai = \Carbon\Carbon::parse($booking->waktu_mulai);
+                                                    $selesai = \Carbon\Carbon::parse($booking->waktu_selesai);
+                                                    $diff = $mulai->diffInHours($selesai);
+                                                @endphp
+                                                {{ $diff }} jam
+                                            </p>
+                                        </div>
+
+                                        <!-- Dibuat Pada -->
+                                        <div>
+                                            <p class="text-xs uppercase tracking-[0.16em] text-gray-400">Dibuat Pada</p>
+                                            <p class="mt-1 font-medium">{{ $booking->created_at->format('d M Y H:i') }}</p>
+                                        </div>
+
+                                        <!-- Alasan Batal (sudah menggunakan alasan_pembatalan) -->
+                                        <div class="sm:col-span-2">
+                                            <p class="text-xs uppercase tracking-[0.16em] text-gray-400">Alasan Batal</p>
+                                            <p class="mt-1 font-medium {{ $booking->status_booking === 'cancelled' ? 'text-rose-700' : 'text-gray-500' }}">
+                                                {{ $booking->status_booking === 'cancelled' ? ($booking->alasan_pembatalan ?? '-') : '-' }}
+                                            </p>
                                         </div>
                                     </div>
                                 </article>

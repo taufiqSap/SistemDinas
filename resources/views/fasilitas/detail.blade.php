@@ -105,22 +105,20 @@
                 </div>
             @endif
 
-            @if ($adminChatUrl)
-                <a
-                    href="{{ $adminChatUrl }}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="chat-admin-float fixed bottom-5 right-5 px-4 py-3"
-                    aria-label="Chat admin via WhatsApp"
-                >
-                    <span class="chat-admin-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="h-6 w-6 fill-current" aria-hidden="true">
-                            <path d="M19.11 17.42c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.79-1.67-2.09-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.02 1-1.02 2.44s1.05 2.84 1.2 3.04c.15.2 2.07 3.16 5 4.43.7.3 1.25.48 1.68.62.7.22 1.34.19 1.85.11.56-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.18-1.42-.07-.11-.27-.18-.57-.33zM16.01 5.33c-5.9 0-10.7 4.8-10.7 10.7 0 1.88.49 3.72 1.42 5.33L6 26.67l5.45-1.4c1.56.85 3.31 1.3 5.07 1.3h.01c5.9 0 10.7-4.8 10.7-10.7 0-2.86-1.11-5.55-3.13-7.57a10.63 10.63 0 0 0-7.59-2.97zm0 19.48h-.01a8.7 8.7 0 0 1-4.44-1.22l-.32-.19-3.23.83.86-3.14-.21-.33a8.69 8.69 0 0 1-1.34-4.63c0-4.79 3.89-8.68 8.68-8.68 2.32 0 4.5.9 6.14 2.54a8.62 8.62 0 0 1 2.54 6.14c0 4.79-3.89 8.68-8.67 8.68z" />
-                        </svg>
-                    </span>
-                    <span class="pr-1 text-sm font-bold">Chat Admin</span>
-                </a>
-            @endif
+           @if ($adminChatUrl)
+    <a
+        href="{{ $adminChatUrl }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="fixed bottom-5 right-5 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-300"
+        aria-label="Chat admin via WhatsApp"
+        title="Chat Admin"
+    >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="h-7 w-7 fill-current" aria-hidden="true">
+            <path d="M19.11 17.42c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.79-1.67-2.09-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.02 1-1.02 2.44s1.05 2.84 1.2 3.04c.15.2 2.07 3.16 5 4.43.7.3 1.25.48 1.68.62.7.22 1.34.19 1.85.11.56-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.18-1.42-.07-.11-.27-.18-.57-.33zM16.01 5.33c-5.9 0-10.7 4.8-10.7 10.7 0 1.88.49 3.72 1.42 5.33L6 26.67l5.45-1.4c1.56.85 3.31 1.3 5.07 1.3h.01c5.9 0 10.7-4.8 10.7-10.7 0-2.86-1.11-5.55-3.13-7.57a10.63 10.63 0 0 0-7.59-2.97zm0 19.48h-.01a8.7 8.7 0 0 1-4.44-1.22l-.32-.19-3.23.83.86-3.14-.21-.33a8.69 8.69 0 0 1-1.34-4.63c0-4.79 3.89-8.68 8.68-8.68 2.32 0 4.5.9 6.14 2.54a8.62 8.62 0 0 1 2.54 6.14c0 4.79-3.89 8.68-8.67 8.68z" />
+        </svg>
+    </a>
+@endif
 
             <div class="grid grid-cols-1 gap-5 sm:gap-8 lg:grid-cols-12">
                 <div class="lg:col-span-8 space-y-8">
@@ -191,84 +189,76 @@
                                         <h3 class="mt-2 text-xl font-black text-slate-950">Form Permohonan Sewa</h3>
                                     </div>
                                     <div class="text-right">
-                                        <p class="text-xs font-semibold text-slate-500">Biaya Sewa</p>
-                                        <p id="harga_satuan_badge" class="text-2xl font-black text-emerald-600">Gratis</p>
+                                        
                                     </div>
                                 </div>
                             </div>
 
                             @if ($statusFasilitas !== 'maintenance')
-                                <form method="POST" action="{{ route('booking.store') }}" class="space-y-5 p-5 sm:p-6">
-                                    @csrf
+                                <form method="POST" action="{{ route('booking.store') }}" enctype="multipart/form-data" class="space-y-5 p-5 sm:p-6">
+                                     @csrf
 
-                                    <input type="hidden" name="fasilitas_id" value="{{ old('fasilitas_id', $fasilitasId) }}">
+                                     <input type="hidden" name="fasilitas_id" value="{{ old('fasilitas_id', $fasilitasId) }}">
 
-                                    <div>
-                                        <label for="kegiatan_id" class="mb-1.5 block text-sm font-bold text-slate-800">Kegiatan</label>
-                                        <select id="kegiatan_id" name="kegiatan_id" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
-                                            @forelse (($kegiatans ?? []) as $kegiatan)
-                                                <option value="{{ $kegiatan->id }}" @selected(old('kegiatan_id') == $kegiatan->id)>{{ $kegiatan->nama_kegiatan }}</option>
-                                            @empty
-                                                <option value="" disabled>Data kegiatan belum tersedia</option>
-                                            @endforelse
-                                        </select>
-                                    </div>
+                                     <div>
+                                         <label for="kegiatan" class="mb-1.5 block text-sm font-bold text-slate-800">Nama Kegiatan</label>
+                                         <input id="kegiatan" name="kegiatan" type="text" value="{{ old('kegiatan') }}" placeholder="Contoh: Rapat Koordinasi Tahunan" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required minlength="5">
+                                     </div>
 
-                                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                        <div>
-                                            <label for="tanggal_sewa" class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Mulai</label>
-                                            <input id="tanggal_sewa" name="tanggal_sewa" type="date" value="{{ old('tanggal_sewa', request('tanggal_sewa')) }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
-                                        </div>
+                                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                         <div>
+                                             <label for="waktu_mulai" class="mb-1.5 block text-sm font-bold text-slate-800">Waktu Mulai</label>
+                                             <input id="waktu_mulai" name="waktu_mulai" type="datetime-local" value="{{ old('waktu_mulai') }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                         </div>
 
-                                        <div>
-                                            <label for="durasi_hari" class="mb-1.5 block text-sm font-bold text-slate-800">Durasi Hari</label>
-                                            <input id="durasi_hari" name="durasi_hari" type="number" min="1" value="{{ old('durasi_hari', 1) }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
-                                        </div>
-                                    </div>
+                                         <div>
+                                             <label for="waktu_selesai" class="mb-1.5 block text-sm font-bold text-slate-800">Waktu Selesai</label>
+                                             <input id="waktu_selesai" name="waktu_selesai" type="datetime-local" value="{{ old('waktu_selesai') }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                         </div>
+                                     </div>
 
-                                    <div>
-                                        <label for="tanggal_selesai" class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Selesai</label>
-                                        <input id="tanggal_selesai" type="date" value="{{ old('tanggal_selesai') }}" class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900" readonly>
-                                        <p class="mt-2 text-xs text-slate-600">Tanggal selesai dihitung otomatis dari tanggal mulai dan durasi.</p>
-                                    </div>
+                                     <div>
+                                         <label for="dokumen_pdf" class="mb-1.5 block text-sm font-bold text-slate-800">Dokumen Pengajuan (PDF)</label>
+                                         <input id="dokumen_pdf" name="dokumen_pdf" type="file" accept="application/pdf" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 file:mr-4 file:rounded-full file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                         <p class="mt-2 text-xs text-slate-600">Format wajib .pdf, maksimal ukuran 2MB.</p>
+                                     </div>
 
-                                    <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#c62828] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#c62828]/20 transition hover:bg-[#b71c1c]">
-                                        <span class="material-symbols-outlined"></span>
-                                        Ajukan Booking 
-                                    </button>
+                                     <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#c62828] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#c62828]/20 transition hover:bg-[#b71c1c]">
+                                         <span class="material-symbols-outlined">send</span>
+                                         Ajukan Booking 
+                                     </button>
                                 </form>
                             @else
-                                <div class="space-y-5 p-5 sm:p-6">
-                                    <input type="hidden" name="fasilitas_id" value="{{ $fasilitasId }}">
+                        <div class="space-y-5 p-5 sm:p-6">
+                            <input type="hidden" name="fasilitas_id" value="{{ $fasilitasId }}">
 
-                                    <div>
-                                        <label class="mb-1.5 block text-sm font-bold text-slate-800">Kegiatan</label>
-                                        <div class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">-</div>
-                                    </div>
+                            <div>
+                                <label class="mb-1.5 block text-sm font-bold text-slate-800">Nama Kegiatan</label>
+                                <div class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">-</div>
+                            </div>
 
-                                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                        <div>
-                                            <label class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Mulai</label>
-                                            <input type="date" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">
-                                        </div>
-
-                                        <div>
-                                            <label class="mb-1.5 block text-sm font-bold text-slate-800">Durasi Hari</label>
-                                            <input type="number" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="mb-1.5 block text-sm font-bold text-slate-800">Tanggal Selesai</label>
-                                        <input type="date" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">
-                                        <p class="mt-2 text-xs text-slate-600">Fasilitas sedang menjalani perawatan.</p>
-                                    </div>
-
-                                    <button type="button" disabled class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-400 px-5 py-3.5 text-sm font-black text-white shadow-sm">
-                                        Sedang dalam perawatan
-                                    </button>
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label class="mb-1.5 block text-sm font-bold text-slate-800">Waktu Mulai</label>
+                                    <input type="datetime-local" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">
                                 </div>
-                            @endif
+                                <div>
+                                    <label class="mb-1.5 block text-sm font-bold text-slate-800">Waktu Selesai</label>
+                                    <input type="datetime-local" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="mb-1.5 block text-sm font-bold text-slate-800">Dokumen Pengajuan (PDF)</label>
+                                <input type="file" disabled class="w-full rounded-2xl border border-slate-200 bg-slate-100 px-4 py-3 text-sm text-slate-500">
+                                <p class="mt-2 text-xs text-slate-600">Fasilitas sedang menjalani perawatan.</p>
+                            </div>
+
+                            <button type="button" disabled class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-400 px-5 py-3.5 text-sm font-black text-white shadow-sm">
+                                Sedang dalam perawatan
+                            </button>
+                        </div>
+                        @endif
                         </div>
 
                         <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-5">
@@ -298,41 +288,12 @@
 @push('scripts')
     <script>
         (function () {
-            const tanggalSewa = document.getElementById('tanggal_sewa');
-            const durasiHari = document.getElementById('durasi_hari');
-            const tanggalSelesai = document.getElementById('tanggal_selesai');
-            const hargaSatuanBadge = document.getElementById('harga_satuan_badge');
-
-            if (!tanggalSewa || !durasiHari || !tanggalSelesai || !hargaSatuanBadge) {
-                return;
-            }
-
-            const setTanggalSelesai = () => {
-                if (!tanggalSewa.value || !durasiHari.value) {
-                    tanggalSelesai.value = '';
-                    return;
-                }
-
-                const durasi = parseInt(durasiHari.value, 10);
-                if (Number.isNaN(durasi) || durasi < 1) {
-                    tanggalSelesai.value = '';
-                    return;
-                }
-
-                const end = new window['Date'](tanggalSewa.value + 'T00:00:00');
-                end.setDate(end.getDate() + durasi - 1);
-                tanggalSelesai.value = end.toISOString().slice(0, 10);
-            };
-
-            tanggalSewa.addEventListener('change', setTanggalSelesai);
-            durasiHari.addEventListener('input', setTanggalSelesai);
-            setTanggalSelesai();
-
             const successPopup = document.getElementById('booking-success-popup');
             const fasilitasUrl = @json(route('fasilitas.index'));
 
             if (successPopup) {
                 successPopup.addEventListener('click', (event) => {
+                    // Tutup modal jika user mengklik area di luar kotak modal
                     if (event.target === successPopup) {
                         window.location.href = fasilitasUrl;
                     }

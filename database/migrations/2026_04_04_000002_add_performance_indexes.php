@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('booking', function (Blueprint $table) {
             $table->index('status_booking', 'booking_status_booking_index');
             $table->index('fasilitas_id', 'booking_fasilitas_id_index');
-            $table->index('kegiatan_id', 'booking_kegiatan_id_index');
+         
         });
 
         Schema::table('fasilitas', function (Blueprint $table) {
@@ -44,7 +44,7 @@ return new class extends Migration
         Schema::table('booking', function (Blueprint $table) {
             $table->dropIndex('booking_status_booking_index');
             $table->dropIndex('booking_fasilitas_id_index');
-            $table->dropIndex('booking_kegiatan_id_index');
+           
         });
     }
 };

@@ -10,25 +10,19 @@
         <div class="grid gap-5 sm:grid-cols-2">
             <div>
                 <label for="nama" class="block text-sm font-semibold text-slate-700">Nama Lengkap</label>
-                <input id="nama" name="nama" type="text" class="mt-2 block w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-[#c62828] focus:bg-white focus:ring-1 focus:ring-[#c62828]" :value="old('nama', $user->nama)" required autofocus autocomplete="name" />
-                @if ($errors->has('nama'))
-                    <p class="mt-1 text-sm text-red-600">{{ $errors->first('nama') }}</p>
-                @endif
+                <p class="mt-2 block w-full rounded-lg border border-slate-200 bg-slate-100 px-4 py-2.5 text-slate-700">{{ $user->nama }}</p>
             </div>
 
             <div>
                 <label for="email" class="block text-sm font-semibold text-slate-700">Email</label>
-                <input id="email" name="email" type="email" class="mt-2 block w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-[#c62828] focus:bg-white focus:ring-1 focus:ring-[#c62828]" :value="old('email', $user->email)" required autocomplete="username" />
-                @if ($errors->has('email'))
-                    <p class="mt-1 text-sm text-red-600">{{ $errors->first('email') }}</p>
-                @endif
+                <p class="mt-2 block w-full rounded-lg border border-slate-200 bg-slate-100 px-4 py-2.5 text-slate-700">{{ $user->email }}</p>
             </div>
         </div>
 
         <div class="grid gap-5 sm:grid-cols-2">
             <div>
                 <label for="no_hp" class="block text-sm font-semibold text-slate-700">Nomor HP</label>
-                <input id="no_hp" name="no_hp" type="tel" class="mt-2 block w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-[#c62828] focus:bg-white focus:ring-1 focus:ring-[#c62828]" :value="old('no_hp', $user->no_hp)" required autocomplete="tel" />
+                <input id="no_hp" name="no_hp" type="tel" class="mt-2 block w-full rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 text-slate-900 placeholder-slate-400 focus:border-[#c62828] focus:bg-white focus:ring-1 focus:ring-[#c62828]" value="{{ old('no_hp', $user->no_hp) }}" required autofocus autocomplete="tel" />
                 @if ($errors->has('no_hp'))
                     <p class="mt-1 text-sm text-red-600">{{ $errors->first('no_hp') }}</p>
                 @endif

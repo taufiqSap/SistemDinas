@@ -22,10 +22,6 @@
                     <p class="mt-4 max-w-2xl text-sm leading-6 text-slate-700 sm:text-base">
                         Pantau booking masuk, status verifikasi, data fasilitas, dan kegiatan aktif dari satu halaman.
                     </p>
-
-                    <div class="mt-6 flex flex-wrap gap-3">
-
-                    </div>
                 </div>
 
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
@@ -71,6 +67,7 @@
                         <thead class="bg-red-50 text-xs uppercase tracking-[0.2em] text-slate-600">
                             <tr>
                                 <th class="px-4 py-4 font-semibold">Kode</th>
+                                <th class="px-4 py-4 font-semibold">Pemesan</th>
                                 <th class="px-4 py-4 font-semibold">Kegiatan</th>
                                 <th class="px-4 py-4 font-semibold">Fasilitas</th>
                                 <th class="px-4 py-4 font-semibold">Jadwal</th>
@@ -81,12 +78,15 @@
                             @forelse ($recentBookings as $booking)
                                 <tr class="align-top transition hover:bg-red-50">
                                     <td class="px-4 py-4 font-semibold text-slate-900">{{ $booking->kode_booking }}</td>
-                                    <td class="px-4 py-4 text-slate-700">{{ $booking->kegiatan?->nama_kegiatan ?? '-' }}</td>
+                                    <td class="px-4 py-4 text-slate-700">{{ $booking->user?->nama ?? '-' }}</td>
+                                    <td class="px-4 py-4 text-slate-700 max-w-[180px] truncate" title="{{ $booking->kegiatan ?? '-' }}">
+                                        {{ $booking->kegiatan ?? '-' }}
+                                    </td>
                                     <td class="px-4 py-4 text-slate-700">{{ $booking->fasilitas?->nama_fasilitas ?? '-' }}</td>
-                                    <td class="px-4 py-4 text-slate-700">
-                                        {{ \Carbon\Carbon::parse($booking->tanggal_sewa)->format('d M Y') }}
+                                    <td class="px-4 py-4 text-slate-700 whitespace-nowrap">
+                                        {{ \Carbon\Carbon::parse($booking->waktu_mulai)->format('d M Y H:i') }}
                                         -
-                                        {{ \Carbon\Carbon::parse($booking->tanggal_selesai)->format('d M Y') }}
+                                        {{ \Carbon\Carbon::parse($booking->waktu_selesai)->format('d M Y H:i') }}
                                     </td>
                                     <td class="px-4 py-4">
                                         <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $statusClasses[$booking->status_booking] ?? 'bg-white/10 text-slate-200 ring-1 ring-inset ring-white/15' }}">
@@ -96,7 +96,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-10 text-center text-slate-500">
+                                    <td colspan="6" class="px-4 py-10 text-center text-slate-500">
                                         Belum ada data booking yang masuk.
                                     </td>
                                 </tr>

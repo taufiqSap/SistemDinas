@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->string('NIK')->unique();
             $table->string('nama');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
@@ -21,6 +22,8 @@ return new class extends Migration
             $table->text('alamat');
             $table->enum('role', ['admin', 'user'])->default('user');
             $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
+            $table->enum('jenis_daftar',['lembaga','perorangan'])->default('perorangan');
+            $table->string('nama_lembaga')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

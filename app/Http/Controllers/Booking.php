@@ -4,64 +4,77 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking as BookingModel;
 use App\Models\Fasilitas;
-use App\Models\Kegiatan;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage; 
 
 class Booking extends Controller
 {
     public function show(Request $request, string $date): JsonResponse
-    {
-        try {
-            $selectedDate = Carbon::createFromFormat('Y-m-d', $date)->startOfDay();
-        } catch (\Throwable $exception) {
-            return response()->json([
-                'message' => 'Format tanggal tidak valid.',
-            ], 422);
-        }
-
-        $bookingsQuery = BookingModel::query()
-            ->where('status_booking', '!=', 'cancelled')
-            ->whereDate('tanggal_sewa', '<=', $selectedDate->toDateString())
-            ->whereDate('tanggal_selesai', '>=', $selectedDate->toDateString());
-
-        if ($request->filled('fasilitas_id')) {
-            $bookingsQuery->where('fasilitas_id', (int) $request->input('fasilitas_id'));
-        }
-
-        $bookings = $bookingsQuery
-            ->with([
-                'user:id,nama',
-                'fasilitas:id,nama_fasilitas',
-                'kegiatan:id,nama_kegiatan',
-            ])
-            ->orderBy('tanggal_sewa')
-            ->get()
-            ->map(function (BookingModel $booking) {
-                return [
-                    'kode_booking' => $booking->kode_booking,
-                    'user_id' => $booking->user_id,
-                    'nama_pemesan' => $booking->user?->nama ?? '-',
-                    'agenda' => $booking->kegiatan?->nama_kegiatan ?? '-',
-                    'fasilitas' => $booking->fasilitas?->nama_fasilitas ?? '-',
-                    'tanggal_sewa' => Carbon::parse($booking->tanggal_sewa)->translatedFormat('d F Y'),
-                    'tanggal_selesai' => Carbon::parse($booking->tanggal_selesai)->translatedFormat('d F Y'),
-                    'durasi_hari' => (int) $booking->durasi_hari,
-                    'status_booking' => $booking->status_booking,
-                ];
-            })
-            ->values();
-
+{
+    try {
+        $selectedDate = Carbon::createFromFormat('Y-m-d', $date)->startOfDay();
+    } catch (\Throwable $exception) {
         return response()->json([
-            'tanggal' => $selectedDate->toDateString(),
-            'tanggal_label' => $selectedDate->translatedFormat('d F Y'),
-            'bookings' => $bookings,
-        ]);
+            'message' => 'Format tanggal tidak valid.',
+        ], 422);
     }
+
+    $bookingsQuery = BookingModel::query()
+        ->where('status_booking', '!=', 'cancelled')
+        ->where(function($query) use ($selectedDate) {
+            $query->whereDate('waktu_mulai', '<=', $selectedDate->toDateString())
+                  ->whereDate('waktu_selesai', '>=', $selectedDate->toDateString());
+        });
+
+    if ($request->filled('fasilitas_id')) {
+        $bookingsQuery->where('fasilitas_id', (int) $request->input('fasilitas_id'));
+    }
+
+    // Cek apakah kolom 'nama_lembaga' ada di tabel users
+    $hasLembaga = Schema::hasColumn('users', 'nama_lembaga');
+
+    // Tentukan field yang akan di-select dari tabel users
+    $userFields = ['id', 'nama'];
+    if ($hasLembaga) {
+        $userFields[] = 'nama_lembaga';
+    }
+
+    $bookings = $bookingsQuery
+        ->with([
+            'user' => function ($query) use ($userFields) {
+                $query->select($userFields);
+            },
+            'fasilitas:id,nama_fasilitas',
+        ])
+        ->orderBy('waktu_mulai')
+        ->get()
+        ->map(function (BookingModel $booking) use ($hasLembaga) {
+            return [
+                'kode_booking'   => $booking->kode_booking,
+                'user_id'        => $booking->user_id,
+                'nama_pemesan'   => $booking->user?->nama ?? '-',
+                'lembaga'        => $hasLembaga ? ($booking->user?->nama_lembaga ?? null) : null,
+                'kegiatan'       => $booking->kegiatan ?? '-',
+                'fasilitas'      => $booking->fasilitas?->nama_fasilitas ?? '-',
+                'waktu_mulai'    => Carbon::parse($booking->waktu_mulai)->translatedFormat('d F Y H:i'),
+                'waktu_selesai'  => Carbon::parse($booking->waktu_selesai)->translatedFormat('d F Y H:i'),
+                'status_booking' => $booking->status_booking,
+                'dokumen_pdf'    => $booking->dokumen_pdf ? asset('storage/' . $booking->dokumen_pdf) : null,
+            ];
+        })
+        ->values();
+
+    return response()->json([
+        'tanggal'       => $selectedDate->toDateString(),
+        'tanggal_label' => $selectedDate->translatedFormat('d F Y'),
+        'bookings'      => $bookings,
+    ]);
+}
 
     public function history(Request $request)
     {
@@ -69,7 +82,6 @@ class Booking extends Controller
             ->where('user_id', $request->user()->id)
             ->with([
                 'fasilitas:id,nama_fasilitas',
-                'kegiatan:id,nama_kegiatan',
             ]);
 
         if ($request->filled('status')) {
@@ -80,11 +92,9 @@ class Booking extends Controller
             $keyword = trim((string) $request->q);
             $query->where(function ($builder) use ($keyword) {
                 $builder->where('kode_booking', 'like', "%{$keyword}%")
+                    ->orWhere('kegiatan', 'like', "%{$keyword}%") // PERUBAHAN: search langsung ke kolom text
                     ->orWhereHas('fasilitas', function ($relation) use ($keyword) {
                         $relation->where('nama_fasilitas', 'like', "%{$keyword}%");
-                    })
-                    ->orWhereHas('kegiatan', function ($relation) use ($keyword) {
-                        $relation->where('nama_kegiatan', 'like', "%{$keyword}%");
                     });
             });
         }
@@ -108,6 +118,7 @@ class Booking extends Controller
                 'pending' => (int) ($summary['pending'] ?? 0),
                 'confirmed' => (int) ($summary['confirmed'] ?? 0),
                 'cancelled' => (int) ($summary['cancelled'] ?? 0),
+                'disabled' => (int) ($summary['disabled'] ?? 0),
             ],
             'filters' => [
                 'q' => (string) $request->get('q', ''),
@@ -118,92 +129,82 @@ class Booking extends Controller
 
     public function create()
     {
-        $hasKegiatanStatus = Schema::hasColumn('kegiatan', 'status');
-
-        $kegiatans = Cache::remember('booking.create.kegiatans.' . (int) $hasKegiatanStatus, now()->addMinutes(10), function () use ($hasKegiatanStatus) {
-            $kegiatanQuery = Kegiatan::query();
-
-            if ($hasKegiatanStatus) {
-                $kegiatanQuery->where('status', 'active');
-            }
-
-            return $kegiatanQuery->orderBy('nama_kegiatan')->get();
-        });
-
         $fasilitass = Cache::remember('booking.create.fasilitass', now()->addMinutes(10), function () {
             return Fasilitas::orderBy('nama_fasilitas')->get();
         });
 
+        // Relasi master Kegiatan dihapus dari form karena kegiatan sekarang diisi bebas via teks input wajib
         return view('booking.create', [
-            'kegiatans' => $kegiatans,
             'fasilitass' => $fasilitass,
         ]);
     }
 
     public function store(Request $request)
     {
+        // 1. Validasi input baru (Menerima input datetime dari form html / flatpickr)
         $validated = $request->validate([
             'fasilitas_id' => ['required', 'integer', 'exists:fasilitas,id'],
-            'kegiatan_id' => ['required', 'integer', 'exists:kegiatan,id'],
-            'tanggal_sewa' => ['required', 'date'],
-            'durasi_hari' => ['required', 'integer', 'min:1'],
+            'waktu_mulai' => ['required', 'date', 'after_or_equal:now'],
+            'waktu_selesai' => ['required', 'date', 'after:waktu_mulai'],
+            'kegiatan' => ['required', 'string', 'min:5'], // Wajib diisi berupa teks
+            'dokumen_pdf' => ['required', 'file', 'mimes:pdf', 'max:2048'], // Wajib upload file PDF maks 2MB
         ]);
 
-        $bookingSummary = $this->resolveBookingSummary($validated);
+        $waktuMulai = Carbon::parse($validated['waktu_mulai']);
+        $waktuSelesai = Carbon::parse($validated['waktu_selesai']);
 
-        // Validate conflicts: do not allow creating a booking that overlaps
-        // with existing bookings from OTHER users for the same facility.
-        $tanggalSewa = Carbon::parse($validated['tanggal_sewa'])->startOfDay();
-        $tanggalSelesai = Carbon::parse($bookingSummary['tanggal_selesai'])->startOfDay();
-
+        // 2. LOGIKA ANTI-BENTROK BARU (Per Jam & Lintas Hari)
+        // Mengecek apakah ada booking terkonfirmasi lain yang rentang waktunya saling bersinggungan
         $conflictExists = BookingModel::query()
-            ->where('status_booking', '!=', 'cancelled')
+            ->where('status_booking', 'confirmed') // Hanya membandingkan dengan yang sudah fix/confirmed
             ->where('fasilitas_id', $validated['fasilitas_id'])
-            ->where('user_id', '!=', $request->user()->id)
-            ->whereDate('tanggal_sewa', '<=', $tanggalSelesai->toDateString())
-            ->whereDate('tanggal_selesai', '>=', $tanggalSewa->toDateString())
+            ->where(function ($query) use ($waktuMulai, $waktuSelesai) {
+                $query->where(function ($q) use ($waktuMulai, $waktuSelesai) {
+                    $q->where('waktu_mulai', '<', $waktuSelesai)
+                      ->where('waktu_selesai', '>', $waktuMulai);
+                });
+            })
             ->exists();
 
         if ($conflictExists) {
             return redirect()->back()
-                ->withErrors(['tanggal_sewa' => 'Tanggal yang dipilih bentrok dengan booking pengguna lain.'])
+                ->withErrors(['waktu_mulai' => 'Fasilitas sudah dibooking pada rentang waktu/jam tersebut.'])
                 ->withInput();
         }
 
-        DB::transaction(function () use ($request, $validated, $bookingSummary) {
+        // 3. Proses upload dokumen PDF ke folder public
+        $pdfPath = null;
+        if ($request->hasFile('dokumen_pdf')) {
+            $pdfPath = $request->file('dokumen_pdf')->store('dokumen_booking', 'public');
+        }
+
+        // 4. Proses simpan ke database aman menggunakan Transaction
+        DB::transaction(function () use ($request, $validated, $waktuMulai, $waktuSelesai, $pdfPath) {
             BookingModel::create([
                 'kode_booking' => $this->generateBookingCode(),
                 'user_id' => $request->user()->id,
                 'fasilitas_id' => $validated['fasilitas_id'],
-                'kegiatan_id' => $validated['kegiatan_id'],
-                'tanggal_sewa' => $validated['tanggal_sewa'],
-                'tanggal_selesai' => $bookingSummary['tanggal_selesai'],
-                'durasi_hari' => $validated['durasi_hari'],
+                'waktu_mulai' => $waktuMulai,
+                'waktu_selesai' => $waktuSelesai,
+                'kegiatan' => $validated['kegiatan'],
+                'dokumen_pdf' => $pdfPath,
                 'status_booking' => 'pending',
             ]);
         });
 
-        return redirect()->back()->with('success', 'Booking gratis berhasil dibuat.');
+        return redirect()->back()->with('success', 'Booking berhasil diajukan dan menunggu persetujuan.');
     }
 
-    private function resolveBookingSummary(array $validated): array
-    {
-        $durasi = (int) $validated['durasi_hari'];
-        $tanggalSewa = Carbon::parse($validated['tanggal_sewa']);
-        $tanggalSelesai = (clone $tanggalSewa)->addDays($durasi - 1);
+   private function generateBookingCode(): string
+{
+    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    do {
+        $code = '';
+        for ($i = 0; $i < 6; $i++) {
+            $code .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+    } while (Booking::where('kode_booking', $code)->exists());
 
-        return [
-            'tanggal_selesai' => $tanggalSelesai->toDateString(),
-        ];
-    }
-
-    private function generateBookingCode(): string
-    {
-        do {
-            $code = 'BK-' . now()->format('Ymd') . '-' . str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
-        } while (BookingModel::where('kode_booking', $code)->exists());
-
-        return $code;
-    }
-
+    return $code;
+}
 }

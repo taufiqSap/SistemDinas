@@ -11,20 +11,21 @@ class Booking extends Model
     protected $table = 'booking';
 
     protected $fillable = [
-        'kode_booking',
-        'user_id',
-        'fasilitas_id',
-        'kegiatan_id',
-        'tanggal_sewa',
-        'tanggal_selesai',
-        'durasi_hari',
-        'status_booking',
-    ];
-
-    public function kegiatan()
-    {
-        return $this->belongsTo(Kegiatan::class);
-    }
+    'kode_booking',
+    'user_id',
+    'fasilitas_id',
+    'waktu_mulai',
+    'waktu_selesai',
+    'kegiatan',
+    'dokumen_pdf',
+    'status_booking',
+    'alasan_pembatalan',
+];
+protected $casts = [
+    'waktu_mulai' => 'datetime',
+    'waktu_selesai' => 'datetime',
+];
+    
 
     public function user()
     {

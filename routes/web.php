@@ -3,96 +3,22 @@
 use App\Http\Controllers\Booking as BookingController;
 use App\Http\Controllers\Fasilitas as FasilitasController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FasilitasController as AdminFasilitasController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
 use App\Http\Controllers\Admin\KategoriController as AdminKategoriController;
 use App\Http\Controllers\ProfileController;
-use App\Models\Booking as BookingModel;
-use App\Models\Fasilitas;
-use App\Models\Kegiatan;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Schema;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
 Route::get('/booking/show/{date}', [BookingController::class, 'show'])->name('booking.show');
 
-Route::get('/dashboard', function () {
-    $dashboardData = Cache::remember('admin.dashboard.summary', now()->addSeconds(60), function () {
-        $totalBooking = BookingModel::count();
-        $pendingBooking = BookingModel::where('status_booking', 'pending')->count();
-        $confirmedBooking = BookingModel::where('status_booking', 'confirmed')->count();
-        $fasilitasCount = Fasilitas::count();
-        $activeKegiatanCount = Schema::hasColumn('kegiatan', 'status')
-            ? Kegiatan::where('status', 'active')->count()
-            : Kegiatan::count();
-        $recentBookings = BookingModel::query()
-            ->select([
-                'id',
-                'kode_booking',
-                'kegiatan_id',
-                'fasilitas_id',
-                'tanggal_sewa',
-                'tanggal_selesai',
-                'status_booking',
-            ])
-            ->with([
-                'kegiatan:id,nama_kegiatan',
-                'fasilitas:id,nama_fasilitas',
-            ])
-            ->latest()
-            ->take(5)
-            ->get();
-
-        return compact(
-            'totalBooking',
-            'pendingBooking',
-            'confirmedBooking',
-            'fasilitasCount',
-            'activeKegiatanCount',
-            'recentBookings'
-        );
-    });
-
-    return view('admin.dashboard', [
-        'stats' => [
-            [
-                'label' => 'Total Booking',
-                'value' => $dashboardData['totalBooking'],
-                'note' => 'Semua pengajuan',
-                'tone' => 'bg-cyan-400/15 text-cyan-200 ring-cyan-400/20',
-            ],
-            [
-                'label' => 'Booking Pending',
-                'value' => $dashboardData['pendingBooking'],
-                'note' => 'Menunggu verifikasi',
-                'tone' => 'bg-amber-400/15 text-amber-200 ring-amber-400/20',
-            ],
-            [
-                'label' => 'Booking Confirmed',
-                'value' => $dashboardData['confirmedBooking'],
-                'note' => 'Sudah disetujui',
-                'tone' => 'bg-emerald-400/15 text-emerald-200 ring-emerald-400/20',
-            ],
-            [
-                'label' => 'Fasilitas',
-                'value' => $dashboardData['fasilitasCount'],
-                'note' => 'Data tersedia',
-                'tone' => 'bg-violet-400/15 text-violet-200 ring-violet-400/20',
-            ],
-            [
-                'label' => 'Kegiatan Aktif',
-                'value' => $dashboardData['activeKegiatanCount'],
-                'note' => 'Siap dipilih',
-                'tone' => 'bg-sky-400/15 text-sky-200 ring-sky-400/20',
-            ],
-        ],
-        'recentBookings' => $dashboardData['recentBookings'],
-    ]);
-})->middleware(['auth', 'verified', 'active', 'role:admin'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', 'active', 'role:admin'])
+    ->name('dashboard');
 
 Route::prefix('admin')->middleware(['auth', 'active', 'role:admin'])->name('admin.')->group(function () {
     Route::get('/fasilitas', [AdminFasilitasController::class, 'index'])->name('fasilitas.index');
@@ -105,14 +31,6 @@ Route::prefix('admin')->middleware(['auth', 'active', 'role:admin'])->name('admi
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
     Route::patch('/users/{user}/toggle-status', [AdminUserController::class, 'toggleStatus'])->name('users.toggle-status');
 
-    Route::get('/kegiatan', [AdminKegiatanController::class, 'index'])->name('kegiatan.index');
-    Route::get('/kegiatan/create', [AdminKegiatanController::class, 'create'])->name('kegiatan.create');
-    Route::post('/kegiatan', [AdminKegiatanController::class, 'store'])->name('kegiatan.store');
-    Route::get('/kegiatan/{kegiatan}/edit', [AdminKegiatanController::class, 'edit'])->name('kegiatan.edit');
-    Route::put('/kegiatan/{kegiatan}', [AdminKegiatanController::class, 'update'])->name('kegiatan.update');
-    Route::delete('/kegiatan/{kegiatan}', [AdminKegiatanController::class, 'destroy'])->name('kegiatan.destroy');
-
-    // Kategori CRUD
     Route::get('/kategori', [AdminKategoriController::class, 'index'])->name('kategori.index');
     Route::get('/kategori/create', [AdminKategoriController::class, 'create'])->name('kategori.create');
     Route::post('/kategori', [AdminKategoriController::class, 'store'])->name('kategori.store');
@@ -120,6 +38,8 @@ Route::prefix('admin')->middleware(['auth', 'active', 'role:admin'])->name('admi
     Route::put('/kategori/{kategori}', [AdminKategoriController::class, 'update'])->name('kategori.update');
     Route::delete('/kategori/{kategori}', [AdminKategoriController::class, 'destroy'])->name('kategori.destroy');
 
+    Route::get('/bookings/create', [AdminBookingController::class, 'create'])->name('bookings.create');
+    Route::post('/bookings', [AdminBookingController::class, 'store'])->name('bookings.store');
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
     Route::put('/bookings/{booking}', [AdminBookingController::class, 'update'])->name('bookings.update');
