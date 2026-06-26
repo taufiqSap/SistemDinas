@@ -48,7 +48,7 @@ Route::prefix('admin')->middleware(['auth', 'active', 'role:admin','no-cache'])-
     Route::delete('/bookings/{booking}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
 });
 
-Route::middleware(['auth', 'verified', 'active', 'role:user'])->group(function () {
+Route::middleware(['auth', 'verified', 'active', 'role:user','no-cache'])->group(function () {
     Route::get('/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');
     Route::get('/fasilitas/{id}', [FasilitasController::class, 'show'])->name('fasilitas.show');
     Route::get('/booking/history', [BookingController::class, 'history'])->name('booking.history');
