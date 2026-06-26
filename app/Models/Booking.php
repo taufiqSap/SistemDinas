@@ -20,6 +20,7 @@ class Booking extends Model
     'dokumen_pdf',
     'status_booking',
     'alasan_pembatalan',
+    'alasan_penolakan',
 ];
 protected $casts = [
     'waktu_mulai' => 'datetime',

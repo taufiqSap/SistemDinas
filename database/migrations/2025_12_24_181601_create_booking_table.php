@@ -18,15 +18,16 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('fasilitas_id')->constrained('fasilitas')->onDelete('cascade');
             
-            // Perubahan: Menggunakan datetime agar presisi per jam lintas hari
+            
             $table->dateTime('waktu_mulai'); 
             $table->dateTime('waktu_selesai');
             
-            // Tambahan kolom baru
-            $table->text('kegiatan'); // Isi kegiatan
-            $table->string('dokumen_pdf')->nullable(); // Path file PDF (nullable jika opsional, hapus jika wajib)
             
-            $table->enum('status_booking', ['pending', 'confirmed', 'cancelled'])->default('pending');
+            $table->text('kegiatan'); 
+            $table->string('dokumen_pdf')->nullable(); 
+            
+            $table->enum('status_booking', ['pending', 'approved', 'rejected','cancelled'])->default('pending');
+            $table->text('alasan_penolakan')->nullable();
             $table->text('alasan_pembatalan')->nullable();
             $table->timestamps();
         });

@@ -50,4 +50,23 @@ class UserController extends Controller
 
         return back()->with('success', 'Status user berhasil diperbarui.');
     }
+
+    /**
+ * Reset password user menjadi nomor HP.
+ */
+public function resetPassword(User $user): RedirectResponse
+{
+    if ($user->role !== 'user') {
+        abort(403, 'Hanya akun user yang dapat direset passwordnya.');
+    }
+
+    if (empty($user->no_hp)) {
+        return back()->withErrors(['error' => 'User ini tidak memiliki nomor HP, reset password gagal.']);
+    }
+
+    $user->password = bcrypt($user->no_hp);
+    $user->save();
+
+    return back()->with('success', 'Password user "' . $user->nama . '" berhasil direset ke nomor HP.');
+}
 }

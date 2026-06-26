@@ -76,56 +76,59 @@ class Booking extends Controller
     ]);
 }
 
-    public function history(Request $request)
-    {
-        $query = BookingModel::query()
-            ->where('user_id', $request->user()->id)
-            ->with([
-                'fasilitas:id,nama_fasilitas',
-            ]);
+   public function history(Request $request)
+{
+    // Query dasar tanpa ORDER BY
+    $baseQuery = BookingModel::query()
+        ->where('user_id', $request->user()->id)
+        ->with(['fasilitas:id,nama_fasilitas']);
 
-        if ($request->filled('status')) {
-            $query->where('status_booking', $request->string('status'));
-        }
-
-        if ($request->filled('q')) {
-            $keyword = trim((string) $request->q);
-            $query->where(function ($builder) use ($keyword) {
-                $builder->where('kode_booking', 'like', "%{$keyword}%")
-                    ->orWhere('kegiatan', 'like', "%{$keyword}%") // PERUBAHAN: search langsung ke kolom text
-                    ->orWhereHas('fasilitas', function ($relation) use ($keyword) {
-                        $relation->where('nama_fasilitas', 'like', "%{$keyword}%");
-                    });
-            });
-        }
-
-        $summary = (clone $query)
-            ->selectRaw('status_booking, COUNT(*) as total')
-            ->groupBy('status_booking')
-            ->pluck('total', 'status_booking');
-
-        $totalBookings = (clone $query)->count();
-
-        $bookings = $query
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
-
-        return view('booking.history', [
-            'bookings' => $bookings,
-            'summary' => [
-                'total' => $totalBookings,
-                'pending' => (int) ($summary['pending'] ?? 0),
-                'confirmed' => (int) ($summary['confirmed'] ?? 0),
-                'cancelled' => (int) ($summary['cancelled'] ?? 0),
-                'disabled' => (int) ($summary['disabled'] ?? 0),
-            ],
-            'filters' => [
-                'q' => (string) $request->get('q', ''),
-                'status' => (string) $request->get('status', ''),
-            ],
-        ]);
+    // Filter status
+    if ($request->filled('status')) {
+        $baseQuery->where('status_booking', $request->string('status'));
     }
+
+    // Pencarian teks
+    if ($request->filled('q')) {
+        $keyword = trim((string) $request->q);
+        $baseQuery->where(function ($builder) use ($keyword) {
+            $builder->where('kode_booking', 'like', "%{$keyword}%")
+                ->orWhere('kegiatan', 'like', "%{$keyword}%")
+                ->orWhereHas('fasilitas', function ($relation) use ($keyword) {
+                    $relation->where('nama_fasilitas', 'like', "%{$keyword}%");
+                });
+        });
+    }
+
+    // Ringkasan status (clone tanpa ORDER BY)
+    $summary = (clone $baseQuery)
+        ->selectRaw('status_booking, COUNT(*) as total')
+        ->groupBy('status_booking')
+        ->pluck('total', 'status_booking');
+
+    $totalBookings = (clone $baseQuery)->count();
+
+    // Data booking dengan urutan dan paginasi
+    $bookings = (clone $baseQuery)
+        ->orderBy('created_at', 'desc')
+        ->paginate(15)
+        ->appends($request->query());
+
+    return view('booking.history', [
+        'bookings' => $bookings,
+        'summary' => [
+            'total'      => $totalBookings,
+            'pending'    => (int) ($summary['pending'] ?? 0),
+            'approved'   => (int) ($summary['approved'] ?? 0),
+            'rejected'   => (int) ($summary['rejected'] ?? 0),
+            'cancelled'  => (int) ($summary['cancelled'] ?? 0),
+        ],
+        'filters' => [
+            'q'      => (string) $request->get('q', ''),
+            'status' => (string) $request->get('status', ''),
+        ],
+    ]);
+}
 
     public function create()
     {
@@ -147,7 +150,7 @@ class Booking extends Controller
             'waktu_mulai' => ['required', 'date', 'after_or_equal:now'],
             'waktu_selesai' => ['required', 'date', 'after:waktu_mulai'],
             'kegiatan' => ['required', 'string', 'min:5'], // Wajib diisi berupa teks
-            'dokumen_pdf' => ['required', 'file', 'mimes:pdf', 'max:2048'], // Wajib upload file PDF maks 2MB
+            'dokumen_pdf' => ['', 'file', 'mimes:pdf,png,jpg,jpeg', 'max:2048'], // Wajib upload file PDF maks 2MB
         ]);
 
         $waktuMulai = Carbon::parse($validated['waktu_mulai']);
@@ -155,16 +158,15 @@ class Booking extends Controller
 
         // 2. LOGIKA ANTI-BENTROK BARU (Per Jam & Lintas Hari)
         // Mengecek apakah ada booking terkonfirmasi lain yang rentang waktunya saling bersinggungan
+        // Cek konflik (hanya terhadap booking yang sudah approved)
         $conflictExists = BookingModel::query()
-            ->where('status_booking', 'confirmed') // Hanya membandingkan dengan yang sudah fix/confirmed
+            ->where('status_booking', 'approved') // ← ubah dari 'confirmed'
             ->where('fasilitas_id', $validated['fasilitas_id'])
             ->where(function ($query) use ($waktuMulai, $waktuSelesai) {
-                $query->where(function ($q) use ($waktuMulai, $waktuSelesai) {
-                    $q->where('waktu_mulai', '<', $waktuSelesai)
+                $query->where('waktu_mulai', '<', $waktuSelesai)
                       ->where('waktu_selesai', '>', $waktuMulai);
-                });
             })
-            ->exists();
+             ->exists();
 
         if ($conflictExists) {
             return redirect()->back()
@@ -194,17 +196,41 @@ class Booking extends Controller
 
         return redirect()->back()->with('success', 'Booking berhasil diajukan dan menunggu persetujuan.');
     }
+    // Di dalam App\Http\Controllers\Booking
+
+public function cancel(Request $request, $id)
+{
+    $booking = BookingModel::where('user_id', $request->user()->id)
+                ->where('id', $id)
+                ->firstOrFail();
+
+    // Hanya boleh dibatalkan jika status masih pending atau approved
+    if (!in_array($booking->status_booking, ['pending', 'approved'])) {
+        return back()->withErrors(['error' => 'Booking ini tidak dapat dibatalkan.']);
+    }
+
+    $validated = $request->validate([
+        'alasan_pembatalan' => ['required', 'string', 'min:5'],
+    ]);
+
+    $booking->update([
+        'status_booking' => 'cancelled',
+        'alasan_pembatalan' => $validated['alasan_pembatalan'],
+    ]);
+
+    // Hapus cache jika perlu
+    Cache::flush();
+
+    return redirect()->route('booking.history')
+        ->with('success', 'Booking berhasil dibatalkan.');
+}
 
    private function generateBookingCode(): string
-{
-    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    do {
-        $code = '';
-        for ($i = 0; $i < 6; $i++) {
-            $code .= $characters[random_int(0, strlen($characters) - 1)];
-        }
-    } while (Booking::where('kode_booking', $code)->exists());
+    {
+        do {
+            $code = 'BK' . now()->format('Ymd') . '' . str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
+        } while (BookingModel::where('kode_booking', $code)->exists());
 
-    return $code;
-}
+        return $code;
+    }
 }

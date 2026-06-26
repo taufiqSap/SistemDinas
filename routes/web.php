@@ -20,7 +20,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified', 'active', 'role:admin'])
     ->name('dashboard');
 
-Route::prefix('admin')->middleware(['auth', 'active', 'role:admin'])->name('admin.')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'active', 'role:admin','no-cache'])->name('admin.')->group(function () {
     Route::get('/fasilitas', [AdminFasilitasController::class, 'index'])->name('fasilitas.index');
     Route::get('/fasilitas/create', [AdminFasilitasController::class, 'create'])->name('fasilitas.create');
     Route::post('/fasilitas', [AdminFasilitasController::class, 'store'])->name('fasilitas.store');
@@ -30,6 +30,8 @@ Route::prefix('admin')->middleware(['auth', 'active', 'role:admin'])->name('admi
 
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
     Route::patch('/users/{user}/toggle-status', [AdminUserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::put('/users/{user}/reset-password', [AdminUserController::class, 'resetPassword'])->name('users.reset-password');
+    
 
     Route::get('/kategori', [AdminKategoriController::class, 'index'])->name('kategori.index');
     Route::get('/kategori/create', [AdminKategoriController::class, 'create'])->name('kategori.create');
@@ -52,6 +54,7 @@ Route::middleware(['auth', 'verified', 'active', 'role:user'])->group(function (
     Route::get('/booking/history', [BookingController::class, 'history'])->name('booking.history');
     Route::get('/booking/create', [BookingController::class, 'create'])->name('booking.create');
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+    Route::put('/booking/cancel/{id}', [BookingController::class, 'cancel'])->name('booking.cancel');
 });
 
 Route::middleware(['auth', 'active'])->group(function () {

@@ -1,12 +1,25 @@
 <x-admin-layout title="Detail Booking">
     <div class="space-y-6">
+        {{-- Notifikasi sukses --}}
         @if (session('success'))
             <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
                 {{ session('success') }}
             </div>
         @endif
 
+        {{-- Notifikasi error umum (opsional tapi membantu) --}}
+        @if ($errors->any())
+            <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <section class="rounded-3xl border border-red-100 bg-white p-6 shadow-sm shadow-red-100/60">
+            <!-- ... (konten utama sama seperti semula, tidak diubah) ... -->
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.25em] text-red-500">Handle Booking</p>
@@ -18,7 +31,7 @@
             </div>
 
             <div class="mt-6 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-                <!-- Kiri: Informasi Booking -->
+                <!-- Kiri: Informasi Booking (tidak diubah) -->
                 <div class="space-y-4 rounded-3xl border border-red-100 bg-white p-5 shadow-sm">
                     <div class="grid gap-4 md:grid-cols-2">
                         <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500">User</p><p class="mt-1 font-semibold text-slate-950">{{ $booking->user?->nama ?? '-' }}</p></div>
@@ -26,9 +39,9 @@
                         <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500">Fasilitas</p><p class="mt-1 font-semibold text-slate-950">{{ $booking->fasilitas?->nama_fasilitas ?? '-' }}</p></div>
                         <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500">Kegiatan</p><p class="mt-1 font-semibold text-slate-950">{{ $booking->kegiatan ?? '-' }}</p></div>
                         
-                        {{-- Dokumen PDF --}}
+                        {{-- Dokumen --}}
                         <div class="md:col-span-2">
-                            <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Dokumen PDF</p>
+                            <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Dokumen</p>
                             @if ($booking->dokumen_pdf)
                                 <a href="{{ asset('storage/' . $booking->dokumen_pdf) }}" target="_blank" 
                                    class="mt-1 inline-flex items-center gap-2 rounded-full bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100">
@@ -45,77 +58,78 @@
                         <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500">Mulai</p><p class="mt-1 font-semibold text-slate-950">{{ \Carbon\Carbon::parse($booking->waktu_mulai)->format('d M Y H:i') }}</p></div>
                         <div><p class="text-xs uppercase tracking-[0.2em] text-slate-500">Selesai</p><p class="mt-1 font-semibold text-slate-950">{{ \Carbon\Carbon::parse($booking->waktu_selesai)->format('d M Y H:i') }}</p></div>
                     </div>
-
-                    <div class="grid gap-4 md:grid-cols-2">
-                    </div>
                 </div>
 
                 <!-- Kanan: Status & Aksi -->
                 <div class="space-y-4 rounded-3xl border border-red-100 bg-white p-5 shadow-sm">
-                    {{-- Form update status (tombol aksi) --}}
-                    <form method="POST" action="{{ route('admin.bookings.update', $booking) }}" class="space-y-4" id="formUpdateStatus">
-                        @csrf
-                        @method('PUT')
-
-                        @if ($booking->status_booking === 'pending')
-                            <div class="flex gap-3">
-                                {{-- Tombol Konfirmasi: buka modal konfirmasi --}}
-                                <button type="button" onclick="bukaModalKonfirmasi('{{ route('admin.bookings.update', $booking) }}')"
-                                        class="flex-1 rounded-full bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700">
-                                    Konfirmasi
-                                </button>
-                                {{-- Tombol Batalkan: panggil modal --}}
-                                <button type="button" onclick="bukaModalBatal('{{ route('admin.bookings.update', $booking) }}')"
-                                        class="flex-1 rounded-full bg-rose-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-rose-700">
-                                    Batalkan
-                                </button>
-                            </div>
-                        @elseif ($booking->status_booking === 'confirmed')
-                            <button type="button" onclick="bukaModalBatal('{{ route('admin.bookings.update', $booking) }}')"
-                                    class="w-full rounded-full bg-rose-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-rose-700">
-                                Batalkan Booking
+                    @if ($booking->status_booking === 'pending')
+                        <div class="flex flex-wrap gap-3">
+                            <button type="button" onclick="bukaModalKonfirmasi('{{ route('admin.bookings.update', $booking) }}')"
+                                    class="flex-1 rounded-full bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700">
+                                Konfirmasi
                             </button>
-                        @else {{-- cancelled --}}
-                            <div class="rounded-2xl bg-slate-100 p-4 text-center text-sm text-slate-600">
-                                Booking ini telah dibatalkan dan tidak dapat diubah.
-                            </div>
-                        @endif
-                    </form>
+                            <button type="button" onclick="bukaModalTolak('{{ route('admin.bookings.update', $booking) }}')"
+                                    class="flex-1 rounded-full bg-amber-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-amber-700">
+                                Tolak
+                            </button>
+                        </div>
+                    @elseif ($booking->status_booking === 'approved')
+                        <div class="rounded-2xl bg-emerald-50 p-4 text-center text-sm text-emerald-700">
+                            Booking ini telah disetujui.
+                        </div>
+                    @elseif ($booking->status_booking === 'rejected')
+                        <div class="rounded-2xl bg-amber-50 p-4 text-center text-sm text-amber-700">
+                            Booking ini telah ditolak.
+                            @if ($booking->alasan_penolakan)
+                                <div class="mt-2 text-left text-xs">
+                                    <strong>Alasan:</strong> {{ $booking->alasan_penolakan }}
+                                </div>
+                            @endif
+                        </div>
+                    @else {{-- cancelled --}}
+                        <div class="rounded-2xl bg-rose-50 p-4 text-center text-sm text-rose-700">
+                            Booking ini telah dibatalkan.
+                            @if ($booking->alasan_pembatalan)
+                                <div class="mt-2 text-left text-xs">
+                                    <strong>Alasan:</strong> {{ $booking->alasan_pembatalan }}
+                                </div>
+                            @endif
+                        </div>
+                    @endif
 
-                    {{-- Tombol hapus booking: buka modal hapus --}}
                     <button type="button" onclick="bukaModalHapus('{{ route('admin.bookings.destroy', $booking) }}')"
                             class="w-full rounded-full border border-rose-200 bg-rose-50 px-5 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-100">
                         Hapus Booking
                     </button>
 
-                    {{-- Status saat ini + alasan batal jika ada --}}
-                    <div class="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-slate-700">
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
                         <p class="font-semibold text-slate-950">Status saat ini</p>
                         <p class="mt-1">{{ ucfirst($booking->status_booking) }}</p>
-                        
-                        @if ($booking->status_booking === 'cancelled' && $booking->alasan_pembatalan)
-                            <div class="mt-3 rounded-xl border border-red-200 bg-white/60 p-3">
-                                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Alasan dibatalkan</p>
-                                <p class="mt-1 text-sm text-slate-800">{{ $booking->alasan_pembatalan }}</p>
-                            </div>
-                        @endif
                     </div>
                 </div>
             </div>
         </section>
     </div>
 
-    {{-- ========== MODAL KONFIRMASI ========== --}}
+    {{-- ========== MODAL KONFIRMASI (dengan area error) ========== --}}
     <div id="modalKonfirmasi" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/55 p-4" role="dialog" aria-modal="true">
         <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl">
             <div class="border-b border-slate-200 px-5 py-4">
                 <h3 class="text-lg font-bold text-slate-900">Konfirmasi Booking</h3>
-                <p class="text-sm text-slate-600">Apakah Anda yakin ingin mengonfirmasi booking ini?</p>
+                <p class="text-sm text-slate-600">Apakah Anda yakin ingin menyetujui booking ini?</p>
             </div>
+
+            {{-- AREA ERROR DINAMIS --}}
+            <div id="errorKonfirmasi" class="px-5 pt-2 hidden">
+                <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700">
+                    <!-- isi akan diisi oleh JavaScript -->
+                </div>
+            </div>
+
             <form id="formKonfirmasi" method="POST" class="p-5">
                 @csrf
                 @method('PUT')
-                <input type="hidden" name="status_booking" value="confirmed">
+                <input type="hidden" name="status_booking" value="approved">
                 <div class="mt-4 flex gap-3">
                     <button type="button" id="btnBatalKonfirmasi" class="flex-1 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                         Batal
@@ -128,29 +142,29 @@
         </div>
     </div>
 
-    {{-- ========== MODAL PEMBATALAN (dengan alasan) ========== --}}
-    <div id="modalBatal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/55 p-4" role="dialog" aria-modal="true">
+    {{-- ========== MODAL TOLAK ========== --}}
+    <div id="modalTolak" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/55 p-4" role="dialog" aria-modal="true">
         <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl">
             <div class="border-b border-slate-200 px-5 py-4">
-                <h3 class="text-lg font-bold text-slate-900">Alasan Pembatalan</h3>
-                <p class="text-sm text-slate-600">Silakan isi alasan mengapa booking ini dibatalkan.</p>
+                <h3 class="text-lg font-bold text-slate-900">Alasan Penolakan</h3>
+                <p class="text-sm text-slate-600">Silakan isi alasan mengapa booking ini ditolak.</p>
             </div>
-            <form id="formBatal" method="POST" class="p-5">
+            <form id="formTolak" method="POST" class="p-5">
                 @csrf
                 @method('PUT')
-                <input type="hidden" name="status_booking" value="cancelled">
+                <input type="hidden" name="status_booking" value="rejected">
                 <div>
-                    <label for="alasan_pembatalan" class="mb-1.5 block text-sm font-bold text-slate-800">Alasan</label>
-                    <textarea id="alasan_pembatalan" name="alasan_pembatalan" rows="4" 
+                    <label for="alasan_penolakan" class="mb-1.5 block text-sm font-bold text-slate-800">Alasan</label>
+                    <textarea id="alasan_penolakan" name="alasan_penolakan" rows="4" 
                               class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-red-500 focus:ring-red-200" 
-                              placeholder="Contoh: Jadwal bentrok dengan kegiatan lain..." required minlength="5"></textarea>
+                              placeholder="Contoh: Dokumen tidak lengkap..." required minlength="5"></textarea>
                 </div>
                 <div class="mt-4 flex gap-3">
-                    <button type="button" id="btnBatalModal" class="flex-1 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    <button type="button" id="btnBatalTolak" class="flex-1 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                         Batal
                     </button>
-                    <button type="submit" class="flex-1 rounded-full bg-rose-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-rose-700">
-                        Konfirmasi Batal
+                    <button type="submit" class="flex-1 rounded-full bg-amber-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-amber-700">
+                        Konfirmasi Tolak
                     </button>
                 </div>
             </form>
@@ -181,27 +195,21 @@
 
     @push('scripts')
     <script>
-        // Fungsi untuk modal konfirmasi
+        // ============ FUNGSI BUKA MODAL ============
         function bukaModalKonfirmasi(actionUrl) {
             const modal = document.getElementById('modalKonfirmasi');
             const form = document.getElementById('formKonfirmasi');
             form.action = actionUrl;
+            // Sembunyikan error jika ada
+            document.getElementById('errorKonfirmasi').classList.add('hidden');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
 
-        document.getElementById('btnBatalKonfirmasi').addEventListener('click', function() {
-            const modal = document.getElementById('modalKonfirmasi');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        });
-
-        // Fungsi untuk modal pembatalan (sudah ada)
-        function bukaModalBatal(actionUrl) {
-            const modal = document.getElementById('modalBatal');
-            const form = document.getElementById('formBatal');
-            const textarea = document.getElementById('alasan_pembatalan');
-            
+        function bukaModalTolak(actionUrl) {
+            const modal = document.getElementById('modalTolak');
+            const form = document.getElementById('formTolak');
+            const textarea = document.getElementById('alasan_penolakan');
             form.action = actionUrl;
             textarea.value = '';
             modal.classList.remove('hidden');
@@ -209,13 +217,6 @@
             setTimeout(() => textarea.focus(), 100);
         }
 
-        document.getElementById('btnBatalModal').addEventListener('click', function() {
-            const modal = document.getElementById('modalBatal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        });
-
-        // Fungsi untuk modal hapus
         function bukaModalHapus(actionUrl) {
             const modal = document.getElementById('modalHapus');
             const form = document.getElementById('formHapus');
@@ -224,20 +225,60 @@
             modal.classList.add('flex');
         }
 
+        // ============ TOMBOL BATAL ============
+        document.getElementById('btnBatalKonfirmasi').addEventListener('click', function() {
+            const modal = document.getElementById('modalKonfirmasi');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.getElementById('errorKonfirmasi').classList.add('hidden');
+        });
+
+        document.getElementById('btnBatalTolak').addEventListener('click', function() {
+            const modal = document.getElementById('modalTolak');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        });
+
         document.getElementById('btnBatalHapus').addEventListener('click', function() {
             const modal = document.getElementById('modalHapus');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         });
 
-        // Tutup modal jika klik di luar area modal (untuk semua modal)
+        // ============ TUTUP MODAL KETIKA KLIK DI LUAR ============
         document.querySelectorAll('.fixed.inset-0.z-50').forEach(modal => {
             modal.addEventListener('click', function(e) {
                 if (e.target === this) {
                     this.classList.add('hidden');
                     this.classList.remove('flex');
+                    // Jika modal konfirmasi, sembunyikan error juga
+                    if (this.id === 'modalKonfirmasi') {
+                        document.getElementById('errorKonfirmasi').classList.add('hidden');
+                    }
                 }
             });
+        });
+
+        // ============ CEK ERROR SAAT LOAD ============
+        document.addEventListener('DOMContentLoaded', function() {
+            // Jika ada error status_booking, buka modal konfirmasi dan tampilkan error
+            @if ($errors->has('status_booking'))
+                const modal = document.getElementById('modalKonfirmasi');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                const errorDiv = document.getElementById('errorKonfirmasi');
+                errorDiv.classList.remove('hidden');
+                errorDiv.querySelector('div').innerText = '{{ $errors->first('status_booking') }}';
+            @endif
+
+            // Jika ada flash error_modal (dari controller), buka modal konfirmasi
+            @if (session('error_modal') === 'konfirmasi')
+                const modal = document.getElementById('modalKonfirmasi');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                // Jika error sudah ditangani di atas, tidak perlu tambahan
+            @endif
         });
     </script>
     @endpush

@@ -7,7 +7,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ $title }}</title>
-          <link rel="icon" href="{{ asset('images/icon.png') }}" type="image/png">
+          <link rel="icon" href="{{ asset('images/icon.jpeg') }}" type="image/jpeg">
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
@@ -111,7 +111,7 @@
                 <div class="flex h-full flex-col p-4">
                     <div class="sidebar-brand-row mb-5 flex items-center">
                         <div class="sidebar-brand-logo mr-3 flex h-12 w-12 items-center justify-center rounded-xl bg-white/95">
-                            <img src="{{ asset('images/Icon.png') }}" alt="Logo Kota Blitar" class="h-9 w-9 object-contain">
+                            <img src="{{ asset('images/Icon.jpeg') }}" alt="Logo Kota Blitar" class="h-9 w-9 object-contain">
                         </div>
                         <div class="sidebar-brand-copy transition-all duration-200">
                             <p class="text-[11px] font-semibold uppercase tracking-[0.25em] text-red-100">Selaras</p>

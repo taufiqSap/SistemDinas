@@ -15,7 +15,6 @@
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.25em] text-red-500">Tambah Booking</p>
                     <h2 class="mt-2 text-2xl font-bold text-slate-950">Buat Booking Baru</h2>
-                    <p class="mt-1 text-sm text-slate-700">Booking akan langsung berstatus <span class="font-semibold text-emerald-600">Confirmed</span>.</p>
                 </div>
                 <a href="{{ route('admin.bookings.index') }}" class="rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-red-50">Kembali</a>
             </div>

@@ -29,12 +29,12 @@ class BookingController extends Controller
         }
 
         return view('admin.booking.index', [
-            'bookings' => $query->paginate(10)->withQueryString(),
-            'filters' => [
-                'status' => (string) $request->get('status', ''),
-            ],
-            'statusOptions' => ['pending', 'confirmed', 'cancelled'],
-        ]);
+        'bookings' => $query->paginate(10)->withQueryString(),
+        'filters' => [
+            'status' => (string) $request->get('status', ''),
+        ],
+        'statusOptions' => ['pending', 'approved', 'rejected', 'cancelled'], // tambahkan cancelled
+    ]);
     }
 
     public function show(Booking $booking): View
@@ -47,33 +47,59 @@ class BookingController extends Controller
 
         return view('admin.booking.show', [
             'booking' => $booking,
-            'statusOptions' => ['pending', 'confirmed', 'cancelled'],
+            'statusOptions' => ['pending', 'approved', 'rejected'],
         ]);
     }
 
-    public function update(Request $request, Booking $booking): RedirectResponse
+  public function update(Request $request, Booking $booking): RedirectResponse
 {
+    // Validasi status yang diizinkan (semua enum)
     $rules = [
-        'status_booking' => ['required', Rule::in(['pending', 'confirmed', 'cancelled'])],
+        'status_booking' => ['required', Rule::in(['pending', 'approved', 'rejected', 'cancelled'])],
     ];
 
+    if ($request->input('status_booking') === 'rejected') {
+        $rules['alasan_penolakan'] = ['required', 'string', 'min:5'];
+    }
+
     if ($request->input('status_booking') === 'cancelled') {
-        $rules['alasan_pembatalan'] = ['required', 'string', 'min:5']; 
+        $rules['alasan_pembatalan'] = ['required', 'string', 'min:5'];
     }
 
     $validated = $request->validate($rules);
 
+    // Jika status baru 'approved', lakukan pengecekan konflik dengan booking lain yang statusnya 'pending' atau 'approved'
+    if ($validated['status_booking'] === 'approved') {
+        $conflict = Booking::where('fasilitas_id', $booking->fasilitas_id)
+            ->whereIn('status_booking', ['pending', 'approved']) // cek pending dan approved
+            ->where('id', '!=', $booking->id)
+            ->where(function ($query) use ($booking) {
+                $query->where('waktu_mulai', '<', $booking->waktu_selesai)
+                      ->where('waktu_selesai', '>', $booking->waktu_mulai);
+            })->exists();
+
+        if ($conflict) {
+            return back()->withErrors([
+                'status_booking' => 'Tidak dapat mengkonfirmasi karena ada booking lain (pending atau approved) yang waktunya bertabrakan.'
+            ])->withInput();
+        }
+    }
+
     $data = ['status_booking' => $validated['status_booking']];
 
+    if ($validated['status_booking'] === 'rejected') {
+        $data['alasan_penolakan'] = $validated['alasan_penolakan'];
+    }
+
     if ($validated['status_booking'] === 'cancelled') {
-        $data['alasan_pembatalan'] = $validated['alasan_pembatalan']; 
+        $data['alasan_pembatalan'] = $validated['alasan_pembatalan'];
     }
 
     $booking->update($data);
 
     Cache::flush();
 
-    return redirect()->route('admin.bookings.show', $booking)
+    return redirect()->route('admin.bookings.index', $booking)
         ->with('success', 'Status booking berhasil diperbarui.');
 }
 
@@ -104,9 +130,9 @@ public function store(Request $request): RedirectResponse
         'dokumen_pdf'  => 'nullable|file|mimes:pdf|max:2048',
     ]);
 
-    // Cek konflik booking (confirmed)
+    // Cek konflik dengan booking yang sudah approved (bukan confirmed)
     $conflict = Booking::where('fasilitas_id', $validated['fasilitas_id'])
-        ->where('status_booking', 'confirmed')
+        ->where('status_booking', 'approved')
         ->where(function ($query) use ($validated) {
             $query->where('waktu_mulai', '<', $validated['waktu_selesai'])
                   ->where('waktu_selesai', '>', $validated['waktu_mulai']);
@@ -114,7 +140,7 @@ public function store(Request $request): RedirectResponse
 
     if ($conflict) {
         return back()
-            ->withErrors(['waktu_mulai' => 'Fasilitas sudah dibooking pada rentang waktu tersebut.'])
+            ->withErrors(['waktu_mulai' => 'Fasilitas sudah di-approve pada rentang waktu tersebut.'])
             ->withInput();
     }
 
@@ -124,23 +150,23 @@ public function store(Request $request): RedirectResponse
         $pdfPath = $request->file('dokumen_pdf')->store('dokumen_booking', 'public');
     }
 
-    // Buat booking dengan user_id = admin yang login
+    // Buat booking langsung dengan status approved
     $booking = Booking::create([
         'kode_booking'   => $this->generateBookingCode(),
-        'user_id'        => auth()->id(), // otomatis admin
+        'user_id'        => auth()->id(),
         'fasilitas_id'   => $validated['fasilitas_id'],
         'waktu_mulai'    => $validated['waktu_mulai'],
         'waktu_selesai'  => $validated['waktu_selesai'],
         'kegiatan'       => $validated['kegiatan'],
         'dokumen_pdf'    => $pdfPath,
-        'status_booking' => 'confirmed',
+        'status_booking' => 'approved', // langsung approved
     ]);
 
     Cache::flush();
 
     return redirect()
         ->route('admin.bookings.index')
-        ->with('success', "Booking berhasil dibuat dengan kode {$booking->kode_booking} (langsung confirmed).");
+        ->with('success', "Booking berhasil dibuat dengan kode {$booking->kode_booking} (langsung approved).");
 }
 
     /**
