@@ -39,37 +39,30 @@ class LoginRequest extends FormRequest
      *
      * @throws ValidationException
      */
-    public function authenticate(): void
-    {
-        $this->ensureIsNotRateLimited();
+   public function authenticate(): void
+{
+    $this->ensureIsNotRateLimited();
 
-        $user = User::where('email', $this->string('email')->lower())->first();
+    $user = User::where('email', $this->string('email')->lower())->first();
 
-        if (! $user || ! Hash::check($this->string('password'), $user->password)) {
-            RateLimiter::hit($this->throttleKey());
-
-            throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]);
-        }
-
-        if (($user->status ?? 'aktif') === 'nonaktif') {
-            throw ValidationException::withMessages([
-                'email' => 'Akun Anda sedang nonaktif. Hubungi admin untuk mengaktifkan kembali.',
-            ]);
-        }
-
-        if (! $user->hasVerifiedEmail()) {
-            throw ValidationException::withMessages([
-                'email' => 'Akun Anda belum terverifikasi. Silakan cek email untuk verifikasi terlebih dahulu.',
-            ]);
-        }
-
-        Auth::login($user, $this->boolean('remember'));
-
-        RateLimiter::clear($this->throttleKey());
+    if (! $user || ! Hash::check($this->string('password'), $user->password)) {
+        RateLimiter::hit($this->throttleKey());
+        throw ValidationException::withMessages([
+            'email' => trans('auth.failed'),
+        ]);
     }
 
+    if (($user->status ?? 'aktif') === 'nonaktif') {
+        throw ValidationException::withMessages([
+            'email' => 'Akun Anda sedang nonaktif. Hubungi admin untuk mengaktifkan kembali.',
+        ]);
+    }
+
+    // ← Blok verifikasi email sudah dihapus
+
+    Auth::login($user, $this->boolean('remember'));
+    RateLimiter::clear($this->throttleKey());
+}
     /**
      * Ensure the login request is not rate limited.
      *

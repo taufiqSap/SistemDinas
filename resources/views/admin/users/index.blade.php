@@ -63,7 +63,7 @@
                                     <td class="px-4 py-4 font-semibold text-slate-900">{{ $user->NIK }}</td>
                                     <td class="px-4 py-4 font-semibold text-slate-900">{{ $user->nama }}</td>
                                     <td class="px-4 py-4 text-slate-700">{{ $user->email }}</td>
-                                    <td class="px-4 py-4 text-slate-700">{{ $user->no_hp }}</td>
+                                    <td class="px-4 py-4 text-slate-700">{{ $user->phone?->no_hp ?? '-' }}</td>
                                     <td class="px-4 py-4 text-slate-700">
                                         {{ ucfirst($user->jenis_daftar ?? 'perorangan') }}
                                     </td>
@@ -88,7 +88,7 @@
                                     
                                         {{-- Tombol Reset Password --}}
                                         <button type="button" 
-                                                onclick="bukaModalReset('{{ route('admin.users.reset-password', $user) }}', '{{ $user->nama }}', '{{ $user->no_hp }}')"
+                                                onclick="bukaModalReset('{{ route('admin.users.reset-password', $user) }}', '{{ $user->nama }}', '{{ $user->phone?->no_hp ?? 'tidak tersedia' }}')"
                                                 class="mt-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 transition hover:bg-amber-100">
                                             Reset Password
                                         </button>

@@ -12,17 +12,21 @@ class UserController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = User::query()
+        // Eager load relasi 'phone' agar tidak N+1 query
+        $query = User::with('phone')
             ->where('role', 'user')
             ->orderBy('nama');
 
         if ($request->filled('q')) {
             $keyword = $request->string('q')->toString();
 
+            // Pencarian juga mencakup no_hp di tabel user_phones
             $query->where(function ($builder) use ($keyword) {
                 $builder->where('nama', 'like', "%{$keyword}%")
                     ->orWhere('email', 'like', "%{$keyword}%")
-                    ->orWhere('no_hp', 'like', "%{$keyword}%");
+                    ->orWhereHas('phone', function ($q) use ($keyword) {
+                        $q->where('no_hp', 'like', "%{$keyword}%");
+                    });
             });
         }
 
@@ -52,21 +56,24 @@ class UserController extends Controller
     }
 
     /**
- * Reset password user menjadi nomor HP.
- */
-public function resetPassword(User $user): RedirectResponse
-{
-    if ($user->role !== 'user') {
-        abort(403, 'Hanya akun user yang dapat direset passwordnya.');
+     * Reset password user menjadi nomor HP (dari tabel user_phones).
+     */
+    public function resetPassword(User $user): RedirectResponse
+    {
+        if ($user->role !== 'user') {
+            abort(403, 'Hanya akun user yang dapat direset passwordnya.');
+        }
+
+        // Ambil no_hp dari relasi phone
+        $noHp = $user->phone?->no_hp;
+
+        if (empty($noHp)) {
+            return back()->withErrors(['error' => 'User ini tidak memiliki nomor HP, reset password gagal.']);
+        }
+
+        $user->password = bcrypt($noHp);
+        $user->save();
+
+        return back()->with('success', 'Password user "' . $user->nama . '" berhasil direset ke nomor HP.');
     }
-
-    if (empty($user->no_hp)) {
-        return back()->withErrors(['error' => 'User ini tidak memiliki nomor HP, reset password gagal.']);
-    }
-
-    $user->password = bcrypt($user->no_hp);
-    $user->save();
-
-    return back()->with('success', 'Password user "' . $user->nama . '" berhasil direset ke nomor HP.');
-}
 }

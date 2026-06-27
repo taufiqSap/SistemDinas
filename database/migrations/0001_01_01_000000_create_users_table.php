@@ -16,9 +16,7 @@ return new class extends Migration
             $table->string('NIK')->unique();
             $table->string('nama');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('no_hp');
             $table->text('alamat');
             $table->enum('role', ['admin', 'user'])->default('user');
             $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');

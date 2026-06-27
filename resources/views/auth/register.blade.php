@@ -125,102 +125,91 @@
 
                         <form id="register-form" method="POST" action="{{ route('register') }}">
                             @csrf
-                             <!-- Bagian Input NIK yang Benar -->
-                        <div id="step-1" class="flex flex-col gap-4 px-8 py-6">
-                        <!-- NIK -->
-                        <div class="flex flex-col gap-1.5">
-                            <label for="nik" class="text-sm font-semibold text-gray-800">
-                                NIK <span class="text-[#C6352F]">*</span>
-                            </label>
-                            <div class="relative flex items-center">
-                                <span class="material-symbols-outlined pointer-events-none absolute left-3.5 text-[20px] text-gray-400">badge</span>
-                                <input id="nik" name="nik" class="input-field" placeholder="Masukkan NIK Anda" type="text" value="{{ old('nik') }}" required autofocus maxlength="16" inputmode="numeric" pattern="[0-9]{16}" title="NIK harus 16 digit angka" oninput="this.value = this.value.replace(/\D/g,'')" />
+                            <!-- STEP 1: Data Diri -->
+                            <div id="step-1" class="flex flex-col gap-4 px-8 py-6">
+                                <!-- NIK -->
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="nik" class="text-sm font-semibold text-gray-800">
+                                        NIK <span class="text-[#C6352F]">*</span>
+                                    </label>
+                                    <div class="relative flex items-center">
+                                        <span class="material-symbols-outlined pointer-events-none absolute left-3.5 text-[20px] text-gray-400">badge</span>
+                                        <input id="nik" name="nik" class="input-field" placeholder="Masukkan NIK Anda" type="text" value="{{ old('nik') }}" required autofocus maxlength="16" inputmode="numeric" pattern="[0-9]{16}" title="NIK harus 16 digit angka" oninput="this.value = this.value.replace(/\D/g,'')" />
+                                    </div>
+                                    <x-input-error :messages="$errors->get('nik')" class="mt-1 text-sm" />
+                                </div>
+
+                                <!-- Nama -->
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="nama" class="text-sm font-semibold text-gray-800">
+                                        Nama Lengkap <span class="text-[#C6352F]">*</span>
+                                    </label>
+                                    <div class="relative flex items-center">
+                                        <span class="material-symbols-outlined pointer-events-none absolute left-3.5 text-[20px] text-gray-400">badge</span>
+                                        <input id="nama" name="nama" class="input-field" placeholder="Masukkan nama lengkap Anda" type="text" value="{{ old('nama') }}" required autocomplete="name" />
+                                    </div>
+                                    <x-input-error :messages="$errors->get('nama')" class="mt-1 text-sm" />
+                                </div>
+
+                                <!-- Email -->
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="email" class="text-sm font-semibold text-gray-800">
+                                        Email <span class="text-[#C6352F]">*</span>
+                                    </label>
+                                    <div class="relative flex items-center">
+                                        <span class="material-symbols-outlined pointer-events-none absolute left-3.5 text-[20px] text-gray-400">mail</span>
+                                        <input id="email" name="email" class="input-field" placeholder="contoh@email.com" type="email" value="{{ old('email') }}" required autocomplete="username" />
+                                    </div>
+                                    <x-input-error :messages="$errors->get('email')" class="mt-1 text-sm" />
+                                </div>
+
+                                <!-- Alamat -->
+                                <div class="flex flex-col gap-1.5">
+                                    <label for="alamat" class="text-sm font-semibold text-gray-800">
+                                        Alamat <span class="text-[#C6352F]">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <span class="material-symbols-outlined pointer-events-none absolute left-3.5 top-3 text-[20px] text-gray-400">home_pin</span>
+                                        <textarea id="alamat" name="alamat" class="textarea-field" placeholder="Masukkan alamat Anda" rows="3" required>{{ old('alamat') }}</textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Jenis Pendaftaran -->
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm font-semibold text-gray-800">Jenis Pendaftaran <span class="text-[#C6352F]">*</span></label>
+                                    <div class="flex rounded-xl border border-gray-200 p-1 bg-gray-50">
+                                        <button type="button" id="btn-perorangan" class="flex-1 rounded-lg py-2 text-sm font-semibold transition-all bg-[#C6352F] text-white shadow-sm" onclick="setJenisDaftar('perorangan')">
+                                            Perorangan
+                                        </button>
+                                        <button type="button" id="btn-lembaga" class="flex-1 rounded-lg py-2 text-sm font-semibold transition-all text-gray-600 hover:bg-gray-100" onclick="setJenisDaftar('lembaga')">
+                                            Lembaga
+                                        </button>
+                                    </div>
+                                    <input type="hidden" name="jenis_daftar" id="jenis_daftar" value="perorangan">
+                                </div>
+
+                                <!-- Nama Lembaga (muncul jika pilih lembaga) -->
+                                <div id="lembaga-field" class="flex flex-col gap-1.5 hidden">
+                                    <label for="nama_lembaga" class="text-sm font-semibold text-gray-800">
+                                        Nama Lembaga <span class="text-[#C6352F]">*</span>
+                                    </label>
+                                    <div class="relative flex items-center">
+                                        <span class="material-symbols-outlined pointer-events-none absolute left-3.5 text-[20px] text-gray-400">business</span>
+                                        <input id="nama_lembaga" name="nama_lembaga" class="input-field" placeholder="Masukkan nama lembaga" type="text" value="{{ old('nama_lembaga') }}" />
+                                    </div>
+                                    <x-input-error :messages="$errors->get('nama_lembaga')" class="mt-1 text-sm" />
+                                </div>
+
+                                <!-- Tombol Lanjut -->
+                                <div class="pt-2">
+                                    <button type="button" onclick="goToStep2()" class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#FFD700] text-sm font-bold uppercase tracking-wide text-gray-900 shadow transition-all hover:brightness-105 active:scale-[0.98]">
+                                        Lanjut
+                                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                                    </button>
+                                </div>
                             </div>
-                            <x-input-error :messages="$errors->get('nik')" class="mt-1 text-sm" />
-                        </div>
 
-                        <!-- Nama -->
-                        <div class="flex flex-col gap-1.5">
-                            <label for="nama" class="text-sm font-semibold text-gray-800">
-                                Nama Lengkap <span class="text-[#C6352F]">*</span>
-                            </label>
-                            <div class="relative flex items-center">
-                                <span class="material-symbols-outlined pointer-events-none absolute left-3.5 text-[20px] text-gray-400">badge</span>
-                                <input id="nama" name="nama" class="input-field" placeholder="Masukkan nama lengkap Anda" type="text" value="{{ old('nama') }}" required autocomplete="name" />
-                            </div>
-                            <x-input-error :messages="$errors->get('nama')" class="mt-1 text-sm" />
-                        </div>
-
-                        <!-- Email -->
-                        <div class="flex flex-col gap-1.5">
-                            <label for="email" class="text-sm font-semibold text-gray-800">
-                                Email <span class="text-[#C6352F]">*</span>
-                            </label>
-                            <div class="relative flex items-center">
-                                <span class="material-symbols-outlined pointer-events-none absolute left-3.5 text-[20px] text-gray-400">mail</span>
-                                <input id="email" name="email" class="input-field" placeholder="contoh@email.com" type="email" value="{{ old('email') }}" required autocomplete="username" />
-                            </div>
-                            <x-input-error :messages="$errors->get('email')" class="mt-1 text-sm" />
-                        </div>
-
-                        <!-- Nomor HP -->
-                        <div class="flex flex-col gap-1.5">
-                            <label for="nohp" class="text-sm font-semibold text-gray-800">
-                                Nomor HP <span class="text-[#C6352F]">*</span>
-                            </label>
-                            <div class="relative flex items-center">
-                                <span class="material-symbols-outlined pointer-events-none absolute left-3.5 text-[20px] text-gray-400">smartphone</span>
-                                <input id="nohp" name="no_hp" class="input-field" placeholder="08xxxxxxxxxx" type="tel" value="{{ old('no_hp') }}" oninput="this.value=this.value.replace(/[^0-9+]/g,'')" required />
-                            </div>
-                            <p class="pl-1 text-xs text-gray-400">Format: 08xx atau +628xx</p>
-                        </div>
-
-                        <!-- Alamat -->
-                        <div class="flex flex-col gap-1.5">
-                            <label for="alamat" class="text-sm font-semibold text-gray-800">
-                                Alamat <span class="text-[#C6352F]">*</span>
-                            </label>
-                            <div class="relative">
-                                <span class="material-symbols-outlined pointer-events-none absolute left-3.5 top-3 text-[20px] text-gray-400">home_pin</span>
-                                <textarea id="alamat" name="alamat" class="textarea-field" placeholder="Masukkan alamat Anda" rows="3" required>{{ old('alamat') }}</textarea>
-                            </div>
-                        </div>
-
-                        <!-- Jenis Pendaftaran -->
-<div class="flex flex-col gap-1.5">
-    <label class="text-sm font-semibold text-gray-800">Jenis Pendaftaran <span class="text-[#C6352F]">*</span></label>
-    <div class="flex rounded-xl border border-gray-200 p-1 bg-gray-50">
-        <button type="button" id="btn-perorangan" class="flex-1 rounded-lg py-2 text-sm font-semibold transition-all bg-[#C6352F] text-white shadow-sm" onclick="setJenisDaftar('perorangan')">
-            Perorangan
-        </button>
-        <button type="button" id="btn-lembaga" class="flex-1 rounded-lg py-2 text-sm font-semibold transition-all text-gray-600 hover:bg-gray-100" onclick="setJenisDaftar('lembaga')">
-            Lembaga
-        </button>
-    </div>
-    <input type="hidden" name="jenis_daftar" id="jenis_daftar" value="perorangan">
-</div>
-
-<!-- Nama Lembaga (muncul jika pilih lembaga) -->
-<div id="lembaga-field" class="flex flex-col gap-1.5 hidden">
-    <label for="nama_lembaga" class="text-sm font-semibold text-gray-800">
-        Nama Lembaga <span class="text-[#C6352F]">*</span>
-    </label>
-    <div class="relative flex items-center">
-        <span class="material-symbols-outlined pointer-events-none absolute left-3.5 text-[20px] text-gray-400">business</span>
-        <input id="nama_lembaga" name="nama_lembaga" class="input-field" placeholder="Masukkan nama lembaga" type="text" value="{{ old('nama_lembaga') }}" />
-    </div>
-    <x-input-error :messages="$errors->get('nama_lembaga')" class="mt-1 text-sm" />
-</div>
-
-                        <!-- Tombol Lanjut -->
-                        <div class="pt-2">
-                            <button type="button" onclick="goToStep2()" class="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#FFD700] text-sm font-bold uppercase tracking-wide text-gray-900 shadow transition-all hover:brightness-105 active:scale-[0.98]">
-                                Lanjut
-                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                            </button>
-                        </div>
-                    </div>
-
+                            <!-- STEP 2: Keamanan -->
                             <div id="step-2" class="{{ $showStep2 ? 'flex' : 'hidden' }} flex-col gap-4 px-8 py-6">
                                 <div class="animate-fadein-delay flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
                                     <span class="material-symbols-outlined shrink-0 text-2xl text-[#C6352F]">info</span>
@@ -283,7 +272,6 @@
                             </p>
                         </div>
                     </div>
-
                 </div>
             </div>
         </main>
@@ -322,67 +310,66 @@
                 document.getElementById('warning-popup').classList.remove('show');
             }
 
-          function goToStep2() {
-    const nik = document.getElementById("nik").value.trim();
-    const nama = document.getElementById("nama").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const nohp = document.getElementById("nohp").value.trim();
-    const alamat = document.getElementById("alamat").value.trim();
+            function goToStep2() {
+                const nik = document.getElementById("nik").value.trim();
+                const nama = document.getElementById("nama").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const alamat = document.getElementById("alamat").value.trim();
 
-    if (!nik || !nama || !email || !nohp || !alamat) {
-        showWarningPopup("Harap lengkapi semua data.");
-        return;
-    }
+                if (!nik || !nama || !email || !alamat) {
+                    showWarningPopup("Harap lengkapi semua data.");
+                    return;
+                }
 
-    if (nik.length !== 16 || !/^\d{16}$/.test(nik)) {
-        showWarningPopup("NIK harus terdiri dari 16 digit angka.");
-        return;
-    }
+                if (nik.length !== 16 || !/^\d{16}$/.test(nik)) {
+                    showWarningPopup("NIK harus terdiri dari 16 digit angka.");
+                    return;
+                }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        showWarningPopup('Format email tidak valid. Silakan periksa kembali email Anda.');
-        return;
-    }
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showWarningPopup('Format email tidak valid. Silakan periksa kembali email Anda.');
+                    return;
+                }
 
-    // ===== Validasi jenis daftar (PINDAHKAN KE SINI) =====
-    const jenisDaftar = document.getElementById('jenis_daftar').value;
-    if (jenisDaftar === 'lembaga') {
-        const namaLembaga = document.getElementById('nama_lembaga').value.trim();
-        if (!namaLembaga) {
-            showWarningPopup('Harap isi nama lembaga.');
-            return; // hentikan proses, step 1 tetap muncul
-        }
-    }
+                // Validasi jenis daftar
+                const jenisDaftar = document.getElementById('jenis_daftar').value;
+                if (jenisDaftar === 'lembaga') {
+                    const namaLembaga = document.getElementById('nama_lembaga').value.trim();
+                    if (!namaLembaga) {
+                        showWarningPopup('Harap isi nama lembaga.');
+                        return;
+                    }
+                }
 
-    // Sembunyikan step 1
-    document.getElementById('step-1').style.display = 'none';
+                // Sembunyikan step 1
+                document.getElementById('step-1').style.display = 'none';
 
-    // Tampilkan step 2
-    const step2 = document.getElementById('step-2');
-    step2.style.display = 'flex';
-    step2.style.flexDirection = 'column';
-    step2.style.gap = '1rem';
+                // Tampilkan step 2
+                const step2 = document.getElementById('step-2');
+                step2.style.display = 'flex';
+                step2.style.flexDirection = 'column';
+                step2.style.gap = '1rem';
 
-    // Update indikator progress
-    document.getElementById('step2-dot').classList.remove('bg-gray-200', 'text-gray-400');
-    document.getElementById('step2-dot').classList.add('bg-[#C6352F]', 'text-white');
-    document.getElementById('step2-label').classList.remove('text-gray-400');
-    document.getElementById('step2-label').classList.add('text-[#C6352F]');
-    document.getElementById('step-progress').style.width = '100%';
-}
+                // Update indikator progress
+                document.getElementById('step2-dot').classList.remove('bg-gray-200', 'text-gray-400');
+                document.getElementById('step2-dot').classList.add('bg-[#C6352F]', 'text-white');
+                document.getElementById('step2-label').classList.remove('text-gray-400');
+                document.getElementById('step2-label').classList.add('text-[#C6352F]');
+                document.getElementById('step-progress').style.width = '100%';
+            }
 
-           function goToStep1() {
-    const step2 = document.getElementById('step-2');
-    step2.style.display = 'none';
-    document.getElementById('step-1').style.display = 'flex'; // atau 'block' sesuai kebutuhan
+            function goToStep1() {
+                const step2 = document.getElementById('step-2');
+                step2.style.display = 'none';
+                document.getElementById('step-1').style.display = 'flex';
 
-    document.getElementById('step2-dot').classList.add('bg-gray-200', 'text-gray-400');
-    document.getElementById('step2-dot').classList.remove('bg-[#C6352F]', 'text-white');
-    document.getElementById('step2-label').classList.add('text-gray-400');
-    document.getElementById('step2-label').classList.remove('text-[#C6352F]');
-    document.getElementById('step-progress').style.width = '0%';
-}
+                document.getElementById('step2-dot').classList.add('bg-gray-200', 'text-gray-400');
+                document.getElementById('step2-dot').classList.remove('bg-[#C6352F]', 'text-white');
+                document.getElementById('step2-label').classList.add('text-gray-400');
+                document.getElementById('step2-label').classList.remove('text-[#C6352F]');
+                document.getElementById('step-progress').style.width = '0%';
+            }
 
             function togglePass(inputId, iconId) {
                 const input = document.getElementById(inputId);
@@ -464,28 +451,28 @@
             });
 
             function setJenisDaftar(jenis) {
-    document.getElementById('jenis_daftar').value = jenis;
-    const btnPerorangan = document.getElementById('btn-perorangan');
-    const btnLembaga = document.getElementById('btn-lembaga');
-    const lembagaField = document.getElementById('lembaga-field');
+                document.getElementById('jenis_daftar').value = jenis;
+                const btnPerorangan = document.getElementById('btn-perorangan');
+                const btnLembaga = document.getElementById('btn-lembaga');
+                const lembagaField = document.getElementById('lembaga-field');
 
-    if (jenis === 'perorangan') {
-        btnPerorangan.className = 'flex-1 rounded-lg py-2 text-sm font-semibold transition-all bg-[#C6352F] text-white shadow-sm';
-        btnLembaga.className = 'flex-1 rounded-lg py-2 text-sm font-semibold transition-all text-gray-600 hover:bg-gray-100';
-        lembagaField.classList.add('hidden');
-        document.getElementById('nama_lembaga').removeAttribute('required');
-    } else {
-        btnLembaga.className = 'flex-1 rounded-lg py-2 text-sm font-semibold transition-all bg-[#C6352F] text-white shadow-sm';
-        btnPerorangan.className = 'flex-1 rounded-lg py-2 text-sm font-semibold transition-all text-gray-600 hover:bg-gray-100';
-        lembagaField.classList.remove('hidden');
-        document.getElementById('nama_lembaga').setAttribute('required', 'required');
-    }
-}
+                if (jenis === 'perorangan') {
+                    btnPerorangan.className = 'flex-1 rounded-lg py-2 text-sm font-semibold transition-all bg-[#C6352F] text-white shadow-sm';
+                    btnLembaga.className = 'flex-1 rounded-lg py-2 text-sm font-semibold transition-all text-gray-600 hover:bg-gray-100';
+                    lembagaField.classList.add('hidden');
+                    document.getElementById('nama_lembaga').removeAttribute('required');
+                } else {
+                    btnLembaga.className = 'flex-1 rounded-lg py-2 text-sm font-semibold transition-all bg-[#C6352F] text-white shadow-sm';
+                    btnPerorangan.className = 'flex-1 rounded-lg py-2 text-sm font-semibold transition-all text-gray-600 hover:bg-gray-100';
+                    lembagaField.classList.remove('hidden');
+                    document.getElementById('nama_lembaga').setAttribute('required', 'required');
+                }
+            }
 
-// Inisialisasi default saat halaman dimuat
-document.addEventListener('DOMContentLoaded', function() {
-    setJenisDaftar('perorangan');
-});
+            // Inisialisasi default saat halaman dimuat
+            document.addEventListener('DOMContentLoaded', function() {
+                setJenisDaftar('perorangan');
+            });
         </script>
     @endpush
 </x-guest-layout>

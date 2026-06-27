@@ -17,7 +17,7 @@ Route::get('/', function () {
 Route::get('/booking/show/{date}', [BookingController::class, 'show'])->name('booking.show');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified', 'active', 'role:admin'])
+    ->middleware(['auth', 'active', 'role:admin'])
     ->name('dashboard');
 
 Route::prefix('admin')->middleware(['auth', 'active', 'role:admin','no-cache'])->name('admin.')->group(function () {
@@ -48,7 +48,7 @@ Route::prefix('admin')->middleware(['auth', 'active', 'role:admin','no-cache'])-
     Route::delete('/bookings/{booking}', [AdminBookingController::class, 'destroy'])->name('bookings.destroy');
 });
 
-Route::middleware(['auth', 'verified', 'active', 'role:user','no-cache'])->group(function () {
+Route::middleware(['auth', 'active', 'role:user','no-cache'])->group(function () {
     Route::get('/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');
     Route::get('/fasilitas/{id}', [FasilitasController::class, 'show'])->name('fasilitas.show');
     Route::get('/booking/history', [BookingController::class, 'history'])->name('booking.history');
