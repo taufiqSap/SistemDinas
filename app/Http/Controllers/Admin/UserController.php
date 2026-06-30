@@ -4,15 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\WhatsAppService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class UserController extends Controller
 {
+    public function __construct(private WhatsAppService $whatsApp) {}
+
     public function index(Request $request): View
     {
-        // Eager load relasi 'phone' agar tidak N+1 query
         $query = User::with('phone')
             ->where('role', 'user')
             ->orderBy('nama');
@@ -20,7 +22,6 @@ class UserController extends Controller
         if ($request->filled('q')) {
             $keyword = $request->string('q')->toString();
 
-            // Pencarian juga mencakup no_hp di tabel user_phones
             $query->where(function ($builder) use ($keyword) {
                 $builder->where('nama', 'like', "%{$keyword}%")
                     ->orWhere('email', 'like', "%{$keyword}%")
@@ -31,13 +32,13 @@ class UserController extends Controller
         }
 
         return view('admin.users.index', [
-            'users' => $query->paginate(10)->withQueryString(),
-            'statusLabels' => [
-                'aktif' => 'Aktif',
+            'users'         => $query->paginate(10)->withQueryString(),
+            'statusLabels'  => [
+                'aktif'    => 'Aktif',
                 'nonaktif' => 'Nonaktif',
             ],
             'statusClasses' => [
-                'aktif' => 'bg-emerald-100 text-emerald-800 ring-1 ring-inset ring-emerald-200',
+                'aktif'    => 'bg-emerald-100 text-emerald-800 ring-1 ring-inset ring-emerald-200',
                 'nonaktif' => 'bg-rose-100 text-rose-800 ring-1 ring-inset ring-rose-200',
             ],
         ]);
@@ -56,7 +57,7 @@ class UserController extends Controller
     }
 
     /**
-     * Reset password user menjadi nomor HP (dari tabel user_phones).
+     * Reset password user menjadi nomor HP, lalu kirim notifikasi WhatsApp 1x.
      */
     public function resetPassword(User $user): RedirectResponse
     {
@@ -64,7 +65,6 @@ class UserController extends Controller
             abort(403, 'Hanya akun user yang dapat direset passwordnya.');
         }
 
-        // Ambil no_hp dari relasi phone
         $noHp = $user->phone?->no_hp;
 
         if (empty($noHp)) {
@@ -73,6 +73,10 @@ class UserController extends Controller
 
         $user->password = bcrypt($noHp);
         $user->save();
+
+        // Kirim notifikasi WhatsApp 1x
+        $message = "Halo {$user->nama}, password akun Anda telah direset oleh admin. Password baru Anda adalah nomor HP Anda. Segera ganti password setelah login.";
+        $this->whatsApp->send($noHp, $message);
 
         return back()->with('success', 'Password user "' . $user->nama . '" berhasil direset ke nomor HP.');
     }

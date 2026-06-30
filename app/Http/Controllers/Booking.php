@@ -150,7 +150,7 @@ class Booking extends Controller
             'waktu_mulai' => ['required', 'date', 'after_or_equal:now'],
             'waktu_selesai' => ['required', 'date', 'after:waktu_mulai'],
             'kegiatan' => ['required', 'string', 'min:5'], // Wajib diisi berupa teks
-            'dokumen_pdf' => ['', 'file', 'mimes:pdf,png,jpg,jpeg', 'max:2048'], // Wajib upload file PDF maks 2MB
+            'dokumen_pdf' => ['nullable', 'file', 'mimes:pdf', 'max:1024'], 
         ]);
 
         $waktuMulai = Carbon::parse($validated['waktu_mulai']);

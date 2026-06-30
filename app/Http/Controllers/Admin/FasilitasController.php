@@ -21,7 +21,7 @@ class FasilitasController extends Controller
         ->select([
             'fasilitas.id',
             'fasilitas.nama_fasilitas',
-            'fasilitas.deskripsi',      // ✅ ditambahkan
+            'fasilitas.deskripsi',      
             'fasilitas.status_fasilitas',
             'fasilitas.kapasitas',
             'kategori.nama_kategori',

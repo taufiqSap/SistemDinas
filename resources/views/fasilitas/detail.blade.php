@@ -218,9 +218,9 @@
                                      </div>
 
                                      <div>
-                                         <label for="dokumen_pdf" class="mb-1.5 block text-sm font-bold text-slate-800">Dokumen Pengajuan (Opsional)</label>
+                                         <label for="dokumen_pdf" class="mb-1.5 block text-sm font-bold text-slate-800">Dokumen pendukung Pengajuan (Opsional)</label>
                                          <input id="dokumen_pdf" name="dokumen_pdf" type="file" accept="application/pdf" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 file:mr-4 file:rounded-full file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200 focus:border-[#c62828] focus:ring-[#c62828]" required>
-                                         <p class="mt-2 text-xs text-slate-600">Format wajib .pdf, maksimal ukuran 2MB.</p>
+                                         <p class="mt-2 text-xs text-slate-600">Format wajib .pdf, maksimal ukuran 1MB.</p>
                                      </div>
 
                                      <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#c62828] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#c62828]/20 transition hover:bg-[#b71c1c]">

@@ -6,14 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\OtpVerifications;
 use App\Models\User;
 use App\Models\UserPhones;
+use App\Services\WhatsAppService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class VerifyOtpController extends Controller
 {
+    public function __construct(private WhatsAppService $whatsApp) {}
+
     /**
-     * Tampilkan form input nomor HP untuk kirim OTP
+     * Tampilkan form input nomor HP untuk kirim OTP.
      */
     public function showKirim()
     {
@@ -25,7 +28,7 @@ class VerifyOtpController extends Controller
     }
 
     /**
-     * Kirim OTP ke nomor HP yang diinput
+     * Simpan nomor HP, generate OTP, dan kirim via WhatsApp.
      */
     public function sendOtp(Request $request)
     {
@@ -34,47 +37,49 @@ class VerifyOtpController extends Controller
         ]);
 
         $userId = session('pending_user_id');
-        $user = User::find($userId);
+        $user   = User::find($userId);
 
         if (!$user) {
             return redirect()->route('register')->withErrors(['error' => 'Sesi registrasi tidak valid. Silakan registrasi ulang.']);
         }
 
-        // Buat user_phones
         UserPhones::create([
-            'user_id' => $user->id,
-            'no_hp' => $request->no_hp,
+            'user_id'     => $user->id,
+            'no_hp'       => $request->no_hp,
             'verified_at' => null,
         ]);
 
-        // Generate OTP dengan durasi 60 detik
-        $otpCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $otpCode = $this->generateOtp();
+
         OtpVerifications::create([
-            'no_hp' => $request->no_hp,
-            'kode' => $otpCode,
+            'no_hp'         => $request->no_hp,
+            'kode'          => $otpCode,
             'attempt_count' => 0,
-            'expired_at' => Carbon::now()->addSeconds(60),
-            'verified_at' => null,
+            'expired_at'    => Carbon::now()->addSeconds(60),
+            'verified_at'   => null,
         ]);
 
-        Log::info("OTP untuk {$request->no_hp}: {$otpCode}");
+        // Kirim OTP via WhatsApp
+        $this->sendOtpWhatsApp($request->no_hp, $otpCode);
 
-        return redirect()->route('verifikasi.otp', ['no_hp' => $request->no_hp])
-                         ->with('status', 'Kode OTP telah dikirim ke WhatsApp Anda.');
+        return redirect()
+            ->route('verifikasi.otp', ['no_hp' => $request->no_hp])
+            ->with('status', 'Kode OTP telah dikirim ke WhatsApp Anda.');
     }
 
     /**
-     * Tampilkan form verifikasi OTP
+     * Tampilkan form verifikasi OTP.
      */
     public function show($no_hp)
     {
-        // Reset counter resend di awal sesi verifikasi
         session(['otp_resend_count' => 0]);
 
         $userPhone = UserPhones::where('no_hp', $no_hp)->first();
+
         if (!$userPhone) {
             return redirect()->route('kirim.otp')->withErrors(['no_hp' => 'Nomor HP tidak terdaftar.']);
         }
+
         if ($userPhone->verified_at) {
             return redirect()->route('login')->with('status', 'Akun sudah terverifikasi.');
         }
@@ -84,40 +89,40 @@ class VerifyOtpController extends Controller
             ->where('expired_at', '>', Carbon::now())
             ->first();
 
-        // Jika tidak ada OTP yang valid, buat baru dengan durasi 60 detik
+        // Jika tidak ada OTP yang valid, buat dan kirim OTP baru
         if (!$otp) {
-            $otpCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            $otpCode = $this->generateOtp();
+
             $otp = OtpVerifications::create([
-                'no_hp' => $no_hp,
-                'kode' => $otpCode,
+                'no_hp'         => $no_hp,
+                'kode'          => $otpCode,
                 'attempt_count' => 0,
-                'expired_at' => Carbon::now()->addSeconds(60),
-                'verified_at' => null,
+                'expired_at'    => Carbon::now()->addSeconds(60),
+                'verified_at'   => null,
             ]);
-            Log::info("OTP baru untuk {$no_hp}: {$otpCode}");
+
+            $this->sendOtpWhatsApp($no_hp, $otpCode);
         }
 
         return view('auth.verifikasi-otp', [
-            'no_hp' => $no_hp,
+            'no_hp'      => $no_hp,
             'expired_at' => $otp->expired_at,
         ]);
     }
 
     /**
-     * Proses verifikasi OTP
+     * Proses verifikasi kode OTP.
      */
     public function verify(Request $request)
     {
-        // Validasi: kode dikirim sebagai array 6 digit
         $request->validate([
             'no_hp' => ['required', 'string'],
             'kode'  => ['required', 'array', 'size:6'],
         ]);
 
         $no_hp = $request->no_hp;
-        $kode = implode('', $request->kode); // Gabungkan 6 digit menjadi string
+        $kode  = implode('', $request->kode);
 
-        // Cari OTP yang valid
         $otp = OtpVerifications::where('no_hp', $no_hp)
             ->where('kode', $kode)
             ->whereNull('verified_at')
@@ -125,7 +130,6 @@ class VerifyOtpController extends Controller
             ->first();
 
         if (!$otp) {
-            // Cari OTP yang masih berlaku tapi kode salah
             $existingOtp = OtpVerifications::where('no_hp', $no_hp)
                 ->whereNull('verified_at')
                 ->where('expired_at', '>', Carbon::now())
@@ -133,22 +137,27 @@ class VerifyOtpController extends Controller
 
             if ($existingOtp) {
                 $existingOtp->increment('attempt_count');
-                if ($existingOtp->attempt_count >= 3) {
+
+                if ($existingOtp->attempt_count >= OtpVerifications::MAX_ATTEMPTS) {
                     $existingOtp->update(['expired_at' => Carbon::now()]);
                     return back()->withErrors(['kode' => 'Terlalu banyak percobaan. Silakan kirim ulang OTP.']);
                 }
-                return back()->withErrors(['kode' => 'Kode OTP salah. Sisa percobaan: ' . (3 - $existingOtp->attempt_count)]);
-            } else {
-                return back()->withErrors(['kode' => 'Kode OTP tidak valid atau sudah kadaluarsa.']);
+
+                $sisa = OtpVerifications::MAX_ATTEMPTS - $existingOtp->attempt_count;
+                return back()->withErrors(['kode' => "Kode OTP salah. Sisa percobaan: {$sisa}"]);
             }
+
+            return back()->withErrors(['kode' => 'Kode OTP tidak valid atau sudah kadaluarsa.']);
         }
 
-        // OTP valid
+        // OTP valid — tandai terverifikasi
         $otp->update(['verified_at' => Carbon::now()]);
 
         $userPhone = UserPhones::where('no_hp', $no_hp)->first();
+
         if ($userPhone) {
             $userPhone->update(['verified_at' => Carbon::now()]);
+
             $user = $userPhone->user;
             if ($user) {
                 $user->update(['status' => 'aktif']);
@@ -161,7 +170,7 @@ class VerifyOtpController extends Controller
     }
 
     /**
-     * Kirim ulang OTP dengan durasi berkurang
+     * Kirim ulang OTP dengan durasi berkurang tiap pengiriman.
      */
     public function resend(Request $request)
     {
@@ -172,19 +181,19 @@ class VerifyOtpController extends Controller
         $no_hp = $request->no_hp;
 
         $userPhone = UserPhones::where('no_hp', $no_hp)->first();
+
         if (!$userPhone) {
             return back()->withErrors(['no_hp' => 'Nomor HP tidak terdaftar.']);
         }
+
         if ($userPhone->verified_at) {
             return redirect()->route('login')->with('status', 'Akun sudah terverifikasi.');
         }
 
-        // Ambil counter resend dari session
-        $resendCount = session('otp_resend_count', 0);
-        $resendCount++;
+        $resendCount = session('otp_resend_count', 0) + 1;
         session(['otp_resend_count' => $resendCount]);
 
-        // Tentukan durasi berdasarkan jumlah resend: 120, 90, 60 (minimum 60)
+        // Durasi berkurang: 120s → 90s → 60s (minimum 60s)
         $duration = max(60, 120 - ($resendCount - 1) * 30);
 
         // Kadaluarsakan OTP lama
@@ -192,18 +201,47 @@ class VerifyOtpController extends Controller
             ->whereNull('verified_at')
             ->update(['expired_at' => Carbon::now()]);
 
-        // Generate OTP baru
-        $otpCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        // Generate & kirim OTP baru
+        $otpCode = $this->generateOtp();
+
         OtpVerifications::create([
-            'no_hp' => $no_hp,
-            'kode' => $otpCode,
+            'no_hp'         => $no_hp,
+            'kode'          => $otpCode,
             'attempt_count' => 0,
-            'expired_at' => Carbon::now()->addSeconds($duration),
-            'verified_at' => null,
+            'expired_at'    => Carbon::now()->addSeconds($duration),
+            'verified_at'   => null,
         ]);
 
-        Log::info("OTP resend #{$resendCount} untuk {$no_hp}: {$otpCode} (durasi {$duration}s)");
+        $this->sendOtpWhatsApp($no_hp, $otpCode);
+
+        Log::info("[OTP] Resend #{$resendCount} untuk {$no_hp} (durasi {$duration}s)");
 
         return back()->with('status', "Kode OTP baru telah dikirim (berlaku {$duration} detik).");
+    }
+
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Generate kode OTP 6 digit dengan zero-padding.
+     */
+    private function generateOtp(): string
+    {
+        return str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Kirim kode OTP via WhatsApp.
+     */
+    private function sendOtpWhatsApp(string $noHp, string $otpCode): void
+    {
+        $message = "Kode OTP Anda adalah: *{$otpCode}*\n\nKode berlaku selama 60 detik. Jangan bagikan kode ini kepada siapapun.";
+
+        $sent = $this->whatsApp->send($noHp, $message);
+
+        if (!$sent) {
+            Log::warning("[OTP] Gagal kirim OTP via WhatsApp ke {$noHp}");
+        }
     }
 }
