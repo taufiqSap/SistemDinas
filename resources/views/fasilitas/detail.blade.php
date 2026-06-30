@@ -185,7 +185,7 @@
                             <div class="border-b border-slate-100 p-5 sm:p-6">
                                 <div class="flex items-baseline justify-between gap-4">
                                     <div>
-                                        <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-500">Booking Awal</p>
+                                        <p class="text-xs font-black uppercase tracking-[0.24em] text-slate-500"></p>
                                         <h3 class="mt-2 text-xl font-black text-slate-950">Form Permohonan Sewa</h3>
                                     </div>
                                     <div class="text-right">
@@ -201,7 +201,7 @@
                                      <input type="hidden" name="fasilitas_id" value="{{ old('fasilitas_id', $fasilitasId) }}">
 
                                      <div>
-                                         <label for="kegiatan" class="mb-1.5 block text-sm font-bold text-slate-800">Nama Kegiatan</label>
+                                         <label for="kegiatan" class="mb-1.5 block text-sm font-bold text-slate-800">Kegiatan</label>
                                          <input id="kegiatan" name="kegiatan" type="text" value="{{ old('kegiatan') }}" placeholder="Contoh: Rapat Koordinasi Tahunan" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required minlength="5">
                                      </div>
 
@@ -219,7 +219,7 @@
 
                                      <div>
                                          <label for="dokumen_pdf" class="mb-1.5 block text-sm font-bold text-slate-800">Dokumen pendukung Pengajuan (Opsional)</label>
-                                         <input id="dokumen_pdf" name="dokumen_pdf" type="file" accept="application/pdf" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 file:mr-4 file:rounded-full file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                         <input id="dokumen_pdf" name="dokumen_pdf" type="file" accept="application/pdf" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 file:mr-4 file:rounded-full file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-200 focus:border-[#c62828] focus:ring-[#c62828]">
                                          <p class="mt-2 text-xs text-slate-600">Format wajib .pdf, maksimal ukuran 1MB.</p>
                                      </div>
 
