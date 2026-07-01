@@ -78,6 +78,10 @@
                         <div class="rounded-2xl bg-emerald-50 p-4 text-center text-sm text-emerald-700">
                             Booking ini telah disetujui.
                         </div>
+                    @elseif ($booking->status_booking === 'completed')
+                        <div class="rounded-2xl bg-sky-50 p-4 text-center text-sm text-sky-700">
+                            Booking ini telah selesai.
+                        </div>
                     @elseif ($booking->status_booking === 'rejected')
                         <div class="rounded-2xl bg-amber-50 p-4 text-center text-sm text-amber-700">
                             Booking ini telah ditolak.

@@ -120,6 +120,7 @@ class Booking extends Controller
             'total'      => $totalBookings,
             'pending'    => (int) ($summary['pending'] ?? 0),
             'approved'   => (int) ($summary['approved'] ?? 0),
+            'completed'  => (int) ($summary['completed'] ?? 0),
             'rejected'   => (int) ($summary['rejected'] ?? 0),
             'cancelled'  => (int) ($summary['cancelled'] ?? 0),
         ],

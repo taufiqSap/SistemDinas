@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Jobs\CompleteBooking;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Fasilitas;
@@ -9,6 +10,7 @@ use App\Services\WhatsAppService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -32,7 +34,7 @@ class BookingController extends Controller
         return view('admin.booking.index', [
             'bookings'      => $query->paginate(10)->withQueryString(),
             'filters'       => ['status' => (string) $request->get('status', '')],
-            'statusOptions' => ['pending', 'approved', 'rejected', 'cancelled'],
+            'statusOptions' => ['pending', 'approved', 'completed', 'rejected', 'cancelled'],
         ]);
     }
 
@@ -95,6 +97,10 @@ class BookingController extends Controller
 
         $booking->update($data);
         Cache::flush();
+
+        if ($validated['status_booking'] === 'approved') {
+            $this->dispatchCompletionJob($booking);
+        }
 
         // Kirim notifikasi WhatsApp ke user
         $this->sendBookingNotification($booking, $validated);
@@ -160,6 +166,8 @@ class BookingController extends Controller
 
         Cache::flush();
 
+        $this->dispatchCompletionJob($booking);
+
         return redirect()
             ->route('admin.bookings.index')
             ->with('success', "Booking berhasil dibuat dengan kode {$booking->kode_booking} (langsung approved).");
@@ -205,8 +213,23 @@ class BookingController extends Controller
     {
         do {
             $code = 'BK' . now()->format('Ymd') . '' . str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
-        } while (BookingModel::where('kode_booking', $code)->exists());
+        } while (Booking::where('kode_booking', $code)->exists());
 
         return $code;
+    }
+
+    private function dispatchCompletionJob(Booking $booking): void
+    {
+        if ($booking->status_booking !== 'approved') {
+            return;
+        }
+
+        if (now()->lt($booking->waktu_selesai)) {
+            CompleteBooking::dispatch($booking->id)->delay($booking->waktu_selesai);
+
+            return;
+        }
+
+        CompleteBooking::dispatch($booking->id);
     }
 }

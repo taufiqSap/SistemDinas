@@ -26,7 +26,7 @@
                 </div>
             @endif
 
-            <div class="mb-6 grid gap-4 md:grid-cols-4">
+            <div class="mb-6 grid gap-4 md:grid-cols-5">
                 <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Total Booking</p>
                     <p class="mt-2 text-3xl font-black text-slate-900">{{ $summary['total'] ?? 0 }}</p>
@@ -38,6 +38,10 @@
                 <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Disetujui</p>
                     <p class="mt-2 text-3xl font-black text-emerald-700">{{ $summary['approved'] ?? 0 }}</p>
+                </div>
+                <div class="rounded-2xl border border-sky-200 bg-sky-50 p-5 shadow-sm">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky-600">Selesai</p>
+                    <p class="mt-2 text-3xl font-black text-sky-700">{{ $summary['completed'] ?? 0 }}</p>
                 </div>
                 <div class="rounded-2xl border border-rose-200 bg-rose-50 p-5 shadow-sm">
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-rose-600">Dibatalkan</p>
@@ -54,6 +58,7 @@
                                 <option value="">Semua status</option>
                                 <option value="pending" @selected(($filters['status'] ?? '') === 'pending')>Pending</option>
                                 <option value="approved" @selected(($filters['status'] ?? '') === 'approved')>Disetujui</option>
+                                <option value="completed" @selected(($filters['status'] ?? '') === 'completed')>Selesai</option>
                                 <option value="rejected" @selected(($filters['status'] ?? '') === 'rejected')>Ditolak</option>
                                 <option value="cancelled" @selected(($filters['status'] ?? '') === 'cancelled')>Dibatalkan</option>
                             </select>
@@ -101,6 +106,7 @@
                                         @php
                                             $bookingStatusClass = match ($booking->status_booking) {
                                                 'approved' => 'bg-emerald-100 text-emerald-700',
+                                                'completed' => 'bg-sky-100 text-sky-700',
                                                 'rejected' => 'bg-rose-100 text-rose-700',
                                                 'cancelled' => 'bg-gray-200 text-gray-700',
                                                 default => 'bg-amber-100 text-amber-700',
@@ -150,6 +156,7 @@
                                 @php
                                     $bookingStatusClass = match ($booking->status_booking) {
                                         'approved' => 'bg-emerald-100 text-emerald-700',
+                                                'completed' => 'bg-sky-100 text-sky-700',
                                         'rejected' => 'bg-rose-100 text-rose-700',
                                         'cancelled' => 'bg-gray-200 text-gray-700',
                                         default => 'bg-amber-100 text-amber-700',
