@@ -2,7 +2,7 @@
     <div class="flex w-full items-center justify-between px-3 py-3 sm:px-4 lg:px-6">
         <a href="{{ url('/') }}" class="flex items-center gap-3">
             <img
-                src="{{ asset('images/Icon.jpeg') }}"
+                src="{{ asset('images/icon.jpeg') }}"
                 alt="Logo Kota Blitar"
                 class="h-11 w-11 rounded-full bg-white/90 object-contain p-1 shadow-sm"
             />

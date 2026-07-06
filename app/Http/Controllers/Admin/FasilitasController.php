@@ -142,9 +142,19 @@ class FasilitasController extends Controller
             return;
         }
 
-        $path = str_starts_with($storedPath, '/storage/')
-            ? substr($storedPath, strlen('/storage/'))
-            : (str_starts_with($storedPath, 'storage/') ? substr($storedPath, strlen('storage/')) : $storedPath);
+        $path = $storedPath;
+
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            $urlPath = parse_url($path, PHP_URL_PATH);
+
+            if (is_string($urlPath) && str_contains($urlPath, '/storage/')) {
+                $path = substr($urlPath, strpos($urlPath, '/storage/') + strlen('/storage/'));
+            }
+        } elseif (str_starts_with($path, '/storage/')) {
+            $path = substr($path, strlen('/storage/'));
+        } elseif (str_starts_with($path, 'storage/')) {
+            $path = substr($path, strlen('storage/'));
+        }
 
         if (Storage::disk('public')->exists($path)) {
             Storage::disk('public')->delete($path);

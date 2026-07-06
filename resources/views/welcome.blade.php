@@ -1,8 +1,13 @@
 <x-app-layout>
     @push('head')
+    {{-- OPTIMASI GOOGLE FONTS: Preconnect + load non-blocking --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    </noscript>
+
     <style>
         :root {
             --brand-red: #c62828;
@@ -91,11 +96,99 @@
         @php
             $adminWhatsAppNumber = '6285737644100';
             $adminChatUrl = 'https://wa.me/' . $adminWhatsAppNumber . '?text=' . rawurlencode('Halo Admin, saya ingin bertanya tentang layanan penyewaan fasilitas.');
+
+            // ========== OPTIMASI CACHE UNTUK DATA FASILITAS & BOOKING ==========
+            // Cache daftar fasilitas (diperbarui tiap 1 jam)
+            $fasilitasList = \Illuminate\Support\Facades\Cache::remember('home_fasilitas_list_available', 3600, function () {
+                return \App\Models\Fasilitas::query()
+                    ->where('status_fasilitas', 'available')
+                    ->orderBy('nama_fasilitas')
+                    ->get(['id', 'nama_fasilitas']);
+            });
+
+            $selectedFasilitasId = request()->integer('fasilitas_id');
+            if ($selectedFasilitasId === 0 && $fasilitasList->isNotEmpty()) {
+                $selectedFasilitasId = (int) $fasilitasList->first()->id;
+            }
+
+            $selectedFasilitas = $fasilitasList->firstWhere('id', $selectedFasilitasId);
+
+            $monthInput = request('month');
+            $startOfMonth = now()->startOfMonth();
+
+            if (is_string($monthInput) && preg_match('/^\d{4}-\d{2}$/', $monthInput)) {
+                try {
+                    $startOfMonth = \Illuminate\Support\Carbon::createFromFormat('Y-m', $monthInput)->startOfMonth();
+                } catch (\Throwable $e) {
+                    $startOfMonth = now()->startOfMonth();
+                }
+            }
+
+            $endOfMonth = $startOfMonth->copy()->endOfMonth();
+            $daysInMonth = $startOfMonth->daysInMonth;
+            $prevMonth = $startOfMonth->copy()->subMonth()->format('Y-m');
+            $nextMonth = $startOfMonth->copy()->addMonth()->format('Y-m');
+            $monthLabel = $startOfMonth->translatedFormat('F Y');
+
+            $jadwalQueryParams = array_filter([
+                'month' => $startOfMonth->format('Y-m'),
+                'fasilitas_id' => $selectedFasilitasId > 0 ? $selectedFasilitasId : null,
+            ]);
+
+            // Cache data booking per bulan & fasilitas (diperbarui tiap 5 menit, karena data bisa berubah)
+            $bookingCacheKey = 'home_bookings_' . ($selectedFasilitasId ?: 'all') . '_' . $startOfMonth->format('Y-m');
+            $bookingPeriods = \Illuminate\Support\Facades\Cache::remember($bookingCacheKey, 300, function () use ($selectedFasilitasId, $startOfMonth, $endOfMonth) {
+                $query = \App\Models\Booking::query()
+                    ->where('status_booking', '!=', 'cancelled')
+                    ->whereDate('waktu_mulai', '<=', $endOfMonth->toDateString())
+                    ->whereDate('waktu_selesai', '>=', $startOfMonth->toDateString());
+
+                if ($selectedFasilitasId > 0) {
+                    $query->where('fasilitas_id', $selectedFasilitasId);
+                }
+
+                return $query->get(['id', 'waktu_mulai', 'waktu_selesai']);
+            });
+
+            $bookedDates = [];
+            foreach ($bookingPeriods as $booking) {
+                $start = \Illuminate\Support\Carbon::parse($booking->waktu_mulai)->startOfDay();
+                $end = \Illuminate\Support\Carbon::parse($booking->waktu_selesai)->startOfDay();
+
+                if ($end->lt($start)) {
+                    continue;
+                }
+
+                $periodEnd = $end->gt($endOfMonth) ? $endOfMonth : $end;
+                $periodStart = $start->lt($startOfMonth) ? $startOfMonth : $start;
+
+                for ($date = $periodStart->copy(); $date->lte($periodEnd); $date->addDay()) {
+                    $key = $date->format('Y-m-d');
+                    $bookedDates[$key] = ($bookedDates[$key] ?? 0) + 1;
+                }
+            }
+
+            $filledDays = count($bookedDates);
+            $emptyDays = $daysInMonth - $filledDays;
+
+            $fasilitasDetail = null;
+            if ($selectedFasilitasId > 0) {
+                $fasilitasDetail = \App\Models\Fasilitas::query()
+                    ->with('kategori:id,nama_kategori')
+                    ->find($selectedFasilitasId);
+            }
+
+            $fasilitasDetailUrl = $selectedFasilitasId > 0
+                ? route('fasilitas.show', $selectedFasilitasId) . '#form-booking'
+                : route('fasilitas.index');
+
+            $canBook = auth()->check() && auth()->user()->role === 'user';
         @endphp
 
         <section class="mx-auto mt-6 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
             <div class="relative overflow-hidden rounded-2xl shadow-2xl">
-                <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset('images/bg.png') }}');"></div>
+                {{-- PERBAIKAN: Hero background diubah ke <img> agar LCP lebih cepat --}}
+                <img src="{{ asset('images/bg.png') }}" alt="Background hero SELARAS" class="absolute inset-0 h-full w-full object-cover" loading="eager" fetchpriority="high">
                 <div class="hero-overlay absolute inset-0"></div>
 
                 <div class="relative z-10 px-6 py-16 sm:px-10 sm:py-20 lg:px-14">
@@ -123,103 +216,6 @@
 @endif
 
         <section id="jadwal" class="mx-auto mb-16 mt-12 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-            @php
-                $fasilitasList = \App\Models\Fasilitas::query()
-                    ->where('status_fasilitas', 'available')
-                    ->orderBy('nama_fasilitas')
-                    ->get(['id', 'nama_fasilitas']);
-
-                $selectedFasilitasId = request()->integer('fasilitas_id');
-                if ($selectedFasilitasId === 0 && $fasilitasList->isNotEmpty()) {
-                    $selectedFasilitasId = (int) $fasilitasList->first()->id;
-                }
-
-                $selectedFasilitas = $fasilitasList->firstWhere('id', $selectedFasilitasId);
-
-                $monthInput = request('month');
-                $startOfMonth = now()->startOfMonth();
-
-                if (is_string($monthInput) && preg_match('/^\d{4}-\d{2}$/', $monthInput)) {
-                    try {
-                        $startOfMonth = \Illuminate\Support\Carbon::createFromFormat('Y-m', $monthInput)->startOfMonth();
-                    } catch (\Throwable $e) {
-                        $startOfMonth = now()->startOfMonth();
-                    }
-                }
-
-                $endOfMonth = $startOfMonth->copy()->endOfMonth();
-                $daysInMonth = $startOfMonth->daysInMonth;
-                $prevMonth = $startOfMonth->copy()->subMonth()->format('Y-m');
-                $nextMonth = $startOfMonth->copy()->addMonth()->format('Y-m');
-                $monthLabel = $startOfMonth->translatedFormat('F Y');
-
-                $jadwalQueryParams = array_filter([
-                    'month' => $startOfMonth->format('Y-m'),
-                    'fasilitas_id' => $selectedFasilitasId > 0 ? $selectedFasilitasId : null,
-                ]);
-
-              $bookingPeriodsQuery = \App\Models\Booking::query()
-                    ->where('status_booking', '!=', 'cancelled')
-                    ->whereDate('waktu_mulai', '<=', $endOfMonth->toDateString())
-                    ->whereDate('waktu_selesai', '>=', $startOfMonth->toDateString());
-
-                if ($selectedFasilitasId > 0) {
-                    $bookingPeriodsQuery->where('fasilitas_id', $selectedFasilitasId);
-                }
-
-                $bookingPeriods = $bookingPeriodsQuery
-                    ->get(['id', 'waktu_mulai', 'waktu_selesai']); // Ubah kolom select
-
-                $bookedDates = [];
-                foreach ($bookingPeriods as $booking) {
-                    // Sesuaikan dengan nama kolom yang baru
-                    $start = \Illuminate\Support\Carbon::parse($booking->waktu_mulai)->startOfDay();
-                    $end = \Illuminate\Support\Carbon::parse($booking->waktu_selesai)->startOfDay();
-
-                    if ($end->lt($start)) {
-                        continue;
-                    }
-
-                    $periodEnd = $end->gt($endOfMonth) ? $endOfMonth : $end;
-                    $periodStart = $start->lt($startOfMonth) ? $startOfMonth : $start;
-
-                    for ($date = $periodStart->copy(); $date->lte($periodEnd); $date->addDay()) {
-                        $key = $date->format('Y-m-d');
-                        $bookedDates[$key] = ($bookedDates[$key] ?? 0) + 1;
-                    }
-                }
-
-                $filledDays = count($bookedDates);
-                $emptyDays = $daysInMonth - $filledDays;
-
-                $fasilitasDetail = null;
-                if ($selectedFasilitasId > 0) {
-                    $fasilitasDetail = \App\Models\Fasilitas::query()
-                        ->with('kategori:id,nama_kategori')
-                        ->find($selectedFasilitasId);
-                }
-
-                $fasilitasDetailUrl = $selectedFasilitasId > 0
-                    ? route('fasilitas.show', $selectedFasilitasId) . '#form-booking'
-                    : route('fasilitas.index');
-
-                $canBook = auth()->check() && auth()->user()->role === 'user';
-            @endphp
-
-            <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-red)]">Kalender Ketersediaan</p>
-                    <h3 class="mt-2 text-3xl font-extrabold text-[var(--brand-ink)]">Jadwal Bulan {{ $monthLabel }}</h3>
-                    @if ($selectedFasilitas)
-                        <p class="mt-1 text-sm font-semibold text-slate-600">Fasilitas: {{ $selectedFasilitas->nama_fasilitas }}</p>
-                    @endif
-                </div>
-                <div class="flex items-center gap-2 text-xs font-semibold">
-                    <span class="rounded-full bg-emerald-100 px-3 py-1 text-emerald-700">Tersedia: {{ $emptyDays }} hari</span>
-                    <span class="rounded-full bg-amber-100 px-3 py-1 text-amber-700">Terisi: {{ $filledDays }} hari</span>
-                </div>
-            </div>
-
             @if ($fasilitasList->isNotEmpty())
                 <div class="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur">
                     <form method="GET" action="{{ route('home') }}#jadwal" class="flex flex-wrap items-end gap-3">
@@ -243,6 +239,20 @@
                     </form>
                 </div>
             @endif
+
+            <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand-red)]">Kalender Ketersediaan</p>
+                    <h3 class="mt-2 text-3xl font-extrabold text-[var(--brand-ink)]">Jadwal Bulan {{ $monthLabel }}</h3>
+                    @if ($selectedFasilitas)
+                        <p class="mt-1 text-sm font-semibold text-slate-600">Fasilitas: {{ $selectedFasilitas->nama_fasilitas }}</p>
+                    @endif
+                </div>
+                <div class="flex items-center gap-2 text-xs font-semibold">
+                    <span class="rounded-full bg-emerald-100 px-3 py-1 text-emerald-700">Tersedia: {{ $emptyDays }} hari</span>
+                    <span class="rounded-full bg-amber-100 px-3 py-1 text-amber-700">Terisi: {{ $filledDays }} hari</span>
+                </div>
+            </div>
 
             <div class="mb-5 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur">
                 <div class="flex flex-wrap items-center justify-between gap-3">
@@ -317,10 +327,12 @@
                 <div id="detail-fasilitas" class="mt-8 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                     <div class="grid grid-cols-1 lg:grid-cols-2">
                         <div class="relative aspect-[4/3] overflow-hidden bg-slate-100 lg:aspect-auto lg:min-h-[320px]">
+                            {{-- PERBAIKAN: tambah loading="lazy" pada gambar detail --}}
                             <img
                                 src="{{ $fasilitasDetail->gambar_fasilitas_url }}"
                                 alt="{{ $fasilitasDetail->nama_fasilitas }}"
                                 class="h-full w-full object-cover"
+                                loading="lazy"
                             >
                             <div class="absolute left-4 top-4">
                                 <span class="inline-flex rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-700 backdrop-blur">
@@ -471,31 +483,33 @@
             const fasilitasAvailable = @json(($fasilitasDetail?->status_fasilitas ?? 'available') === 'available');
             const modalBooking = document.getElementById('jadwal-modal-booking');
             const modalBookingLink = document.getElementById('jadwal-modal-booking-link');
+            const canBook = @json($canBook);
 
             const buildItemHtml = (item) => {
-    const status = item.status_booking || 'pending';
-    const badgeClass = statusClass[status] || 'bg-slate-100 text-slate-700';
-    const badgeText = statusLabel[status] || status;
+                const status = item.status_booking || 'pending';
+                const badgeClass = statusClass[status] || 'bg-slate-100 text-slate-700';
+                const badgeText = statusLabel[status] || status;
 
-    return '<article class="rounded-xl border border-slate-200 bg-slate-50 p-4">'
-        + '<div class="mb-2 flex items-center justify-between gap-2">'
-        + '<p class="text-sm font-bold text-slate-800">' + item.kode_booking + '</p>'
-        + '<span class="rounded-full px-2 py-1 text-xs font-semibold ' + badgeClass + '">' + badgeText + '</span>'
-        + '</div>'
-        + '<div class="grid gap-2 text-sm text-slate-700 sm:grid-cols-2">'
-        + '<p><span class="font-semibold text-slate-900">Pemesan:</span> ' + item.nama_pemesan + '</p>'
-        + (item.lembaga ? '<p><span class="font-semibold text-slate-900">Lembaga:</span> ' + item.lembaga + '</p>' : '')
-        + '<p><span class="font-semibold text-slate-900">kegiatan:</span> ' + item.kegiatan + '</p>'
-        + '<p><span class="font-semibold text-slate-900">Fasilitas:</span> ' + item.fasilitas + '</p>'
-        + '<p><span class="font-semibold text-slate-900">Mulai:</span> ' + item.waktu_mulai + '</p>'
-        + '<p><span class="font-semibold text-slate-900">Selesai:</span> ' + item.waktu_selesai + '</p>'
-        + '</div>'
-        + '</article>';
-};
+                return '<article class="rounded-xl border border-slate-200 bg-slate-50 p-4">'
+                    + '<div class="mb-2 flex items-center justify-between gap-2">'
+                    + '<p class="text-sm font-bold text-slate-800">' + item.kode_booking + '</p>'
+                    + '<span class="rounded-full px-2 py-1 text-xs font-semibold ' + badgeClass + '">' + badgeText + '</span>'
+                    + '</div>'
+                    + '<div class="grid gap-2 text-sm text-slate-700 sm:grid-cols-2">'
+                    + '<p><span class="font-semibold text-slate-900">Pemesan:</span> ' + item.nama_pemesan + '</p>'
+                    + (item.lembaga ? '<p><span class="font-semibold text-slate-900">Lembaga:</span> ' + item.lembaga + '</p>' : '')
+                    + '<p><span class="font-semibold text-slate-900">kegiatan:</span> ' + item.kegiatan + '</p>'
+                    + '<p><span class="font-semibold text-slate-900">Fasilitas:</span> ' + item.fasilitas + '</p>'
+                    + '<p><span class="font-semibold text-slate-900">Mulai:</span> ' + item.waktu_mulai + '</p>'
+                    + '<p><span class="font-semibold text-slate-900">Selesai:</span> ' + item.waktu_selesai + '</p>'
+                    + '</div>'
+                    + '</article>';
+            };
 
             cards.forEach((card) => {
                 card.addEventListener('click', async () => {
                     const date = card.getAttribute('data-date');
+                    // PERBAIKAN: cek kelas tersedia berdasarkan border (bukan isAvailable bool dari hitungan)
                     const isAvailable = !card.classList.contains('border-amber-200');
 
                     if (!date) {
@@ -534,6 +548,7 @@
                         if (!payload.bookings || payload.bookings.length === 0) {
                             empty.classList.remove('hidden');
 
+                            // PERBAIKAN: logika tampil tombol booking
                             if (isAvailable && fasilitasAvailable && modalBooking && modalBookingLink) {
                                 const detailUrl = new URL(fasilitasDetailBaseUrl, window.location.origin);
                                 detailUrl.searchParams.set('tanggal_sewa', date);
@@ -545,20 +560,9 @@
                             return;
                         }
 
-                        // Deduplicate bookings by pemesan (show only one per pemesan)
+                        // PERBAIKAN: Hapus deduplikasi manual agar semua data booking tampil (transparansi penuh)
                         const bookings = payload.bookings || [];
-                        const seen = [];
-                        const uniqueBookings = [];
-
-                        for (const b of bookings) {
-                            const key = b.nama_pemesan || b.user_id || b.kode_booking || JSON.stringify(b);
-                            if (!seen.includes(key)) {
-                                seen.push(key);
-                                uniqueBookings.push(b);
-                            }
-                        }
-
-                        list.innerHTML = uniqueBookings.map(buildItemHtml).join('');
+                        list.innerHTML = bookings.map(buildItemHtml).join('');
                         list.classList.remove('hidden');
                     } catch (exception) {
                         loading.classList.add('hidden');

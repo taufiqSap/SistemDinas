@@ -64,7 +64,7 @@ class Booking extends Controller
                 'waktu_mulai'    => Carbon::parse($booking->waktu_mulai)->translatedFormat('d F Y H:i'),
                 'waktu_selesai'  => Carbon::parse($booking->waktu_selesai)->translatedFormat('d F Y H:i'),
                 'status_booking' => $booking->status_booking,
-                'dokumen_pdf'    => $booking->dokumen_pdf ? asset('storage/' . $booking->dokumen_pdf) : null,
+                'dokumen_pdf'    => $booking->dokumen_pdf ? Storage::disk('public')->url($booking->dokumen_pdf) : null,
             ];
         })
         ->values();

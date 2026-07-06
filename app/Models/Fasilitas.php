@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Fasilitas extends Model
 {
@@ -39,7 +40,9 @@ class Fasilitas extends Model
                 $storagePosition = strpos($path, '/storage/');
 
                 if ($storagePosition !== false) {
-                    return substr($path, $storagePosition);
+                    $storedPath = substr($path, $storagePosition + strlen('/storage/'));
+
+                    return Storage::disk('public')->url($storedPath);
                 }
             }
 
@@ -47,9 +50,9 @@ class Fasilitas extends Model
         }
 
         if (str_starts_with($gambar, '/storage/') || str_starts_with($gambar, 'storage/')) {
-            return '/' . ltrim($gambar, '/');
+            return Storage::disk('public')->url(ltrim(str_replace('/storage/', '', $gambar), '/'));
         }
 
-        return '/storage/' . ltrim($gambar, '/');
+        return Storage::disk('public')->url(ltrim($gambar, '/'));
     }
 }

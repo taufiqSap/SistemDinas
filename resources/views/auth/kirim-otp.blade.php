@@ -96,12 +96,7 @@
                         </button>
                     </form>
 
-                    <div class="mt-6 text-center">
-                        <p class="text-sm text-gray-500">
-                            Sudah punya akun?
-                            <a href="{{ route('login') }}" class="link-login ml-1 hover:underline">Masuk disini</a>
-                        </p>
-                    </div>
+                    
                 </div>
             </div>
         </div>

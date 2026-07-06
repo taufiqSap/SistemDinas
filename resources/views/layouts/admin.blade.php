@@ -111,7 +111,7 @@
                 <div class="flex h-full flex-col p-4">
                     <div class="sidebar-brand-row mb-5 flex items-center">
                         <div class="sidebar-brand-logo mr-3 flex h-12 w-12 items-center justify-center rounded-xl bg-white/95">
-                            <img src="{{ asset('images/Icon.jpeg') }}" alt="Logo Kota Blitar" class="h-9 w-9 object-contain">
+                            <img src="{{ asset('images/icon.jpeg') }}" alt="Logo Kota Blitar" class="h-9 w-9 object-contain">
                         </div>
                         <div class="sidebar-brand-copy transition-all duration-200">
                             <p class="text-[11px] font-semibold uppercase tracking-[0.25em] text-red-100">Selaras</p>
