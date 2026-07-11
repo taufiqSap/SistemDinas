@@ -448,14 +448,18 @@
             const cards = document.querySelectorAll('[data-jadwal-card]');
 
             const statusLabel = {
-                pending: 'Pending',
-                confirmed: 'Dikonfirmasi',
+                pending: 'Menunggu',
+                approved: 'Disetujui',
+                completed: 'Selesai',
+                rejected: 'Ditolak',
                 cancelled: 'Dibatalkan'
             };
 
             const statusClass = {
                 pending: 'bg-amber-100 text-amber-800',
-                confirmed: 'bg-emerald-100 text-emerald-800',
+                approved: 'bg-emerald-100 text-emerald-800',
+                completed: 'bg-sky-100 text-sky-800',
+                rejected: 'bg-rose-100 text-rose-800',
                 cancelled: 'bg-red-100 text-red-800'
             };
 

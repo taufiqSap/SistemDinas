@@ -28,6 +28,7 @@
                         <label for="waktu_mulai" class="block text-sm font-semibold text-slate-700">Waktu Mulai</label>
                         <input type="datetime-local" id="waktu_mulai" name="waktu_mulai"
                                value="{{ old('waktu_mulai') }}"
+                               min="{{ now()->format('Y-m-d\\TH:i') }}"
                                required
                                class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-red-400 focus:ring-red-200">
                     </div>
@@ -37,6 +38,7 @@
                         <label for="waktu_selesai" class="block text-sm font-semibold text-slate-700">Waktu Selesai</label>
                         <input type="datetime-local" id="waktu_selesai" name="waktu_selesai"
                                value="{{ old('waktu_selesai') }}"
+                               min="{{ now()->format('Y-m-d\\TH:i') }}"
                                required
                                class="mt-2 block w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-red-400 focus:ring-red-200">
                     </div>
@@ -111,6 +113,26 @@
 
     @push('scripts')
     <script>
+        (function () {
+            const waktuMulai = document.getElementById('waktu_mulai');
+            const waktuSelesai = document.getElementById('waktu_selesai');
+
+            const formatLocalDateTime = (date) => {
+                const pad = (value) => String(value).padStart(2, '0');
+                return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+            };
+
+            if (waktuMulai && waktuSelesai) {
+                const minValue = formatLocalDateTime(new window.Date());
+                waktuMulai.min = minValue;
+                waktuSelesai.min = minValue;
+
+                waktuMulai.addEventListener('change', () => {
+                    waktuSelesai.min = waktuMulai.value || minValue;
+                });
+            }
+        })();
+
         function selectFasilitas(id) {
             // Set hidden input
             document.getElementById('fasilitas_id').value = id;

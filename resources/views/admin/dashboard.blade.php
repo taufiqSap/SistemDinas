@@ -2,14 +2,18 @@
     @php
         $statusClasses = [
             'pending' => 'bg-amber-100 text-amber-800 ring-1 ring-inset ring-amber-200',
-            'confirmed' => 'bg-emerald-100 text-emerald-800 ring-1 ring-inset ring-emerald-200',
+            'approved' => 'bg-emerald-100 text-emerald-800 ring-1 ring-inset ring-emerald-200',
+            'completed' => 'bg-sky-100 text-sky-800 ring-1 ring-inset ring-sky-200',
+            'rejected' => 'bg-rose-100 text-rose-800 ring-1 ring-inset ring-rose-200',
             'cancelled' => 'bg-rose-100 text-rose-800 ring-1 ring-inset ring-rose-200',
         ];
 
         $statusLabels = [
-            'pending' => 'Pending',
-            'confirmed' => 'Confirmed',
-            'cancelled' => 'Cancelled',
+            'pending' => 'Menunggu',
+            'approved' => 'Disetujui',
+            'completed' => 'Selesai',
+            'rejected' => 'Ditolak',
+            'cancelled' => 'Dibatalkan',
         ];
     @endphp
 
@@ -34,7 +38,7 @@
                     <div class="rounded-3xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
                         <p class="text-sm font-medium text-amber-700">Menunggu verifikasi</p>
                         <p class="mt-2 text-4xl font-black text-slate-900">{{ number_format($stats[1]['value']) }}</p>
-                        <p class="mt-2 text-sm text-slate-600">Booking yang masih pending.</p>
+                        <p class="mt-2 text-sm text-slate-600">Booking yang masih menunggu persetujuan.</p>
                     </div>
                 </div>
             </div>

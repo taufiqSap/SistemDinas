@@ -1,6 +1,4 @@
 <section>
-    <
-
     <form method="post" action="{{ route('profile.update') }}" class="space-y-5">
         @csrf
         @method('patch')

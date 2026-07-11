@@ -77,7 +77,8 @@
 
                             <div>
                                 <x-input-label for="tanggal_sewa" value="Tanggal Sewa" />
-                                <x-text-input id="tanggal_sewa" name="tanggal_sewa" type="date" class="mt-1 block w-full" :value="old('tanggal_sewa', request('tanggal_sewa'))" required />
+                                <x-text-input id="tanggal_sewa" name="tanggal_sewa" type="date" class="mt-1 block w-full" :value="old('tanggal_sewa', request('tanggal_sewa'))" :min="now()->format('Y-m-d')" required />
+                                <p class="mt-2 text-sm text-gray-500">Tanggal sewa minimal hari ini.</p>
                             </div>
 
                             <div>
@@ -116,6 +117,9 @@
             if (!fasilitasId || !tanggalSewa || !durasiHari || !tanggalSelesai) {
                 return;
             }
+
+            const today = new window['Date']();
+            tanggalSewa.min = today.toISOString().slice(0, 10);
 
             const setTanggalSelesai = () => {
                 if (!tanggalSewa.value || !durasiHari.value) {

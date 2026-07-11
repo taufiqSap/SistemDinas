@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Fasilitas;
+use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
@@ -13,9 +14,10 @@ class DashboardController extends Controller
     public function index(): View
     {
         $dashboardData = Cache::remember('admin.dashboard.summary', now()->addSeconds(60), function () {
+            $totalUser = User::count();
             $totalBooking = Booking::count();
             $pendingBooking = Booking::where('status_booking', 'pending')->count();
-            $confirmedBooking = Booking::where('status_booking', 'confirmed')->count();
+            $approvedBooking = Booking::where('status_booking', 'approved')->count();
             $fasilitasCount = Fasilitas::count();
 
             $recentBookings = Booking::query()
@@ -28,9 +30,10 @@ class DashboardController extends Controller
                 ->get();
 
             return compact(
+                'totalUser',
                 'totalBooking',
                 'pendingBooking',
-                'confirmedBooking',
+                'approvedBooking',
                 'fasilitasCount',
                 'recentBookings'
             );
@@ -38,6 +41,12 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', [
             'stats' => [
+                [
+                    'label' => 'Total User',
+                    'value' => $dashboardData['totalUser'],
+                    'note' => 'Pengguna terdaftar',
+                    'tone' => 'bg-blue-400/15 text-blue-200 ring-blue-400/20',
+                ],
                 [
                     'label' => 'Total Booking',
                     'value' => $dashboardData['totalBooking'],
@@ -51,8 +60,8 @@ class DashboardController extends Controller
                     'tone' => 'bg-amber-400/15 text-amber-200 ring-amber-400/20',
                 ],
                 [
-                    'label' => 'Booking Confirmed',
-                    'value' => $dashboardData['confirmedBooking'],
+                    'label' => 'Booking Disetujui',
+                    'value' => $dashboardData['approvedBooking'],
                     'note' => 'Sudah disetujui',
                     'tone' => 'bg-emerald-400/15 text-emerald-200 ring-emerald-400/20',
                 ],

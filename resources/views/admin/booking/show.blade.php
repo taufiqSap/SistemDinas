@@ -109,7 +109,15 @@
 
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
                         <p class="font-semibold text-slate-950">Status saat ini</p>
-                        <p class="mt-1">{{ ucfirst($booking->status_booking) }}</p>
+                        <p class="mt-1">
+                            {{ [
+                                'pending' => 'Menunggu',
+                                'approved' => 'Disetujui',
+                                'completed' => 'Selesai',
+                                'rejected' => 'Ditolak',
+                                'cancelled' => 'Dibatalkan',
+                            ][$booking->status_booking] ?? ucfirst($booking->status_booking) }}
+                        </p>
                     </div>
                 </div>
             </div>

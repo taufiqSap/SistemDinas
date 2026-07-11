@@ -32,7 +32,7 @@
                     <p class="mt-2 text-3xl font-black text-slate-900">{{ $summary['total'] ?? 0 }}</p>
                 </div>
                 <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
-                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600">Pending</p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600">Menunggu</p>
                     <p class="mt-2 text-3xl font-black text-amber-700">{{ $summary['pending'] ?? 0 }}</p>
                 </div>
                 <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
@@ -56,7 +56,7 @@
                             <label for="status" class="mb-1.5 block text-sm font-semibold text-gray-700">Status booking</label>
                             <select id="status" name="status" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <option value="">Semua status</option>
-                                <option value="pending" @selected(($filters['status'] ?? '') === 'pending')>Pending</option>
+                                <option value="pending" @selected(($filters['status'] ?? '') === 'pending')>Menunggu</option>
                                 <option value="approved" @selected(($filters['status'] ?? '') === 'approved')>Disetujui</option>
                                 <option value="completed" @selected(($filters['status'] ?? '') === 'completed')>Selesai</option>
                                 <option value="rejected" @selected(($filters['status'] ?? '') === 'rejected')>Ditolak</option>
@@ -104,6 +104,14 @@
                                 <tbody class="divide-y divide-gray-100 bg-white">
                                     @foreach ($bookings as $booking)
                                         @php
+                                            $statusLabel = [
+                                                'pending' => 'Menunggu',
+                                                'approved' => 'Disetujui',
+                                                'completed' => 'Selesai',
+                                                'rejected' => 'Ditolak',
+                                                'cancelled' => 'Dibatalkan',
+                                            ][$booking->status_booking] ?? ucfirst($booking->status_booking);
+
                                             $bookingStatusClass = match ($booking->status_booking) {
                                                 'approved' => 'bg-emerald-100 text-emerald-700',
                                                 'completed' => 'bg-sky-100 text-sky-700',
@@ -123,7 +131,7 @@
                                             </td>
                                             <td class="px-4 py-4">
                                                 <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $bookingStatusClass }}">
-                                                    {{ ucfirst($booking->status_booking) }}
+                                                    {{ $statusLabel }}
                                                 </span>
                                             </td>
                                             <td class="px-4 py-4 text-gray-700 max-w-[180px] truncate" title="{{ $booking->status_booking === 'cancelled' ? ($booking->alasan_pembatalan ?? '') : '' }}">
@@ -154,6 +162,14 @@
                         <div class="grid gap-4 lg:hidden">
                             @foreach ($bookings as $booking)
                                 @php
+                                    $statusLabel = [
+                                        'pending' => 'Menunggu',
+                                        'approved' => 'Disetujui',
+                                        'completed' => 'Selesai',
+                                        'rejected' => 'Ditolak',
+                                        'cancelled' => 'Dibatalkan',
+                                    ][$booking->status_booking] ?? ucfirst($booking->status_booking);
+
                                     $bookingStatusClass = match ($booking->status_booking) {
                                         'approved' => 'bg-emerald-100 text-emerald-700',
                                                 'completed' => 'bg-sky-100 text-sky-700',
@@ -169,7 +185,7 @@
                                             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Kode Booking</p>
                                             <h3 class="mt-1 text-base font-bold text-gray-900">{{ $booking->kode_booking }}</h3>
                                         </div>
-                                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $bookingStatusClass }}">{{ ucfirst($booking->status_booking) }}</span>
+                                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $bookingStatusClass }}">{{ $statusLabel }}</span>
                                     </div>
 
                                     <div class="mt-4 grid gap-3 text-sm text-gray-700 sm:grid-cols-2">

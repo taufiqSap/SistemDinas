@@ -68,13 +68,23 @@
                                         {{ \Carbon\Carbon::parse($booking->waktu_selesai)->format('d M Y H:i') }}
                                     </td>
                                     <td class="px-4 py-4">
+                                        @php
+                                            $statusLabel = [
+                                                'pending' => 'Menunggu',
+                                                'approved' => 'Disetujui',
+                                                'completed' => 'Selesai',
+                                                'rejected' => 'Ditolak',
+                                                'cancelled' => 'Dibatalkan',
+                                            ][$booking->status_booking] ?? ucfirst($booking->status_booking);
+                                        @endphp
                                         <span class="inline-block rounded-full px-2 py-1 text-xs font-semibold
                                             @if($booking->status_booking == 'pending') bg-yellow-100 text-yellow-800
                                             @elseif($booking->status_booking == 'approved') bg-green-100 text-green-800
                                             @elseif($booking->status_booking == 'completed') bg-sky-100 text-sky-800
+                                            @elseif($booking->status_booking == 'rejected') bg-rose-100 text-rose-800
                                             @elseif($booking->status_booking == 'cancelled') bg-red-100 text-red-800
                                             @else bg-gray-100 text-gray-800 @endif">
-                                            {{ $booking->status_booking === 'completed' ? 'Selesai' : ucfirst($booking->status_booking) }}
+                                            {{ $statusLabel }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-4 text-right">

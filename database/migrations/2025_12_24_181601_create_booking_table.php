@@ -26,7 +26,7 @@ return new class extends Migration
             $table->text('kegiatan'); 
             $table->string('dokumen_pdf')->nullable(); 
             
-            $table->enum('status_booking', ['pending', 'approved', 'rejected','cancelled'])->default('pending');
+            $table->enum('status_booking', ['pending', 'approved', 'rejected','cancelled','completed'])->default('pending');
             $table->text('alasan_penolakan')->nullable();
             $table->text('alasan_pembatalan')->nullable();
             $table->timestamps();

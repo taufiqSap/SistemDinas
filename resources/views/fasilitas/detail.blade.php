@@ -10,6 +10,10 @@
             --text-soft: #475569;
         }
 
+        .min-date-note {
+            color: #64748b;
+        }
+
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
         }
@@ -208,12 +212,13 @@
                                      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                          <div>
                                              <label for="waktu_mulai" class="mb-1.5 block text-sm font-bold text-slate-800">Waktu Mulai</label>
-                                             <input id="waktu_mulai" name="waktu_mulai" type="datetime-local" value="{{ old('waktu_mulai') }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                             <input id="waktu_mulai" name="waktu_mulai" type="datetime-local" value="{{ old('waktu_mulai') }}" min="{{ now()->format('Y-m-d\\TH:i') }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                             <p class="min-date-note mt-2 text-xs">Tidak bisa memilih waktu yang lebih kecil dari sekarang.</p>
                                          </div>
 
                                          <div>
                                              <label for="waktu_selesai" class="mb-1.5 block text-sm font-bold text-slate-800">Waktu Selesai</label>
-                                             <input id="waktu_selesai" name="waktu_selesai" type="datetime-local" value="{{ old('waktu_selesai') }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
+                                             <input id="waktu_selesai" name="waktu_selesai" type="datetime-local" value="{{ old('waktu_selesai') }}" min="{{ now()->format('Y-m-d\\TH:i') }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 focus:border-[#c62828] focus:ring-[#c62828]" required>
                                          </div>
                                      </div>
 
@@ -290,6 +295,23 @@
         (function () {
             const successPopup = document.getElementById('booking-success-popup');
             const fasilitasUrl = @json(route('fasilitas.index'));
+            const waktuMulai = document.getElementById('waktu_mulai');
+            const waktuSelesai = document.getElementById('waktu_selesai');
+
+            const formatLocalDateTime = (date) => {
+                const pad = (value) => String(value).padStart(2, '0');
+                return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+            };
+
+            if (waktuMulai && waktuSelesai) {
+                const minValue = formatLocalDateTime(new window.Date());
+                waktuMulai.min = minValue;
+                waktuSelesai.min = minValue;
+
+                waktuMulai.addEventListener('change', () => {
+                    waktuSelesai.min = waktuMulai.value || minValue;
+                });
+            }
 
             if (successPopup) {
                 successPopup.addEventListener('click', (event) => {

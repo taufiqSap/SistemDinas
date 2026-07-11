@@ -5,7 +5,7 @@
                 <div class="flex items-center gap-3">
                     <div class="h-12 w-12 shrink-0 rounded-md bg-white p-1">
                         <img
-                            src="{{ asset('images/Icon.png') }}"
+                            src="{{ asset('images/icon.jpeg') }}"
                             alt="Logo Kota Blitar"
                             class="h-full w-full object-contain"
                         >
